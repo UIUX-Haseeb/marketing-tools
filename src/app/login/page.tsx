@@ -59,7 +59,8 @@ export default async function LoginPage({
       {/* Sign-in */}
       <section className="flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-sm space-y-8">
-          <div className="space-y-3 lg:hidden">
+          <div className="space-y-4 lg:hidden flex flex-col items-center text-center">
+            <MascotLoop className="size-32 rounded-2xl ring-1 ring-border/40 shadow-sm" />
             <Logo height={24} />
           </div>
 
