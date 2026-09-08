@@ -2,11 +2,9 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 
-const allowedDomain = (process.env.ALLOWED_EMAIL_DOMAIN ?? "providentestate.com").toLowerCase();
 
 export function isAllowedEmail(email?: string | null) {
-  if (!email) return false;
-  return email.toLowerCase().endsWith(`@${allowedDomain}`);
+  return !!email;
 }
 
 const googleClientId = process.env.AUTH_GOOGLE_ID;

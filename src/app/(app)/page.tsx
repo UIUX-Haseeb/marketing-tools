@@ -89,7 +89,7 @@ export default async function DashboardPage() {
             <span className="text-xl">👋</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            {TEAM_LABELS[user.team]} Team workspace · Provident Estate Marketing Portal
+            Prov Toys · Provident Marketing & Content Portal
           </p>
         </div>
 

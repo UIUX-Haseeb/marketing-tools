@@ -31,9 +31,9 @@ export default async function LoginPage({
           <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary text-lg font-bold text-primary-foreground shadow-sm">
             P
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Provident Marketing Tools</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Prov Toys</h1>
           <p className="text-sm text-muted-foreground">
-            Internal marketing portal for requests and content generation.
+            Provident Estate internal marketing and content tools.
           </p>
         </div>
 

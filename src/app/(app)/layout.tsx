@@ -21,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <aside className="hidden w-60 shrink-0 flex-col border-r bg-sidebar p-4 md:flex">
         <Link href="/" className="mb-6 flex items-center gap-2 px-1">
           <span className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground text-sm font-semibold">P</span>
-          <span className="font-semibold">Marketing Tools</span>
+          <span className="font-semibold tracking-tight">Prov Toys</span>
         </Link>
         <SidebarNav items={nav} />
         <div className="mt-auto space-y-3 border-t pt-4">
@@ -49,7 +49,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile header */}
         <header className="flex items-center justify-between border-b px-4 py-3 md:hidden">
-          <Link href="/" className="font-semibold">Marketing Tools</Link>
+          <Link href="/" className="font-semibold tracking-tight">Prov Toys</Link>
           <nav className="flex gap-3 text-sm">
             {nav.map((n) => (
               <Link key={n.href} href={n.href} className="text-muted-foreground">{n.label}</Link>

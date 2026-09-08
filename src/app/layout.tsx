@@ -4,8 +4,8 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Provident Marketing Tools", template: "%s · Marketing Tools" },
-  description: "Internal marketing tools for Provident teams.",
+  title: { default: "Prov Toys", template: "%s · Prov Toys" },
+  description: "Provident Estate internal marketing and content tools.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
