@@ -23,7 +23,7 @@ export default async function MyRequestsPage({ searchParams }: { searchParams: P
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">My requests</h1>
-          <p className="text-muted-foreground">Everything you've sent to Marketing.</p>
+          <p className="text-muted-foreground">Everything you’ve sent to Marketing.</p>
         </div>
         <Button asChild size="sm"><Link href="/tools/custom-request">New request</Link></Button>
       </div>

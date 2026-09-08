@@ -22,7 +22,7 @@ export default async function UsersPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Users</h1>
-        <p className="text-muted-foreground">Who can sign in, and which team's tools they see.</p>
+        <p className="text-muted-foreground">Who can sign in, and which team’s tools they see.</p>
       </div>
 
       <form action={addUser} className="grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-[1fr_1fr_160px_130px_auto] sm:items-end">
