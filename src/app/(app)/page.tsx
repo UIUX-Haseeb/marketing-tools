@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { toolsForUser, type ToolDef } from "@/lib/tools";
 import { TEAM_LABELS, isMarketing } from "@/lib/teams";
 import { ToolIcon } from "@/components/tool-icon";
+import { Mascot } from "@/components/mascot";
 
 function ToolCard({ tool }: { tool: ToolDef }) {
   const ready = !!tool.component;
@@ -95,9 +96,10 @@ export default async function DashboardPage() {
       <Section kicker="Ask Marketing" title="Requests" tools={requests} />
 
       {tools.length === 0 && (
-        <p className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-          No tools are assigned to your team yet. Ask Marketing to update your team.
-        </p>
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed p-10 text-center">
+          <Mascot size={160} />
+          <p className="text-sm text-muted-foreground">No tools are assigned to your team yet. Ask Marketing to update your team.</p>
+        </div>
       )}
     </div>
   );

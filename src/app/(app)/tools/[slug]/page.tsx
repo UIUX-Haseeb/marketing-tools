@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Hammer } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { requireUser } from "@/auth";
 import { getTool, canUseTool } from "@/lib/tools";
 import { ToolIcon } from "@/components/tool-icon";
 import { Button } from "@/components/ui/button";
+import { Mascot } from "@/components/mascot";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -40,7 +41,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
         <Tool />
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed p-12 text-center">
-          <Hammer className="size-6 text-muted-foreground" />
+          <Mascot size={160} className="-mb-1" />
           <p className="font-medium">This tool is being built</p>
           <p className="max-w-sm text-sm text-muted-foreground">
             {tool.owner ? `${tool.owner} is working on it.` : "It'll appear here when ready."} In the meantime you can send Marketing a custom request.

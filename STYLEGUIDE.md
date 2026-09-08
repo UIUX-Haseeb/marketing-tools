@@ -37,6 +37,9 @@ Raw brand colours (`bg-navy`, `bg-orange`, `bg-paper`, `bg-cream`, `bg-mist`, `b
 - Forms: max width `max-w-xl`, `space-y-5`, `<Label>` above field, helper text `text-xs text-muted-foreground` below.
 - Radius: `rounded-lg` controls · `rounded-xl` cards · `rounded-full` badges/avatars.
 
+## Mascot
+`<Mascot size={160} />` (confused robot, transparent) and `<MascotLoop />` (silent dancing loop in a rounded tile) from `src/components/mascot.tsx`. One per screen, only where a person would naturally react: empty states, "coming soon", 404, the login welcome. Never beside form fields, in tables, or as decoration on working screens. Source files live in `Mascot/`; optimised assets in `public/mascot/`.
+
 ## Components (`src/components/ui`)
 Button (`default | secondary | outline | ghost | brand | destructive | link`, sizes `sm | default | lg | icon`), Badge (`default | secondary | outline | brand | info | success | warning | destructive`), Input, Textarea, Select (native), Label, Table, Card. `StatusBadge` for request statuses. `Logo` (`tone="dark|light"`). `ToolIcon` (lucide by name).
 

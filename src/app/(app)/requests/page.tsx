@@ -3,6 +3,7 @@ import { requireUser } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
+import { Mascot } from "@/components/mascot";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export const metadata = { title: "My requests" };
@@ -35,7 +36,10 @@ export default async function MyRequestsPage({ searchParams }: { searchParams: P
       )}
 
       {requests.length === 0 ? (
-        <p className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">No requests yet.</p>
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed p-10 text-center">
+          <Mascot size={140} />
+          <p className="text-sm text-muted-foreground">No requests yet.</p>
+        </div>
       ) : (
         <Table>
           <TableHeader>

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { auth, signIn } from "@/auth";
 import { Logo } from "@/components/logo";
+import { MascotLoop } from "@/components/mascot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +41,9 @@ export default async function LoginPage({
       {/* Brand panel — navy dominates */}
       <section className="relative hidden flex-col justify-between bg-navy p-12 text-paper lg:flex">
         <Logo tone="light" height={28} />
-        <div className="max-w-md space-y-5">
+        <div className="max-w-md space-y-8">
+          <MascotLoop className="w-56 ring-1 ring-white/10" />
+          <div className="space-y-5">
           <p className="kicker text-sidebar-muted">Prov Toys</p>
           <h1 className="text-display font-medium">
             Marketing tools for the <span className="accent-word">whole</span> team<span className="text-brand">.</span>
@@ -48,6 +51,7 @@ export default async function LoginPage({
           <p className="text-base leading-relaxed text-sidebar-muted">
             Create on-brand posts in minutes, or send Marketing exactly what you need.
           </p>
+          </div>
         </div>
         <p className="text-sm text-sidebar-muted">Provident Real Estate · Internal use</p>
       </section>

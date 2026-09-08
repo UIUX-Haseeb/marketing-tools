@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/auth";
 import { isAdmin } from "@/lib/teams";
 import { Logo } from "@/components/logo";
+import { Mascot, MascotLoop } from "@/components/mascot";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,14 @@ export default async function StyleguidePage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex h-28 items-center justify-center rounded-xl border bg-card"><Logo height={28} /></div>
           <div className="flex h-28 items-center justify-center rounded-xl bg-navy"><Logo tone="light" height={28} /></div>
+        </div>
+      </Block>
+
+      <Block title="Mascot" note="One per screen, only where a person would react: empty states, coming-soon, 404, login. Never next to a form field or in a table. <Mascot size={…} /> and <MascotLoop />.">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="flex h-56 items-center justify-center rounded-xl border bg-card"><Mascot size={160} /></div>
+          <div className="flex h-56 items-center justify-center rounded-xl bg-navy"><Mascot size={160} /></div>
+          <div className="flex h-56 items-center justify-center rounded-xl border bg-card p-6"><MascotLoop className="w-44" /></div>
         </div>
       </Block>
 

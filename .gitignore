@@ -45,3 +45,6 @@ next-env.d.ts
 
 # brand kit photos are too large for the repo (127MB) — keep them locally / in Drive
 /Provident Guidelines Kit/Photos
+
+# mascot source renders (use public/mascot/ in the app)
+/Mascot
