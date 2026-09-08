@@ -22,7 +22,7 @@ export function SidebarNav({ items }: { items: NavItem[] }) {
             href={item.href}
             className={cn(
               "relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground",
-              active && "bg-sidebar-accent text-sidebar-foreground font-medium",
+              active && "bg-sidebar-accent text-sidebar-foreground",
             )}
           >
             <Icon className="size-4" />

@@ -33,11 +33,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
         <div className="mt-auto space-y-3 border-t border-sidebar-border pt-4">
           <div className="flex items-center gap-2.5 px-1">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-xs font-medium">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-xs">
               {initials}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{user.name ?? user.email}</p>
+              <p className="truncate text-sm font-normal">{user.name ?? user.email}</p>
               <p className="truncate text-xs text-sidebar-muted">
                 {TEAM_LABELS[user.team]}
                 {isAdmin(user) && " · Admin"}

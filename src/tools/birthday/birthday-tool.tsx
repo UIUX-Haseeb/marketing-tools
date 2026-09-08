@@ -218,7 +218,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
                 )}
               </div>
               <div className="min-w-0 space-y-0.5 px-1">
-                <p className="truncate text-sm font-medium">{c.name}</p>
+                <p className="truncate text-sm font-normal">{c.name}</p>
                 <p className="truncate text-xs text-muted-foreground">{c.jobTitle}</p>
                 <p className="text-xs text-muted-foreground">
                   {birthDay(c.employee)} {MONTHS_LONG[(birthMonth(c.employee) ?? 1) - 1]}

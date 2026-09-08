@@ -29,7 +29,7 @@ prisma/schema.prisma          User, Request
 
 ## Design tokens & style guide
 
-Brand tokens (Provident navy / orange / warm neutrals), self-hosted Google Sans Flex + Literata, and UI primitives are defined in `src/app/globals.css` and `src/components/ui`. Read **STYLEGUIDE.md** before building a tool, and use `/styleguide` (admins) as the live reference. Brand source files are in `Provident Guidelines Kit/`.
+Brand tokens (Provident navy / orange / warm neutrals), self-hosted Google Sans Flex (the only typeface; 300/400/500 weight logic), and UI primitives are defined in `src/app/globals.css` and `src/components/ui`. Read **STYLEGUIDE.md** before building a tool, and use `/styleguide` (admins) as the live reference. Brand source files are in `Provident Guidelines Kit/`.
 
 ## Adding a tool (for tool builders)
 

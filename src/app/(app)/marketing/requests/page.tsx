@@ -38,7 +38,7 @@ export default async function RequestQueuePage({ searchParams }: { searchParams:
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Request queue</h1>
+        <h1 className="text-h1 font-normal">Request queue</h1>
         <p className="text-muted-foreground">Custom requests from agents and internal teams.</p>
       </div>
 
@@ -49,7 +49,7 @@ export default async function RequestQueuePage({ searchParams }: { searchParams:
             <a
               key={t.label}
               href={t.value ? `?status=${t.value}` : "?"}
-              className={`-mb-px border-b-2 px-3 py-2 text-sm ${active ? "border-foreground font-medium" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+              className={`-mb-px border-b-2 px-3 py-2 text-sm ${active ? "border-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
             >
               {t.label}
             </a>
@@ -66,13 +66,13 @@ export default async function RequestQueuePage({ searchParams }: { searchParams:
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium">{r.title}</p>
+                    <p className="font-normal">{r.title}</p>
                     <StatusBadge status={r.status} />
                     <span className="text-xs text-muted-foreground">{r.type}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {r.requester.name ?? r.requester.email} · {TEAM_LABELS[r.requester.team]} · sent {fmt(r.createdAt)}
-                    {r.dueDate && <> · needed by <span className="font-medium text-foreground">{fmt(r.dueDate)}</span></>}
+                    {r.dueDate && <> · needed by <span className="text-foreground">{fmt(r.dueDate)}</span></>}
                     {r.assignee && <> · {r.assignee.name ?? r.assignee.email}</>}
                   </p>
                   {r.description && <p className="whitespace-pre-wrap pt-1 text-sm">{r.description}</p>}

@@ -21,11 +21,11 @@ function ToolCard({ tool }: { tool: ToolDef }) {
         {ready ? (
           <ArrowUpRight className="size-4 text-muted-foreground transition-colors group-hover:text-foreground" />
         ) : (
-          <span className="rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">Coming soon</span>
+          <span className="rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">Coming soon</span>
         )}
       </div>
       <div className="space-y-1">
-        <p className="font-medium">{tool.name}</p>
+        <p className="font-normal">{tool.name}</p>
         <p className="text-sm leading-relaxed text-muted-foreground">{tool.description}</p>
       </div>
     </Link>
@@ -38,7 +38,7 @@ function Section({ kicker, title, tools }: { kicker: string; title: string; tool
     <section className="space-y-4">
       <div>
         <p className="kicker">{kicker}</p>
-        <h2 className="mt-1 text-h2 font-medium">{title}</h2>
+        <h2 className="mt-1 text-h2 font-normal">{title}</h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tools.map((t) => <ToolCard key={t.slug} tool={t} />)}
@@ -73,19 +73,19 @@ export default async function DashboardPage() {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="kicker">{TEAM_LABELS[user.team]}</p>
-          <h1 className="mt-2 text-display font-medium">
-            {firstName ? <>Hello, <span className="accent-word">{firstName}</span></> : <>Hello</>}
+          <h1 className="mt-2 text-display font-normal">
+            {firstName ? <>Hello, {firstName}</> : <>Hello</>}
             <span className="text-brand">.</span>
           </h1>
         </div>
         <div className="flex gap-6 text-sm">
           <Link href="/requests" className="group">
-            <p className="text-h2 font-medium tabular-nums">{openMine}</p>
+            <p className="text-h2 font-normal tabular-nums">{openMine}</p>
             <p className="text-muted-foreground group-hover:text-foreground">Open requests</p>
           </Link>
           {isMarketing(user) && (
             <Link href="/marketing/requests" className="group">
-              <p className="text-h2 font-medium tabular-nums">{openQueue}</p>
+              <p className="text-h2 font-normal tabular-nums">{openQueue}</p>
               <p className="text-muted-foreground group-hover:text-foreground">In the queue</p>
             </Link>
           )}

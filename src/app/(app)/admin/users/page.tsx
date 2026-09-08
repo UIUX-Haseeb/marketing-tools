@@ -21,7 +21,7 @@ export default async function UsersPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Users</h1>
+        <h1 className="text-h1 font-normal">Users</h1>
         <p className="text-muted-foreground">Who can sign in, and which team’s tools they see.</p>
       </div>
 
@@ -67,7 +67,7 @@ export default async function UsersPage() {
             return (
               <TableRow key={u.id} className={u.active ? "" : "opacity-60"}>
                 <TableCell>
-                  <p className="font-medium">{u.name ?? "—"}{isMe && <span className="ml-1.5 text-xs text-muted-foreground">(you)</span>}</p>
+                  <p className="font-normal">{u.name ?? "—"}{isMe && <span className="ml-1.5 text-xs text-muted-foreground">(you)</span>}</p>
                   <p className="text-xs text-muted-foreground">{u.email}</p>
                 </TableCell>
                 <TableCell>

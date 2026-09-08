@@ -136,7 +136,6 @@
   --radius-2xl: calc(var(--radius) + 10px);
 
   --font-sans: var(--font-google-sans), "Google Sans Flex", system-ui, sans-serif;
-  --font-serif: var(--font-literata), "Literata", Georgia, serif;
 
   /* type scale */
   --text-display: 2.5rem;
@@ -165,7 +164,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Weight logic: Light 300 for everything… */
+    font-weight: 300;
     font-feature-settings: "ss01", "cv01";
+  }
+  /* …Regular 400 for headers only… */
+  h1, h2, h3, .text-display, .text-h1, .text-h2 {
+    font-weight: 400;
+  }
+  /* (…Medium 500 for tracked caps only — see .kicker) */
+  ::placeholder {
+    font-weight: 300;
   }
   ::selection {
     background: color-mix(in oklab, var(--orange) 28%, transparent);
@@ -173,17 +182,12 @@
 }
 
 @layer components {
-  /* Editorial accent word — Literata italic, inherits the headline colour.
-     One per headline, never for UI text. Orange is reserved for the dot. */
-  .accent-word {
-    @apply font-serif italic font-normal;
-  }
   /* The signature dot — use after a word the way the wordmark does: provident. */
   .dot::after {
     content: ".";
     @apply text-brand;
   }
-  /* Small uppercase label above a section */
+  /* Small tracked-caps label above a section — the only place weight 500 is used */
   .kicker {
     @apply text-kicker font-medium uppercase text-muted-foreground;
   }

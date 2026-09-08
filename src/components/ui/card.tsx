@@ -8,7 +8,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("flex flex-col gap-1.5 p-6", className)} {...props} />;
 }
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("font-semibold leading-none", className)} {...props} />;
+  return <div className={cn("font-normal leading-none", className)} {...props} />;
 }
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("text-sm text-muted-foreground", className)} {...props} />;

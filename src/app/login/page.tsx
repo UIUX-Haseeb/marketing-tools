@@ -45,8 +45,8 @@ export default async function LoginPage({
           <MascotLoop className="w-56 ring-1 ring-white/10" />
           <div className="space-y-5">
           <p className="kicker text-sidebar-muted">Prov Toys</p>
-          <h1 className="text-display font-medium">
-            Marketing tools for the <span className="accent-word">whole</span> team<span className="text-brand">.</span>
+          <h1 className="text-display font-normal">
+            Marketing tools for the whole team<span className="text-brand">.</span>
           </h1>
           <p className="text-base leading-relaxed text-sidebar-muted">
             Create on-brand posts in minutes, or send Marketing exactly what you need.
@@ -65,7 +65,7 @@ export default async function LoginPage({
           </div>
 
           <div className="space-y-1.5">
-            <h2 className="text-h1 font-medium">Sign in</h2>
+            <h2 className="text-h1 font-normal">Sign in</h2>
             <p className="text-sm text-muted-foreground">Use your Provident Google account.</p>
           </div>
 

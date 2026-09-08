@@ -111,7 +111,7 @@ export function PhotoDropzone({ onFile, hint, compact, label }: { onFile: (f: Fi
         )}
       >
         <Upload className="size-4 text-muted-foreground" />
-        <p className="text-sm font-medium">{label ?? (compact ? "Add photo" : "Choose a photo, or drag one here")}</p>
+        <p className="text-sm">{label ?? (compact ? "Add photo" : "Choose a photo, or drag one here")}</p>
         {!compact && <p className="text-xs text-muted-foreground">JPG or PNG, up to 10 MB. Any shape — it&apos;s cropped to the circle.</p>}
       </div>
       <input ref={input} type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" className="sr-only" onChange={(e) => take(e.target.files?.[0])} />
@@ -197,7 +197,7 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
         className={cn("max-h-[92vh] w-full overflow-y-auto rounded-2xl bg-background p-6 shadow-xl", wide ? "max-w-4xl" : "max-w-xl")}
       >
         <div className="mb-5 flex items-start justify-between gap-4">
-          <h2 className="text-h2 font-medium">{title}</h2>
+          <h2 className="text-h2 font-normal">{title}</h2>
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>Close</Button>
         </div>
         {children}

@@ -23,7 +23,7 @@ export default async function MyRequestsPage({ searchParams }: { searchParams: P
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">My requests</h1>
+          <h1 className="text-h1 font-normal">My requests</h1>
           <p className="text-muted-foreground">Everything you’ve sent to Marketing.</p>
         </div>
         <Button asChild size="sm"><Link href="/tools/custom-request">New request</Link></Button>
@@ -54,7 +54,7 @@ export default async function MyRequestsPage({ searchParams }: { searchParams: P
           <TableBody>
             {requests.map((r) => (
               <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.title}</TableCell>
+                <TableCell className="font-normal">{r.title}</TableCell>
                 <TableCell className="text-muted-foreground">{r.type}</TableCell>
                 <TableCell className="text-muted-foreground">{fmt(r.createdAt)}</TableCell>
                 <TableCell className="text-muted-foreground">{r.dueDate ? fmt(r.dueDate) : "—"}</TableCell>

@@ -24,11 +24,17 @@ Live version (admins): `/styleguide`. Tokens live in `src/app/globals.css`. Bran
 Raw brand colours (`bg-navy`, `bg-orange`, `bg-paper`, `bg-cream`, `bg-mist`, `bg-stone`, `bg-charcoal`) exist for rendering brand artwork (e.g. a post preview). Don't use them for UI chrome — use the semantic tokens so dark mode works.
 
 ## Typography
-- `font-sans` = **Google Sans Flex** (300–700). Everything UI.
-- `font-serif` = **Literata**. Only via `.accent-word` — one italic word inside a headline. Never for buttons, labels, tables.
-- Scale: `text-display` 40 · `text-h1` 28 · `text-h2` 20 · `text-base` 16 · `text-sm` 14 · `.kicker` 11 uppercase tracked.
-- Headings are `font-medium`, not bold.
-- The signature dot: `<span className="text-brand">.</span>` after a headline, or `.dot` utility.
+- **Google Sans Flex is the only typeface.** No second face, no serif emphasis — both were removed from the brand rules.
+- Weight logic (set globally, you rarely need a weight class):
+  - **Light 300** — everything except headers: body, labels, spec values, table cells, CTA/button labels. This is the default on `body`.
+  - **Regular 400** — headers only: `text-display`, `text-h1`, `text-h2`, `h1–h3`, names and figures that act as titles. Use `font-normal` when you need it on something else.
+  - **Medium 500** — tracked caps only: `.kicker` and small labels in that role. Never on running text.
+- Never use `font-semibold` / `font-bold`.
+- Scale: `text-display` 40 · `text-h1` 28 · `text-h2` 20 · `text-base` 16 · `text-sm` 14 · `.kicker` 11 uppercase, 0.14em tracking.
+- The signature dot: `<span className="text-brand">.</span>` after a headline, or the `.dot` utility.
+
+## Logo
+`<Logo />` renders the **provtoys.** wordmark (`tone="dark"` navy on light surfaces, `tone="light"` white on navy). Files in `public/provtoys-navy.svg` / `provtoys-white.svg`. The dot is always orange. Minimum height 16px.
 
 ## Layout
 - Page: `space-y-12`; header = `.kicker` + `text-display`.

@@ -41,7 +41,7 @@ function Block({ title, note, children }: { title: string; note?: string; childr
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-h2 font-medium">{title}</h2>
+        <h2 className="text-h2 font-normal">{title}</h2>
         {note && <p className="mt-1 text-sm text-muted-foreground">{note}</p>}
       </div>
       {children}
@@ -57,8 +57,8 @@ export default async function StyleguidePage() {
     <div className="space-y-14">
       <header>
         <p className="kicker">Prov Toys</p>
-        <h1 className="mt-2 text-display font-medium">
-          Style <span className="accent-word">guide</span><span className="text-brand">.</span>
+        <h1 className="mt-2 text-display font-normal">
+          Style guide<span className="text-brand">.</span>
         </h1>
         <p className="mt-3 max-w-xl text-muted-foreground">
           The tokens and primitives every tool should use. Source of truth is <code className="rounded bg-muted px-1 py-0.5 text-[13px]">src/app/globals.css</code>;
@@ -66,7 +66,7 @@ export default async function StyleguidePage() {
         </p>
       </header>
 
-      <Block title="Logo" note="Wordmark only. Navy on light surfaces, paper on navy. The dot is always orange. Minimum height 16px.">
+      <Block title="Logo" note="provtoys. wordmark — navy on light surfaces, white on navy. The dot is always orange. Minimum height 16px. Files: public/provtoys-navy.svg, public/provtoys-white.svg.">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex h-28 items-center justify-center rounded-xl border bg-card"><Logo height={28} /></div>
           <div className="flex h-28 items-center justify-center rounded-xl bg-navy"><Logo tone="light" height={28} /></div>
@@ -87,7 +87,7 @@ export default async function StyleguidePage() {
             <div key={name} className="overflow-hidden rounded-xl border bg-card">
               <div className={`h-16 ${cls}`} />
               <div className="p-3">
-                <p className="text-sm font-medium">{name}</p>
+                <p className="text-sm">{name}</p>
                 <p className="font-mono text-xs text-muted-foreground">{hex}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{use}</p>
               </div>
@@ -107,14 +107,22 @@ export default async function StyleguidePage() {
         </div>
       </Block>
 
-      <Block title="Typography" note="Google Sans Flex for everything. Literata italic for one accent word in a headline — never for UI text.">
+      <Block title="Typography" note="Google Sans Flex is the only typeface — no second face, no serif emphasis. Three weights, three roles.">
         <div className="space-y-5 rounded-xl border bg-card p-6">
-          <div><p className="kicker mb-2">text-display · 40/1.1 · medium</p><p className="text-display font-medium">Considered <span className="accent-word">homes</span><span className="text-brand">.</span></p></div>
-          <div><p className="kicker mb-2">text-h1 · 28/1.2 · medium</p><p className="text-h1 font-medium">Page title</p></div>
-          <div><p className="kicker mb-2">text-h2 · 20/1.3 · medium</p><p className="text-h2 font-medium">Section title</p></div>
-          <div><p className="kicker mb-2">text-base · 16 · regular</p><p>Body copy for descriptions and longer help text. Keep it short; agents skim.</p></div>
-          <div><p className="kicker mb-2">text-sm · 14 · regular</p><p className="text-sm text-muted-foreground">Supporting copy, table cells, metadata.</p></div>
-          <div><p className="kicker mb-2">kicker · 11 · medium · tracked</p><p className="kicker">Section label</p></div>
+          <div><p className="kicker mb-2">text-display · 40/1.1 · Regular 400</p><p className="text-display">Considered homes<span className="text-brand">.</span></p></div>
+          <div><p className="kicker mb-2">text-h1 · 28/1.2 · Regular 400</p><p className="text-h1">Page title</p></div>
+          <div><p className="kicker mb-2">text-h2 · 20/1.3 · Regular 400</p><p className="text-h2">Section title</p></div>
+          <div><p className="kicker mb-2">text-base · 16 · Light 300</p><p>Body copy for descriptions and longer help text. Keep it short; agents skim.</p></div>
+          <div><p className="kicker mb-2">text-sm · 14 · Light 300</p><p className="text-sm text-muted-foreground">Supporting copy, table cells, metadata, button labels.</p></div>
+          <div><p className="kicker mb-2">kicker · 11 · Medium 500 · tracked caps</p><p className="kicker">Section label</p></div>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[["Light 300", "Everything except headers — body, labels, spec values, CTA labels."], ["Regular 400", "Headers only — page and section titles, names, figures."], ["Medium 500", "Tracked caps only — kickers and the small labels that share that role."]].map(([w, use]) => (
+            <div key={w} className="rounded-xl border bg-card p-4">
+              <p className="text-h2">Aa <span className="text-sm text-muted-foreground">{w}</span></p>
+              <p className="mt-1 text-sm text-muted-foreground">{use}</p>
+            </div>
+          ))}
         </div>
       </Block>
 

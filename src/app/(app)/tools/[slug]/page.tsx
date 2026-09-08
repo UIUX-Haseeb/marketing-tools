@@ -31,7 +31,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             <ToolIcon name={tool.icon} className="size-4" />
           </span>
           <div>
-            <h1 className="text-xl font-semibold leading-tight">{tool.name}</h1>
+            <h1 className="text-h2 font-normal leading-tight">{tool.name}</h1>
             <p className="text-sm text-muted-foreground">{tool.description}</p>
           </div>
         </div>
@@ -42,7 +42,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed p-12 text-center">
           <Mascot size={160} className="-mb-1" />
-          <p className="font-medium">This tool is being built</p>
+          <p className="font-normal">This tool is being built</p>
           <p className="max-w-sm text-sm text-muted-foreground">
             {tool.owner ? `${tool.owner} is working on it.` : "It'll appear here when ready."} In the meantime you can send Marketing a custom request.
           </p>
