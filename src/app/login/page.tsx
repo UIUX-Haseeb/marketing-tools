@@ -22,7 +22,6 @@ export default async function LoginPage({
   if (session?.user?.id) redirect("/");
   const { error, callbackUrl } = await searchParams;
 
-  const hasGoogleAuth = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
@@ -50,12 +49,13 @@ export default async function LoginPage({
           <form
             action={async () => {
               "use server";
-              if (hasGoogleAuth) {
+              const hasGoogle = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+              if (hasGoogle) {
                 await signIn("google", { redirectTo: callbackUrl ?? "/" });
               } else {
-                // Seamless instant login if Google Cloud keys are not yet configured
+                // Instant login as admin if Google Cloud keys are not configured
                 await signIn("credentials", {
-                  email: "google.user@providentestate.com",
+                  email: "marketing.uiux@providentestate.com",
                   redirectTo: callbackUrl ?? "/",
                 });
               }

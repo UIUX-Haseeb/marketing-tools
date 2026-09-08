@@ -13,6 +13,8 @@ const googleClientId = process.env.AUTH_GOOGLE_ID;
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET;
 
 export const authConfig = {
+  trustHost: true,
+  secret: process.env.AUTH_SECRET || "s6sWAyD7VNs+gD6XOjbHwdMfNvcsQz0KftjfPLKBKhkU",
   providers: [
     ...(googleClientId && googleClientSecret
       ? [
