@@ -43,6 +43,7 @@ model User {
 
   requests Request[] @relation("RequestedBy")
   assigned Request[] @relation("AssignedTo")
+  posts    GeneratedPost[]
 }
 
 /// A request sent to the Marketing team. `type` is free-form so each tool can
@@ -67,4 +68,25 @@ model Request {
 
   @@index([status, createdAt])
   @@index([requesterId])
+}
+
+/// One row per post a user generated with a post tool (no image stored).
+model GeneratedPost {
+  id         String   @id @default(cuid())
+  tool       String   // registry slug, e.g. "birthday", "baby"
+  templateId String   // e.g. "provident-birthday-post"
+  subject    String   // employee name as printed on the post
+  /// "portal" when the data came from the CRM, "manual" when typed in
+  source     String   @default("manual")
+  employeeId String?  // Portal employee id, when known
+  format     String?  // png | jpg
+  bytes      Int?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([tool, createdAt])
+  @@index([userId])
 }

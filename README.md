@@ -57,6 +57,18 @@ Brand tokens (Provident navy / orange / warm neutrals), self-hosted Google Sans 
 
 Keep the UI simple and use the primitives in `src/components/ui`. Add more shadcn components with `npx shadcn@latest add <name>`.
 
+## Post tools (Birthday, New Baby)
+
+Shared canvas engine in `src/tools/_engine/` (ported from the original General Post Generator — geometry, locked Google Sans Flex 400, PNG/JPEG byte budget, ZIP writer). Templates in `public/post-assets/`.
+
+- **Birthday** (`src/tools/birthday`): month view pulls employees from the Portal via `/api/portal/employees`, renders each card live, per-post Adjust/Download, Export all as ZIP. "Create new" opens the manual form for people not in the Portal.
+- **New Baby** (`src/tools/baby`): Boy/Girl variant, name only.
+- Every download is logged to `GeneratedPost` (no images stored) via `logGeneratedPost()`.
+
+**Portal (CRM) connection** — `src/lib/portal/`. Without `PORTAL_API_URL` + `PORTAL_API_KEY` the app uses `mock.ts` (sample employees, generated portraits) and shows a notice. To go live: set the two env vars and adjust the endpoint path + field mapping in `client.ts` (`toEmployee`) to match the Portal API docs. Photos are proxied through `/api/portal/photo/[id]` so the key never reaches the browser.
+
+New DB table: run `npm run db:deploy` (or `db:migrate` locally) to apply `prisma/migrations/20260908120000_generated_post`.
+
 ## Local setup
 
 ```bash

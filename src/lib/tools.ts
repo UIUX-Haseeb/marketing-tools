@@ -53,10 +53,20 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "birthday",
     name: "Birthday",
-    description: "Birthday greeting post for a team member.",
-    teams: ["HR"],
+    description: "Birthday posts for the month, pulled from the Portal — or create one by hand.",
+    teams: ["HR", "MARKETING"],
     category: "posts",
     icon: "Cake",
+    component: () => import("@/tools/birthday"),
+  },
+  {
+    slug: "baby",
+    name: "New Baby",
+    description: "It's a Boy / It's a Girl congratulations post.",
+    teams: ["HR", "MARKETING"],
+    category: "posts",
+    icon: "Baby",
+    component: () => import("@/tools/baby"),
   },
   {
     slug: "promotion",
