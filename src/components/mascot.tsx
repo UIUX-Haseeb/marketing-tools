@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { MascotLoopClient } from "@/components/mascot-loop";
 import { cn } from "@/lib/utils";
 
 /**
@@ -24,16 +25,5 @@ export function Mascot({ pose = "confused", size = 160, className }: { pose?: "c
 }
 
 export function MascotLoop({ className }: { className?: string }) {
-  return (
-    <video
-      className={cn("aspect-square w-full rounded-2xl object-cover", className)}
-      src="/mascot/robot-dancing.mp4"
-      poster="/mascot/robot-dancing-poster.webp"
-      autoPlay
-      muted
-      loop
-      playsInline
-      aria-hidden
-    />
-  );
+  return <MascotLoopClient className={className} />;
 }
