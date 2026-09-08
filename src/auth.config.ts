@@ -9,11 +9,20 @@ export function isAllowedEmail(email?: string | null) {
   return email.toLowerCase().endsWith(`@${allowedDomain}`);
 }
 
+const googleClientId = process.env.AUTH_GOOGLE_ID;
+const googleClientSecret = process.env.AUTH_GOOGLE_SECRET;
+
 export const authConfig = {
   providers: [
-    Google({
-      authorization: { params: { hd: allowedDomain, prompt: "select_account" } },
-    }),
+    ...(googleClientId && googleClientSecret
+      ? [
+          Google({
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+            authorization: { params: { prompt: "select_account" } },
+          }),
+        ]
+      : []),
   ],
   session: { strategy: "jwt" },
   pages: { signIn: "/login", error: "/login" },

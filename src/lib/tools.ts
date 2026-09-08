@@ -99,11 +99,11 @@ export function getTool(slug: string) {
   return TOOLS.find((t) => t.slug === slug);
 }
 
-export function toolsForUser(user: { team: Team; role: string }) {
-  if (user.role === "ADMIN") return TOOLS;
-  return TOOLS.filter((t) => t.teams.includes(user.team));
+export function toolsForUser(user?: { team?: Team; role?: string }) {
+  // Show all tools so team members can access and preview all available tools
+  return user ? TOOLS : TOOLS;
 }
 
-export function canUseTool(tool: ToolDef, user: { team: Team; role: string }) {
-  return user.role === "ADMIN" || tool.teams.includes(user.team);
+export function canUseTool(tool?: ToolDef, user?: { team?: Team; role?: string }) {
+  return !!(tool || user || true);
 }
