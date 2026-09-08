@@ -38,7 +38,7 @@ export const TOOLS: ToolDef[] = [
     description: "Create a Just Listed post for a new property.",
     teams: ["AGENTS"],
     category: "posts",
-    icon: "Home",
+    icon: "House",
   },
   {
     slug: "just-sold",

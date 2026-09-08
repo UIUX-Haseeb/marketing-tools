@@ -109,6 +109,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async jwt({ token, user, trigger }) {
+      // Carry over what the provider gave us (credentials fallback sets team/role).
+      if (user) {
+        const u = user as { id?: string; team?: Team; role?: Role };
+        token.uid = token.uid ?? u.id;
+        token.team = token.team ?? u.team;
+        token.role = token.role ?? u.role;
+      }
       if (user?.email || trigger === "update") {
         const email = (user?.email ?? token.email)?.toLowerCase();
         if (email) {

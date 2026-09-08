@@ -29,7 +29,7 @@ export default async function MyRequestsPage({ searchParams }: { searchParams: P
       </div>
 
       {sent && (
-        <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <p className="rounded-lg border border-success/30 bg-success/8 px-3 py-2.5 text-sm text-success">
           Sent — Marketing will pick it up shortly.
         </p>
       )}

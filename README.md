@@ -27,6 +27,10 @@ src/
 prisma/schema.prisma          User, Request
 ```
 
+## Design tokens & style guide
+
+Brand tokens (Provident navy / orange / warm neutrals), self-hosted Google Sans Flex + Literata, and UI primitives are defined in `src/app/globals.css` and `src/components/ui`. Read **STYLEGUIDE.md** before building a tool, and use `/styleguide` (admins) as the live reference. Brand source files are in `Provident Guidelines Kit/`.
+
 ## Adding a tool (for tool builders)
 
 1. Create `src/tools/<your-slug>/index.tsx` with a **default export** component. It can be a client component (`"use client"`) or a server component. It renders inside the tool page under the tool's title.

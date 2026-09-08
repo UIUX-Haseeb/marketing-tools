@@ -1,0 +1,46 @@
+# Prov Toys — Style guide for tool builders
+
+Live version (admins): `/styleguide`. Tokens live in `src/app/globals.css`. Brand source: `Provident Guidelines Kit/`.
+
+## Principles
+- **Navy dominates, orange punctuates.** Orange (`text-brand` / `bg-brand`) is the dot — use it for one small accent per screen (active indicator, the trailing dot, a single hero CTA). Never for large fills or body text.
+- **Warm neutrals carry the breathing room.** Page = paper, cards = white with a 1px stone border. No drop shadows.
+- **Simple and to the point.** One primary action per view. Short copy. Agents skim.
+
+## Tokens (Tailwind utilities)
+| Purpose | Class | Light value |
+| --- | --- | --- |
+| Page background | `bg-background` | Paper #FAF8F4 |
+| Card / panel | `bg-card border` | White, stone border |
+| Text | `text-foreground` | Deep Navy #1A2942 |
+| Secondary text | `text-muted-foreground` | #5B6472 |
+| Fills | `bg-secondary` (cream) · `bg-muted` (mist) | |
+| Primary button / solid | `bg-primary text-primary-foreground` | Navy / paper |
+| Brand accent | `text-brand` `bg-brand` | Orange #F3793C |
+| Status | `text-success` `text-warning` `text-info` `text-destructive` | |
+| Hover border | `hover:border-navy-2/60` | |
+| Focus ring | automatic via `ring` | Provident Navy |
+
+Raw brand colours (`bg-navy`, `bg-orange`, `bg-paper`, `bg-cream`, `bg-mist`, `bg-stone`, `bg-charcoal`) exist for rendering brand artwork (e.g. a post preview). Don't use them for UI chrome — use the semantic tokens so dark mode works.
+
+## Typography
+- `font-sans` = **Google Sans Flex** (300–700). Everything UI.
+- `font-serif` = **Literata**. Only via `.accent-word` — one italic word inside a headline. Never for buttons, labels, tables.
+- Scale: `text-display` 40 · `text-h1` 28 · `text-h2` 20 · `text-base` 16 · `text-sm` 14 · `.kicker` 11 uppercase tracked.
+- Headings are `font-medium`, not bold.
+- The signature dot: `<span className="text-brand">.</span>` after a headline, or `.dot` utility.
+
+## Layout
+- Page: `space-y-12`; header = `.kicker` + `text-display`.
+- Section: `.kicker` + `text-h2`, then a grid `grid gap-4 sm:grid-cols-2 lg:grid-cols-3`.
+- Card: `rounded-xl border bg-card p-5`.
+- Forms: max width `max-w-xl`, `space-y-5`, `<Label>` above field, helper text `text-xs text-muted-foreground` below.
+- Radius: `rounded-lg` controls · `rounded-xl` cards · `rounded-full` badges/avatars.
+
+## Components (`src/components/ui`)
+Button (`default | secondary | outline | ghost | brand | destructive | link`, sizes `sm | default | lg | icon`), Badge (`default | secondary | outline | brand | info | success | warning | destructive`), Input, Textarea, Select (native), Label, Table, Card. `StatusBadge` for request statuses. `Logo` (`tone="dark|light"`). `ToolIcon` (lucide by name).
+
+Need something else? `npx shadcn@latest add <component>` — then swap its colour classes for the tokens above.
+
+## Inside a tool page
+Your component renders under the tool title (already on the page). Start your content at the section level: don't repeat the tool name, don't add your own page header. Put the form on the left / preview on the right for post generators: `grid gap-8 lg:grid-cols-[minmax(0,28rem)_1fr]`.

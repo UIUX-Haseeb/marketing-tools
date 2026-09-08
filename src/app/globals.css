@@ -2,51 +2,93 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ──────────────────────────────────────────────────────────────────────────
+   PROVIDENT · DESIGN TOKENS
+   Source: Provident Guidelines Kit (Brand Reference). Navy dominates, orange
+   punctuates, warm neutrals carry the breathing room.
+   Tool builders: use the semantic tokens (bg-background, text-foreground,
+   bg-primary, text-brand …) — never raw hex in components.
+   ────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.985 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.955 0 0);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.955 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0 0);
-  --input: oklch(0.91 0 0);
-  --ring: oklch(0.708 0 0);
-  --sidebar: oklch(1 0 0);
+  /* 1. Brand palette (raw) */
+  --navy: #1a2942;        /* Deep Navy — primary surface */
+  --navy-2: #2f4960;      /* Provident Navy — brand voice */
+  --orange: #f3793c;      /* Signature Orange — the dot. Punctuation only. */
+  --paper: #faf8f4;       /* primary background */
+  --cream: #f4f1ec;
+  --mist: #ece7df;
+  --stone: #d4cfc4;
+  --muted-grey: #5b6472;
+  --charcoal: #1a1a1a;
+  --teal: #1c6e8c;        /* digital templates secondary — links/info */
+
+  /* 2. Semantic tokens — light */
+  --radius: 0.625rem;
+  --background: var(--paper);
+  --foreground: var(--navy);
+  --card: #ffffff;
+  --card-foreground: var(--navy);
+  --popover: #ffffff;
+  --popover-foreground: var(--navy);
+  --primary: var(--navy);
+  --primary-foreground: var(--paper);
+  --secondary: var(--cream);
+  --secondary-foreground: var(--navy);
+  --muted: var(--mist);
+  --muted-foreground: var(--muted-grey);
+  --accent: var(--cream);
+  --accent-foreground: var(--navy);
+  --brand: var(--orange);
+  --brand-foreground: #ffffff;
+  --info: var(--teal);
+  --success: #2f7d5b;
+  --warning: #b9781b;
+  --destructive: #b8412e;
+  --border: var(--stone);
+  --input: var(--stone);
+  --ring: var(--navy-2);
+
+  /* Sidebar is a navy surface in light mode */
+  --sidebar: var(--navy);
+  --sidebar-foreground: var(--paper);
+  --sidebar-muted: #a7b0bf;
+  --sidebar-accent: rgb(255 255 255 / 8%);
+  --sidebar-border: rgb(255 255 255 / 10%);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --sidebar: oklch(0.18 0 0);
+  --background: #111a2b;
+  --foreground: var(--paper);
+  --card: var(--navy);
+  --card-foreground: var(--paper);
+  --popover: var(--navy);
+  --popover-foreground: var(--paper);
+  --primary: var(--paper);
+  --primary-foreground: var(--navy);
+  --secondary: var(--navy-2);
+  --secondary-foreground: var(--paper);
+  --muted: #23344d;
+  --muted-foreground: #a7b0bf;
+  --accent: #23344d;
+  --accent-foreground: var(--paper);
+  --brand: var(--orange);
+  --brand-foreground: #ffffff;
+  --info: #4fb3d2;
+  --success: #6cc39a;
+  --warning: #e0a651;
+  --destructive: #e5765f;
+  --border: rgb(255 255 255 / 12%);
+  --input: rgb(255 255 255 / 16%);
+  --ring: #a7b0bf;
+  --sidebar: #0d1523;
+  --sidebar-foreground: var(--paper);
+  --sidebar-muted: #8b95a6;
+  --sidebar-accent: rgb(255 255 255 / 8%);
+  --sidebar-border: rgb(255 255 255 / 10%);
 }
 
+/* 3. Expose tokens to Tailwind utilities (bg-*, text-*, border-*, font-*) */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -62,24 +104,87 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-info: var(--info);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+
+  /* raw brand colours, for the rare case a tool renders brand artwork */
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-orange: var(--orange);
+  --color-paper: var(--paper);
+  --color-cream: var(--cream);
+  --color-mist: var(--mist);
+  --color-stone: var(--stone);
+  --color-charcoal: var(--charcoal);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --radius-2xl: calc(var(--radius) + 10px);
+
+  --font-sans: var(--font-google-sans), "Google Sans Flex", system-ui, sans-serif;
+  --font-serif: var(--font-literata), "Literata", Georgia, serif;
+
+  /* type scale */
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: 1.75rem;
+  --text-h1--line-height: 1.2;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: 1.25rem;
+  --text-h2--line-height: 1.3;
+  --text-h2--letter-spacing: -0.01em;
+  --text-kicker: 0.6875rem;
+  --text-kicker--line-height: 1;
+  --text-kicker--letter-spacing: 0.14em;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv01";
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--orange) 28%, transparent);
+  }
+}
+
+@layer components {
+  /* Editorial accent word — Literata italic, inherits the headline colour.
+     One per headline, never for UI text. Orange is reserved for the dot. */
+  .accent-word {
+    @apply font-serif italic font-normal;
+  }
+  /* The signature dot — use after a word the way the wordmark does: provident. */
+  .dot::after {
+    content: ".";
+    @apply text-brand;
+  }
+  /* Small uppercase label above a section */
+  .kicker {
+    @apply text-kicker font-medium uppercase text-muted-foreground;
   }
 }
