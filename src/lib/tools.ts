@@ -19,7 +19,7 @@ export interface ToolDef {
   slug: string;
   name: string;
   description: string;
-  /** Teams that can see and use this tool. ADMIN role sees everything. */
+  /** Teams this tool is for (shown as a tag on the home screen; no access control in the demo). */
   teams: Team[];
   category: ToolCategory;
   /** lucide icon name, see src/components/tool-icon.tsx */
@@ -53,7 +53,7 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "birthday",
     name: "Birthday",
-    description: "Birthday posts for the month, pulled from the Portal — or create one by hand.",
+    description: "Birthday posts for the month from the employee list — or create one by hand.",
     teams: ["HR", "MARKETING"],
     category: "posts",
     icon: "Cake",
@@ -107,13 +107,4 @@ export const TOOLS: ToolDef[] = [
 
 export function getTool(slug: string) {
   return TOOLS.find((t) => t.slug === slug);
-}
-
-export function toolsForUser(user?: { team?: Team; role?: string }) {
-  // Show all tools so team members can access and preview all available tools
-  return user ? TOOLS : TOOLS;
-}
-
-export function canUseTool(tool?: ToolDef, user?: { team?: Team; role?: string }) {
-  return !!(tool || user || true);
 }

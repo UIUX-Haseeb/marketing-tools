@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { RequestStatus } from "@/generated/prisma/enums";
+import type { RequestStatus } from "@/lib/demo/types";
 
 const MAP: Record<RequestStatus, { label: string; variant: "secondary" | "warning" | "success" | "destructive" }> = {
   NEW: { label: "New", variant: "secondary" },

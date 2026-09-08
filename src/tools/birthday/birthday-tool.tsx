@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Download, Pencil, Plus, ArrowLeft, Archive, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { logGeneratedPost } from "@/lib/actions/posts";
-import { birthDay, birthMonth, type Employee } from "@/lib/portal/types";
+import { logGeneratedPost } from "@/lib/store";
+import { listEmployees } from "@/lib/demo/employees";
+import { birthDay, birthMonth, type Employee } from "@/lib/demo/types";
 import { cn } from "@/lib/utils";
 import { BIRTHDAY } from "@/tools/_engine/templates";
 import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_engine/render";
@@ -60,7 +60,6 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
 
   const update = (id: string, patch: Partial<Card>) =>
     setCards((cur) => cur.map((c) => (c.employee.id === id ? { ...c, ...patch } : c)));
-  const [source, setSource] = useState<"mock" | "portal" | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [zipping, setZipping] = useState<{ done: number; total: number } | null>(null);
 
@@ -70,27 +69,25 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
       return next.length ? next.sort((a, b) => a - b) : cur;
     });
 
-  // Fetch employees for the selected months.
+  // Load employees for the selected months (demo list — swap listEmployees() for the CRM).
   useEffect(() => {
     let alive = true;
-    fetch(`/api/portal/employees?months=${monthsKey}`)
-      .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error ?? `Portal error ${r.status}`);
-        return r.json() as Promise<{ employees: Employee[]; source: "mock" | "portal" }>;
-      })
-      .then(({ employees, source }) => {
+    listEmployees()
+      .then((employees) => {
         if (!alive) return;
         setError(null);
-        setSource(source);
-        const sorted = [...employees].sort((a, b) => (birthMonth(a)! - birthMonth(b)!) || (birthDay(a)! - birthDay(b)!));
+        const wanted = new Set(monthsKey.split(",").map(Number));
+        const sorted = employees
+          .filter((e) => wanted.has(birthMonth(e) ?? -1))
+          .sort((a, b) => (birthMonth(a)! - birthMonth(b)!) || (birthDay(a)! - birthDay(b)!));
         setCards((prev) =>
           sorted.map((e) => {
             const keep = prev.find((c) => c.employee.id === e.id);
-            return keep ?? { employee: e, name: e.fullName, jobTitle: e.designation, photo: null, photoState: e.hasPhoto ? "loading" : "missing", transform: IDENTITY_TRANSFORM };
+            return keep ?? { employee: e, name: e.fullName, jobTitle: e.designation, photo: null, photoState: e.photoUrl ? "loading" : "missing", transform: IDENTITY_TRANSFORM };
           }),
         );
       })
-      .catch((e) => alive && setError(e.message))
+      .catch((e) => alive && setError((e as Error).message))
       .finally(() => alive && setFetchedKey(monthsKey));
     return () => {
       alive = false;
@@ -104,7 +101,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
     let alive = true;
     pending.forEach(async (c) => {
       try {
-        const img = await toDrawable(`/api/portal/photo/${encodeURIComponent(c.employee.id)}`);
+        const img = await toDrawable(c.employee.photoUrl!);
         if (alive) update(c.employee.id, { photo: img, photoState: "ready" });
       } catch {
         if (alive) update(c.employee.id, { photoState: "failed" });
@@ -123,7 +120,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
     if (!artwork || !c.photo) return;
     const out = await exportPost({ template: BIRTHDAY, templateImage: artwork, photo: c.photo, transform: c.transform, name: c.name, jobTitle: c.jobTitle });
     downloadBlob(out.blob, safeFileName(BIRTHDAY, c.name, out.extension));
-    void logGeneratedPost({ tool: TOOL, templateId: BIRTHDAY.id, subject: c.name.trim(), source: "portal", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
+    logGeneratedPost({ tool: TOOL, templateId: BIRTHDAY.id, subject: c.name.trim(), source: "demo", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
   }
 
   async function exportAll() {
@@ -139,7 +136,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
         while (used.has(file)) file = file.replace(/(\.\w+)$/, `-${++i}$1`);
         used.add(file);
         entries.push({ name: file, data: new Uint8Array(await out.blob.arrayBuffer()) });
-        void logGeneratedPost({ tool: TOOL, templateId: BIRTHDAY.id, subject: c.name.trim(), source: "portal", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
+        logGeneratedPost({ tool: TOOL, templateId: BIRTHDAY.id, subject: c.name.trim(), source: "demo", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
         setZipping({ done: entries.length, total: readyCards.length });
         await new Promise((r) => setTimeout(r, 0));
       }
@@ -189,11 +186,9 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
         </div>
       </div>
 
-      {source === "mock" && (
-        <p className="rounded-lg border border-warning/40 bg-warning/8 px-3 py-2 text-xs text-warning">
-          Showing sample employees — the Portal connection isn&apos;t configured yet. Set PORTAL_API_URL and PORTAL_API_KEY to use real data.
-        </p>
-      )}
+      <p className="rounded-lg border border-warning/40 bg-warning/8 px-3 py-2 text-xs text-warning">
+        Demo employee list — connect the CRM in <code className="font-mono">src/lib/demo/employees.ts</code>.
+      </p>
       {fontError && <p className="text-sm text-destructive">{fontError}</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
 
@@ -252,7 +247,6 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
       {cards.length > 0 && (
         <p className="text-xs text-muted-foreground">
           {readyCards.length} of {cards.length} ready · exported as PNG (or JPEG when over {formatBytes(1.4 * 1024 * 1024)}) at {BIRTHDAY.width}×{BIRTHDAY.height}
-          {source === "portal" && <Badge variant="secondary" className="ml-2">Portal</Badge>}
         </p>
       )}
 
@@ -263,7 +257,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
             key={editingCard.employee.id}
             tool={TOOL}
             template={BIRTHDAY}
-            source="portal"
+            source="demo"
             employeeId={editingCard.employee.id}
             initial={{ name: editingCard.name, jobTitle: editingCard.jobTitle, photo: editingCard.photo, transform: editingCard.transform }}
             onApply={(s: PostState) => {

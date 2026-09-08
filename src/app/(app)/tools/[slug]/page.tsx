@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { requireUser } from "@/auth";
-import { getTool, canUseTool } from "@/lib/tools";
+import { getTool, TOOLS } from "@/lib/tools";
 import { ToolIcon } from "@/components/tool-icon";
 import { Button } from "@/components/ui/button";
 import { Mascot } from "@/components/mascot";
+
+export function generateStaticParams() {
+  return TOOLS.map((t) => ({ slug: t.slug }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -14,9 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const user = await requireUser();
   const tool = getTool(slug);
-  if (!tool || !canUseTool(tool, user)) notFound();
+  if (!tool) notFound();
 
   const Tool = tool.component ? (await tool.component()).default : null;
 
@@ -31,7 +33,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             <ToolIcon name={tool.icon} className="size-4" />
           </span>
           <div>
-            <h1 className="text-h2 font-normal leading-tight">{tool.name}</h1>
+            <h1 className="text-h2 leading-tight">{tool.name}</h1>
             <p className="text-sm text-muted-foreground">{tool.description}</p>
           </div>
         </div>
@@ -47,7 +49,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
             {tool.owner ? `${tool.owner} is working on it.` : "It'll appear here when ready."} In the meantime you can send Marketing a custom request.
           </p>
           <Button asChild variant="outline" size="sm">
-            <Link href={`/tools/custom-request?about=${encodeURIComponent(tool.name)}`}>Send a custom request</Link>
+            <Link href="/tools/custom-request">Send a custom request</Link>
           </Button>
         </div>
       )}

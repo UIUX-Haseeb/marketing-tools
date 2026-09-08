@@ -1,6 +1,3 @@
-import { notFound } from "next/navigation";
-import { requireUser } from "@/auth";
-import { isAdmin } from "@/lib/teams";
 import { Logo } from "@/components/logo";
 import { Mascot, MascotLoop } from "@/components/mascot";
 import { Button } from "@/components/ui/button";
@@ -49,10 +46,7 @@ function Block({ title, note, children }: { title: string; note?: string; childr
   );
 }
 
-export default async function StyleguidePage() {
-  const user = await requireUser();
-  if (!isAdmin(user)) notFound();
-
+export default function StyleguidePage() {
   return (
     <div className="space-y-14">
       <header>

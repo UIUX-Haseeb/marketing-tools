@@ -9,7 +9,7 @@ import { Download, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { logGeneratedPost } from "@/lib/actions/posts";
+import { logGeneratedPost } from "@/lib/store";
 import { unsupportedCharacters } from "./font";
 import { clampTransform, IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "./render";
 import { usesJobTitle, usesPhoto, type PostTemplate } from "./templates";
@@ -37,7 +37,7 @@ export function PostEditor({
   tool: string;
   template: PostTemplate;
   initial?: Partial<PostState>;
-  source?: "manual" | "portal";
+  source?: "manual" | "demo";
   employeeId?: string;
   /** When provided, an "Apply" button returns the edited state to the caller (used by the Adjust dialog). */
   onApply?: (state: PostState) => void;
@@ -108,7 +108,7 @@ export function PostEditor({
       setExported({ key: stateKey, result: out });
       downloadBlob(out.blob, safeFileName(template, name, out.extension));
       onExported?.(out);
-      void logGeneratedPost({ tool, templateId: template.id, subject: name.trim(), source, employeeId, format: out.extension, bytes: out.bytes });
+      logGeneratedPost({ tool, templateId: template.id, subject: name.trim(), source, employeeId, format: out.extension, bytes: out.bytes });
     } catch (e) {
       setError((e as Error).message);
     } finally {
