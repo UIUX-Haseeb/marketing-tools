@@ -37,29 +37,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const raw = credentials?.email;
         const email = typeof raw === "string" && raw.trim() ? raw.trim().toLowerCase() : "staff@providentestate.com";
 
-        // Auto-provision user in DB if they don't exist yet
-        let dbUser = await prisma.user.findUnique({
-          where: { email },
-        });
+        try {
+          if (process.env.DATABASE_URL) {
+            let dbUser = await prisma.user.findUnique({
+              where: { email },
+            });
 
-        if (!dbUser) {
-          dbUser = await prisma.user.create({
-            data: {
-              email,
-              name: email.split("@")[0],
-              team: "MARKETING",
-              role: "ADMIN",
-              active: true,
-            },
-          });
+            if (!dbUser) {
+              dbUser = await prisma.user.create({
+                data: {
+                  email,
+                  name: email.split("@")[0],
+                  team: "MARKETING",
+                  role: "ADMIN",
+                  active: true,
+                },
+              });
+            }
+
+            return {
+              id: dbUser.id,
+              email: dbUser.email,
+              name: dbUser.name ?? dbUser.email.split("@")[0],
+              team: dbUser.team,
+              role: dbUser.role,
+            };
+          }
+        } catch (err) {
+          console.error("Database connection fallback in authorize:", err);
         }
 
+        // Fallback user object if DB is not linked yet
         return {
-          id: dbUser.id,
-          email: dbUser.email,
-          name: dbUser.name ?? dbUser.email.split("@")[0],
-          team: dbUser.team,
-          role: dbUser.role,
+          id: `usr_${Date.now()}`,
+          email,
+          name: email.split("@")[0],
+          team: "MARKETING" as Team,
+          role: "ADMIN" as Role,
         };
       },
     }),
@@ -67,43 +81,54 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
 
-    // Allow anyone to sign in; auto-provision user record in DB
+    // Allow anyone to sign in; auto-provision user record in DB if available
     async signIn({ user }) {
       const email = user.email?.toLowerCase();
       if (!email) return true;
 
-      const dbUser = await prisma.user.findUnique({ where: { email } });
-      if (!dbUser) {
-        await prisma.user.create({
-          data: {
-            email,
-            name: user.name ?? email.split("@")[0],
-            image: user.image,
-            team: "MARKETING",
-            role: "ADMIN",
-            active: true,
-          },
-        });
+      try {
+        if (process.env.DATABASE_URL) {
+          const dbUser = await prisma.user.findUnique({ where: { email } });
+          if (!dbUser) {
+            await prisma.user.create({
+              data: {
+                email,
+                name: user.name ?? email.split("@")[0],
+                image: user.image,
+                team: "MARKETING",
+                role: "ADMIN",
+                active: true,
+              },
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Database connection fallback in signIn:", err);
       }
       return true;
     },
 
     async jwt({ token, user, trigger }) {
-      // On sign-in (and on session.update()) refresh team/role from the DB.
       if (user?.email || trigger === "update") {
         const email = (user?.email ?? token.email)?.toLowerCase();
         if (email) {
-          const dbUser = await prisma.user.findUnique({ where: { email } });
-          if (dbUser) {
-            token.uid = dbUser.id;
-            token.team = dbUser.team;
-            token.role = dbUser.role;
-            if (user?.name || user?.image) {
-              await prisma.user.update({
-                where: { id: dbUser.id },
-                data: { name: dbUser.name ?? user.name, image: user.image ?? dbUser.image },
-              });
+          try {
+            if (process.env.DATABASE_URL) {
+              const dbUser = await prisma.user.findUnique({ where: { email } });
+              if (dbUser) {
+                token.uid = dbUser.id;
+                token.team = dbUser.team;
+                token.role = dbUser.role;
+                if (user?.name || user?.image) {
+                  await prisma.user.update({
+                    where: { id: dbUser.id },
+                    data: { name: dbUser.name ?? user.name, image: user.image ?? dbUser.image },
+                  });
+                }
+              }
             }
+          } catch (err) {
+            console.error("Database connection fallback in jwt:", err);
           }
         }
       }

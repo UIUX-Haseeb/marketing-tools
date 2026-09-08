@@ -61,16 +61,27 @@ function ToolCard({ tool }: { tool: ToolDef }) {
 export default async function DashboardPage() {
   const user = await requireUser();
 
-  const [myRequestsCount, queueCount, userCount, tools] = await Promise.all([
-    prisma.request.count({
-      where: { requesterId: user.id, status: { in: ["NEW", "IN_PROGRESS"] } },
-    }),
-    isMarketing(user)
-      ? prisma.request.count({ where: { status: { in: ["NEW", "IN_PROGRESS"] } } })
-      : Promise.resolve(0),
-    isAdmin(user) ? prisma.user.count({ where: { active: true } }) : Promise.resolve(0),
-    Promise.resolve(toolsForUser(user)),
-  ]);
+  let myRequestsCount = 0;
+  let queueCount = 0;
+  let userCount = 0;
+
+  try {
+    if (process.env.DATABASE_URL) {
+      [myRequestsCount, queueCount, userCount] = await Promise.all([
+        prisma.request.count({
+          where: { requesterId: user.id, status: { in: ["NEW", "IN_PROGRESS"] } },
+        }),
+        isMarketing(user)
+          ? prisma.request.count({ where: { status: { in: ["NEW", "IN_PROGRESS"] } } })
+          : Promise.resolve(0),
+        isAdmin(user) ? prisma.user.count({ where: { active: true } }) : Promise.resolve(0),
+      ]);
+    }
+  } catch (err) {
+    console.error("Dashboard DB query fallback:", err);
+  }
+
+  const tools = toolsForUser(user);
 
   const posts = tools.filter((t) => t.category === "posts");
   const requests = tools.filter((t) => t.category === "requests");
