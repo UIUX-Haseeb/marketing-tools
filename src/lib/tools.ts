@@ -93,6 +93,7 @@ export const TOOLS: ToolDef[] = [
     teams: ["HR"],
     category: "posts",
     icon: "Flower2",
+    component: () => import("@/tools/condolence"),
   },
 
 ];

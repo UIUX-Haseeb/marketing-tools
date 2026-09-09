@@ -74,7 +74,7 @@ export async function encodeCanvas(canvas: HTMLCanvasElement, maxBytes = MAX_POS
 }
 
 /** e.g. Happy-Birthday-Fatima-Al-Zahra-Birthday-post.png */
-export function safeFileName(template: PostTemplate, name: string, extension = "png") {
+export function safeFileName(template: Pick<PostTemplate, "fileStem" | "label">, name: string, extension = "png") {
   const slug = name.trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
   const style = template.label.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
   return `${template.fileStem}${slug ? `-${slug}` : ""}${style ? `-${style}` : ""}.${extension}`;

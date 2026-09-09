@@ -13,6 +13,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `_shared/` | Canvas post engine: locked brand font loader, renderer, PNG/JPEG export with byte budget, ZIP writer, editor + UI pieces | — | `public/tools/_shared/fonts/` |
 | `birthday/` | Birthday post — month view over the employee list + manual form | `index.tsx` | `public/tools/birthday/` |
 | `baby/` | New Baby post (Boy / Girl) | `index.tsx` | `public/tools/baby/` |
+| `condolence/` | Condolence post with read-before-download gate | `index.tsx` | `public/tools/condolence/` |
 | `listing/` | Just Sold + Just Listed (one design, two headlines) | `just-sold.tsx`, `just-listed.tsx` | none (photo is uploaded) |
 
 ## Host contract (what the tools import from the app)
