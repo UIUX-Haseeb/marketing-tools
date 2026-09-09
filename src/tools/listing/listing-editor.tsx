@@ -2,11 +2,10 @@
 
 /**
  * Just Sold / Just Listed editor. Property photo + listing line + price + agent (from the
- * employee list, editable) + optional QR. Renders with renderListing(); exports via encodeCanvas().
+ * employee list, editable) + the agent's DLD QR image. Renders with renderListing(); exports via encodeCanvas().
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import QRCode from "qrcode";
-import { Download } from "lucide-react";
+import { Download, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,25 +18,21 @@ import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/
 import { coverRect, HEADLINES, HEADSHOT_BOX, LISTING, LISTING_LIMITS, PHOTO_BOX, renderListing, type ListingVariant } from "@/tools/_engine/listing";
 import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_engine/export";
 import { toDrawable } from "@/tools/_engine/use-post";
-import { Counter, PhotoControls, PhotoDropzone } from "@/tools/_engine/ui";
+import { Counter, PhotoDropzone } from "@/tools/_engine/ui";
 
 const MANUAL = "__manual__";
 
-function useQr(text: string) {
-  const value = text.trim();
-  const [made, setMade] = useState<{ value: string; canvas: HTMLCanvasElement } | null>(null);
-  useEffect(() => {
-    if (!value) return;
-    let alive = true;
-    const canvas = document.createElement("canvas");
-    QRCode.toCanvas(canvas, value, { margin: 0, width: 648, errorCorrectionLevel: "M", color: { dark: "#1A2942", light: "#FFFFFF" } })
-      .then(() => alive && setMade({ value, canvas }))
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, [value]);
-  return value && made?.value === value ? made.canvas : null;
+/** One-line size control shown right under an upload. */
+function SizeRow({ id, transform, onZoom, onReset, disabled }: { id: string; transform: PhotoTransform; onZoom: (z: number) => void; onReset: () => void; disabled?: boolean }) {
+  return (
+    <div className={cn("flex items-center gap-2 text-xs text-muted-foreground", disabled && "opacity-50")}>
+      <label htmlFor={id} className="w-8 shrink-0">Size</label>
+      <Minus className="size-3" />
+      <input id={id} type="range" min={1} max={3} step={0.01} value={transform.zoom} disabled={disabled} onChange={(e) => onZoom(Number(e.target.value))} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-navy" />
+      <Plus className="size-3" />
+      <button type="button" onClick={onReset} disabled={disabled} className="ml-1 underline-offset-4 hover:text-foreground hover:underline">Reset</button>
+    </div>
+  );
 }
 
 export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool: string }) {
@@ -59,12 +54,10 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   const [agentTitle, setAgentTitle] = useState(EMPLOYEES[0]?.designation ?? "");
   const [headshot, setHeadshot] = useState<Drawable | null>(null);
   const [headshotT, setHeadshotT] = useState<PhotoTransform>(IDENTITY_TRANSFORM);
-  const [qrText, setQrText] = useState("");
-  const [target, setTarget] = useState<"photo" | "headshot">("photo");
+  const [qr, setQr] = useState<Drawable | null>(null);
   const [busy, setBusy] = useState(false);
   const [exported, setExported] = useState<{ key: string; result: ExportResult } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const qr = useQr(qrText);
 
   // Agent picked from the list → prefill name, designation, headshot (all editable afterwards).
   const headshotReq = useRef(0);
@@ -79,7 +72,6 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
     if (e.photoUrl) toDrawable(e.photoUrl).then((img) => req === headshotReq.current && setHeadshot(img)).catch(() => {});
     else setHeadshot(null);
   }
-  // Load the default agent's headshot once.
   useEffect(() => {
     const e = EMPLOYEES[0];
     if (!e?.photoUrl) return;
@@ -115,16 +107,20 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
     return () => cancelAnimationFrame(frame);
   }, [input, fontReady]);
 
-  // Drag in preview moves the active target.
-  const drag = useRef<{ x: number; y: number } | null>(null);
-  const nudge = (dx: number, dy: number) => {
+  // Drag in the preview: inside the headshot circle moves the headshot, anywhere else moves the property photo.
+  const drag = useRef<{ x: number; y: number; target: "photo" | "headshot" } | null>(null);
+  function hitTarget(e: React.PointerEvent<HTMLCanvasElement>): "photo" | "headshot" {
+    const r = e.currentTarget.getBoundingClientRect();
+    const k = LISTING.width / r.width;
+    const x = (e.clientX - r.left) * k;
+    const y = (e.clientY - r.top) * k;
+    const h = LISTING.headshot;
+    return headshot && Math.hypot(x - h.cx, y - h.cy) <= h.r ? "headshot" : "photo";
+  }
+  function moveBy(target: "photo" | "headshot", dx: number, dy: number) {
     if (target === "photo" && photo) setPhotoT((t) => coverRect(photo, PHOTO_BOX, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
     if (target === "headshot" && headshot) setHeadshotT((t) => coverRect(headshot, HEADSHOT_BOX, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
-  };
-  const patch = (p: Partial<PhotoTransform>) => {
-    if (target === "photo" && photo) setPhotoT((t) => coverRect(photo, PHOTO_BOX, { ...t, ...p }).clamped);
-    if (target === "headshot" && headshot) setHeadshotT((t) => coverRect(headshot, HEADSHOT_BOX, { ...t, ...p }).clamped);
-  };
+  }
 
   const problems: string[] = [];
   if (!photo) problems.push("Upload the property photo.");
@@ -134,7 +130,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   if (!headshot) problems.push("Add the agent headshot.");
   const canGenerate = fontReady && problems.length === 0 && !busy;
 
-  const stateKey = JSON.stringify([variant, !!photo, photoT, listing, price, agentName, agentTitle, !!headshot, headshotT, qrText]);
+  const stateKey = JSON.stringify([variant, !!photo, photoT, listing, price, agentName, agentTitle, !!headshot, headshotT, !!qr]);
   const result = exported?.key === stateKey ? exported.result : null;
 
   async function generate() {
@@ -160,28 +156,24 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
     }
   }
 
-  const activeT = target === "photo" ? photoT : headshotT;
-  const activeHas = target === "photo" ? !!photo : !!headshot;
+  const load = (set: (d: Drawable) => void, after?: () => void) => async (f: File) => {
+    try {
+      set(await toDrawable(f));
+      after?.();
+      setError(null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_1fr]">
       <div className="space-y-6">
         {/* Property */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <Label>Property photo</Label>
-          <PhotoDropzone
-            compact={!!photo}
-            label={photo ? "Replace photo" : undefined}
-            onFile={async (f) => {
-              try {
-                setPhoto(await toDrawable(f));
-                setPhotoT(IDENTITY_TRANSFORM);
-                setTarget("photo");
-              } catch (e) {
-                setError((e as Error).message);
-              }
-            }}
-          />
+          <PhotoDropzone compact={!!photo} label={photo ? "Replace photo" : undefined} onFile={load(setPhoto, () => setPhotoT(IDENTITY_TRANSFORM))} />
+          {photo && <SizeRow id="photo-size" transform={photoT} onZoom={(z) => setPhotoT((t) => coverRect(photo, PHOTO_BOX, { ...t, zoom: z }).clamped)} onReset={() => setPhotoT(IDENTITY_TRANSFORM)} />}
         </div>
 
         <div className="space-y-2">
@@ -207,7 +199,6 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
               {EMPLOYEES.map((e) => <option key={e.id} value={e.id}>{e.fullName}</option>)}
               <option value={MANUAL}>Type manually…</option>
             </Select>
-            <p className="text-xs text-muted-foreground">Prefilled from the employee list — edit anything below.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
@@ -225,46 +216,17 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
               <Input id="agentTitle" value={agentTitle} onChange={(e) => setAgentTitle(e.target.value)} />
             </div>
           </div>
-          <PhotoDropzone
-            compact
-            label={headshot ? "Replace headshot" : "Add headshot"}
-            onFile={async (f) => {
-              try {
-                setHeadshot(await toDrawable(f));
-                setHeadshotT(IDENTITY_TRANSFORM);
-                setTarget("headshot");
-              } catch (e) {
-                setError((e as Error).message);
-              }
-            }}
-          />
+          <div className="space-y-2">
+            <PhotoDropzone compact label={headshot ? "Replace headshot" : "Add headshot"} onFile={load(setHeadshot, () => setHeadshotT(IDENTITY_TRANSFORM))} />
+            {headshot && <SizeRow id="headshot-size" transform={headshotT} onZoom={(z) => setHeadshotT((t) => coverRect(headshot, HEADSHOT_BOX, { ...t, zoom: z }).clamped)} onReset={() => setHeadshotT(IDENTITY_TRANSFORM)} />}
+          </div>
         </div>
 
         {/* QR */}
         <div className="space-y-2 border-t pt-5">
-          <Label htmlFor="qr">QR code link <span className="text-muted-foreground">(optional)</span></Label>
-          <Input id="qr" value={qrText} onChange={(e) => setQrText(e.target.value)} placeholder="https://… listing page, WhatsApp or profile link" inputMode="url" />
-          <p className="text-xs text-muted-foreground">Leave empty to hide the QR tile.</p>
-        </div>
-
-        {/* Position */}
-        <div className="space-y-3 border-t pt-5">
-          <div className="flex items-center justify-between">
-            <Label>Position</Label>
-            <div className="flex rounded-lg border p-0.5 text-xs">
-              {(["photo", "headshot"] as const).map((t) => (
-                <button key={t} type="button" onClick={() => setTarget(t)} className={cn("rounded-md px-2.5 py-1 capitalize", target === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-          <PhotoControls
-            transform={activeT}
-            disabled={!activeHas}
-            onChange={patch}
-            onReset={() => (target === "photo" ? setPhotoT(IDENTITY_TRANSFORM) : setHeadshotT(IDENTITY_TRANSFORM))}
-          />
+          <Label>DLD QR code <span className="text-muted-foreground">(optional)</span></Label>
+          <PhotoDropzone compact label={qr ? "Replace QR image" : "Upload your permit QR image"} onFile={load(setQr)} />
+          <p className="text-xs text-muted-foreground">The QR from your Dubai Land Department permit. Leave empty to hide the tile.</p>
         </div>
 
         {/* Generate */}
@@ -284,24 +246,24 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
         <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${LISTING.width} / ${LISTING.height}` }}>
           <canvas
             ref={canvasRef}
-            className={cn("block h-full w-full touch-none", activeHas && "cursor-grab active:cursor-grabbing")}
+            className={cn("block h-full w-full touch-none", (photo || headshot) && "cursor-grab active:cursor-grabbing")}
             onPointerDown={(e) => {
-              if (!activeHas) return;
-              drag.current = { x: e.clientX, y: e.clientY };
+              if (!photo && !headshot) return;
+              drag.current = { x: e.clientX, y: e.clientY, target: hitTarget(e) };
               e.currentTarget.setPointerCapture(e.pointerId);
             }}
             onPointerMove={(e) => {
               if (!drag.current) return;
               const k = LISTING.width / e.currentTarget.getBoundingClientRect().width;
-              nudge((e.clientX - drag.current.x) * k, (e.clientY - drag.current.y) * k);
-              drag.current = { x: e.clientX, y: e.clientY };
+              moveBy(drag.current.target, (e.clientX - drag.current.x) * k, (e.clientY - drag.current.y) * k);
+              drag.current = { ...drag.current, x: e.clientX, y: e.clientY };
             }}
             onPointerUp={() => (drag.current = null)}
             onPointerCancel={() => (drag.current = null)}
           />
           {!fontReady && !fontError && <div className="absolute inset-0 flex items-center justify-center text-sm text-paper/70">Loading design…</div>}
         </div>
-        <p className="text-center text-xs text-muted-foreground">Drag to reposition the {target} · final size {LISTING.width}×{LISTING.height}</p>
+        <p className="text-center text-xs text-muted-foreground">Drag the photo to move it · drag inside the circle to move the headshot</p>
       </div>
     </div>
   );

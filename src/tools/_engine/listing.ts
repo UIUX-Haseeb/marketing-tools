@@ -42,7 +42,7 @@ export type ListingInput = {
   agentTitle: string;
   headshot: Drawable | null;
   headshotTransform: PhotoTransform;
-  /** Pre-rendered QR (square canvas/image) or null to hide the QR slot. */
+  /** The agent's DLD QR permit image, or null to hide the QR slot. Drawn fit-inside the white tile. */
   qr: Drawable | null;
   showPlaceholders?: boolean;
 };
@@ -242,7 +242,13 @@ export function renderListing(ctx: CanvasRenderingContext2D, input: ListingInput
     ctx.fillStyle = "#FFFFFF";
     ctx.fill();
     ctx.restore();
-    ctx.drawImage(input.qr, q.x + q.pad, q.y + q.pad, q.size - q.pad * 2, q.size - q.pad * 2);
+    // Fit the uploaded QR image inside the tile (keeps its aspect; most permit QRs are square).
+    const { w: iw, h: ih } = drawableSize(input.qr);
+    const inner = q.size - q.pad * 2;
+    const s = Math.min(inner / iw, inner / ih);
+    const dw = iw * s;
+    const dh = ih * s;
+    ctx.drawImage(input.qr, q.x + (q.size - dw) / 2, q.y + (q.size - dh) / 2, dw, dh);
   }
 
   ctx.restore();
