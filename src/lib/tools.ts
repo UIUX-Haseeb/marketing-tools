@@ -47,6 +47,7 @@ export const TOOLS: ToolDef[] = [
     teams: ["AGENTS"],
     category: "posts",
     icon: "BadgeCheck",
+    component: () => import("@/tools/just-sold"),
   },
 
   // ── HR ────────────────────────────────────────────────────────────────

@@ -10,6 +10,11 @@ export const POST_FONT_FAMILY = "Provident Brand Sans";
 export const POST_FONT_STACK = `"${POST_FONT_FAMILY}"`;
 export const POST_FONT_WEIGHTS = [400] as const;
 export const POST_FONT_URL = "/post-assets/post-sans-400.woff2";
+/** Extra weights used by the listing (Just Sold / Just Listed) designs — full fonts, same locked family. */
+const EXTRA_FACES: Array<[weight: string, url: string]> = [
+  ["300", "/post-assets/post-sans-300.woff2"],
+  ["500", "/post-assets/post-sans-500.woff2"],
+];
 
 const PROBE_TEXT = "AaBbGgQqMWil0123";
 // Advance widths of PROBE_TEXT at 1000 upm, weight 400 — used to prove the canvas
@@ -68,9 +73,10 @@ async function loadAndVerify(): Promise<FontVerification> {
 
   const already = [...document.fonts].some((f) => f.family.replace(/^"|"$/g, "") === POST_FONT_FAMILY);
   if (!already) {
-    const face = new FontFace(POST_FONT_FAMILY, `url(${POST_FONT_URL})`, { weight: "400", style: "normal", display: "block" });
-    await face.load();
-    document.fonts.add(face);
+    const faces = [new FontFace(POST_FONT_FAMILY, `url(${POST_FONT_URL})`, { weight: "400", style: "normal", display: "block" })];
+    for (const [weight, url] of EXTRA_FACES) faces.push(new FontFace(POST_FONT_FAMILY, `url(${url})`, { weight, style: "normal", display: "block" }));
+    await Promise.all(faces.map((f) => f.load()));
+    faces.forEach((f) => document.fonts.add(f));
   }
   for (const weight of POST_FONT_WEIGHTS) {
     const spec = `${weight} 132px ${POST_FONT_STACK}`;

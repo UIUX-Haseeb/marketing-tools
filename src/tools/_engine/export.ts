@@ -51,7 +51,11 @@ export async function exportPost(input: RenderInput, maxBytes = MAX_POST_BYTES):
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas is not available in this browser.");
   renderPost(ctx, { ...input, showPlaceholder: false }, 1);
+  return encodeCanvas(canvas, maxBytes);
+}
 
+/** PNG if it fits the budget, else JPEG down the quality ladder. Shared by every post design. */
+export async function encodeCanvas(canvas: HTMLCanvasElement, maxBytes = MAX_POST_BYTES): Promise<ExportResult> {
   const png = await toBlob(canvas, "image/png");
   if (png && png.size <= maxBytes) return { blob: png, format: "png", quality: null, bytes: png.size, extension: "png" };
 
