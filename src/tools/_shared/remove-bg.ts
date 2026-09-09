@@ -4,16 +4,28 @@
  * In-browser background removal (no server, nothing leaves the user's machine).
  *
  * Uses @imgly/background-removal (AGPL-3.0) with a self-hosted model bundle at
- * public/tools/_shared/bg-removal/ — ISNet quint8 (~42 MB) + ONNX runtime wasm (~12 MB), fetched
+ * public/tools/_shared/bg-removal/ — ISNet fp16 (~84 MB) + ONNX runtime wasm (~12 MB), fetched
  * once and then served from the browser cache. Rebuild the bundle with
- * `node scripts/build-bg-removal-assets.mjs <isnet_quint8>` if the package version changes.
+ * `node scripts/build-bg-removal-assets.mjs <model file>` if the package version changes.
+ *
+ * Why fp16 and not the smaller quint8: on real headshots with busy studio backgrounds the quantised
+ * model leaves large patches of background behind; fp16 cuts them cleanly. The full-size model needs
+ * more memory than a worker reliably gets.
  *
  * The work runs in a Web Worker (remove-bg.worker.ts) so the page stays responsive. The first run on
- * a device downloads the model, so expect 10–40 s the first time and a few seconds afterwards.
+ * a device downloads the model, so expect 20–60 s the first time and a few seconds afterwards.
  * `progress` reports download vs. processing so the UI can say which is happening.
  */
 
 export const BG_REMOVAL_PUBLIC_PATH = "/tools/_shared/bg-removal/";
+
+/** Which ISNet variant to run. quint8 ≈ 42 MB, fp16 ≈ 88 MB, full ≈ 176 MB. */
+export type BgModel = "isnet" | "isnet_fp16" | "isnet_quint8";
+export const BG_REMOVAL_MODEL: BgModel = "isnet_fp16";
+function model(): BgModel {
+  const o = (globalThis as { __BG_MODEL__?: BgModel }).__BG_MODEL__; // test hook
+  return o ?? BG_REMOVAL_MODEL;
+}
 
 export type RemoveBgProgress = { phase: "download" | "process"; ratio: number };
 
@@ -67,7 +79,7 @@ function getWorker() {
 /** Warm the library + model in the background (e.g. when a tool that uses it mounts). */
 export function preloadBackgroundRemoval() {
   try {
-    getWorker().postMessage({ type: "preload", publicPath: publicPath() });
+    getWorker().postMessage({ type: "preload", publicPath: publicPath(), model: model() });
   } catch {
     /* no worker support — removeBackground will surface the error when used */
   }
@@ -79,7 +91,7 @@ export function removeBackground(file: Blob, onProgress?: (p: RemoveBgProgress) 
     const id = nextId++;
     pending.set(id, { onProgress, resolve, reject, seen: new Map(), downloaded: 0, total: 0 });
     try {
-      getWorker().postMessage({ type: "remove", id, file, publicPath: publicPath() });
+      getWorker().postMessage({ type: "remove", id, file, publicPath: publicPath(), model: model() });
     } catch (e) {
       pending.delete(id);
       reject(e as Error);

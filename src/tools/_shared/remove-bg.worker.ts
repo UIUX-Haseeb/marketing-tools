@@ -7,18 +7,17 @@
  */
 import { preload, removeBackground, type Config } from "@imgly/background-removal";
 
-const MODEL: Config["model"] = "isnet_quint8";
 
 self.onmessage = async (e: MessageEvent) => {
-  const msg = e.data as { type: "preload"; publicPath: string } | { type: "remove"; id: number; file: Blob; publicPath: string };
+  const msg = e.data as { type: "preload"; publicPath: string; model: Config["model"] } | { type: "remove"; id: number; file: Blob; publicPath: string; model: Config["model"] };
   if (msg.type === "preload") {
-    preload({ publicPath: msg.publicPath, model: MODEL, device: "cpu" }).catch(() => {});
+    preload({ publicPath: msg.publicPath, model: msg.model, device: "cpu" }).catch(() => {});
     return;
   }
   try {
     const blob = await removeBackground(msg.file, {
       publicPath: msg.publicPath,
-      model: MODEL,
+      model: msg.model,
       device: "cpu",
       output: { format: "image/png", quality: 1 },
       progress: (key, current, total) => self.postMessage({ type: "progress", id: msg.id, key, current, total }),
