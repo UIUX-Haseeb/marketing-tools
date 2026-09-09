@@ -9,11 +9,11 @@
 export const POST_FONT_FAMILY = "Provident Brand Sans";
 export const POST_FONT_STACK = `"${POST_FONT_FAMILY}"`;
 export const POST_FONT_WEIGHTS = [400] as const;
-export const POST_FONT_URL = "/post-assets/post-sans-400.woff2";
+export const POST_FONT_URL = "/tools/_shared/fonts/GoogleSansFlex-400-subset.woff2";
 /** Extra weights used by the listing (Just Sold / Just Listed) designs — full fonts, same locked family. */
 const EXTRA_FACES: Array<[weight: string, url: string]> = [
-  ["300", "/post-assets/post-sans-300.woff2"],
-  ["500", "/post-assets/post-sans-500.woff2"],
+  ["300", "/tools/_shared/fonts/GoogleSansFlex-300.woff2"],
+  ["500", "/tools/_shared/fonts/GoogleSansFlex-500.woff2"],
 ];
 
 const PROBE_TEXT = "AaBbGgQqMWil0123";

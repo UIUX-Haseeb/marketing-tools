@@ -13,12 +13,12 @@ import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { logGeneratedPost } from "@/lib/store";
 import { EMPLOYEES } from "@/lib/demo/employees";
-import { ensurePostFont, isPostFontReady } from "@/tools/_engine/font";
-import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_engine/render";
-import { coverRect, HEADLINES, HEADSHOT_BOX, LISTING, LISTING_LIMITS, PHOTO_BOX, renderListing, type ListingVariant } from "@/tools/_engine/listing";
-import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_engine/export";
-import { toDrawable } from "@/tools/_engine/use-post";
-import { Counter, PhotoDropzone } from "@/tools/_engine/ui";
+import { ensurePostFont, isPostFontReady } from "@/tools/_shared/font";
+import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
+import { coverRect, HEADLINES, HEADSHOT_BOX, LISTING, LISTING_LIMITS, PHOTO_BOX, renderListing, type ListingVariant } from "./listing";
+import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_shared/export";
+import { toDrawable } from "@/tools/_shared/use-post";
+import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
 
 const MANUAL = "__manual__";
 

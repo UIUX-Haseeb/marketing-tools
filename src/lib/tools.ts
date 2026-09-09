@@ -39,7 +39,7 @@ export const TOOLS: ToolDef[] = [
     teams: ["AGENTS"],
     category: "posts",
     icon: "House",
-    component: () => import("@/tools/just-listed"),
+    component: () => import("@/tools/listing/just-listed"),
   },
   {
     slug: "just-sold",
@@ -48,7 +48,7 @@ export const TOOLS: ToolDef[] = [
     teams: ["AGENTS"],
     category: "posts",
     icon: "BadgeCheck",
-    component: () => import("@/tools/just-sold"),
+    component: () => import("@/tools/listing/just-sold"),
   },
 
   // ── HR ────────────────────────────────────────────────────────────────

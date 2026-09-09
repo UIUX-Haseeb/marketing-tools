@@ -4,9 +4,9 @@
  * The property photo is the whole background; everything else is drawn in code so the
  * frosted card really blurs whatever photo sits behind it.
  */
-import { POST_FONT_STACK } from "./font";
-import type { Drawable, PhotoTransform } from "./render";
-import { drawableSize } from "./render";
+import { POST_FONT_STACK } from "@/tools/_shared/font";
+import type { Drawable, PhotoTransform } from "@/tools/_shared/render";
+import { drawableSize } from "@/tools/_shared/render";
 
 export type ListingVariant = "just-sold" | "just-listed";
 

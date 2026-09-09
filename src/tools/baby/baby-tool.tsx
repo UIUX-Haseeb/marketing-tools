@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { BABY_BOY, BABY_GIRL } from "@/tools/_engine/templates";
-import { PostEditor } from "@/tools/_engine/post-editor";
+import { BABY_BOY, BABY_GIRL } from "./template";
+import { PostEditor } from "@/tools/_shared/post-editor";
 
 const VARIANTS = [BABY_BOY, BABY_GIRL];
 

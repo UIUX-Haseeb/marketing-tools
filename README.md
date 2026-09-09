@@ -23,10 +23,10 @@ src/
   lib/demo/requests.ts       Seed requests for the queue
   lib/demo/types.ts          Employee / MarketingRequest / GeneratedPost shapes
   lib/store.ts               localStorage store for requests + generated-post log
-  tools/_engine/             Post rendering engine (templates, locked font, export, zip)
-  tools/<slug>/              One folder per tool (birthday, baby, custom-request)
+  tools/                     ← ONE FOLDER PER TOOL, each with its own README (see tools/README.md for handover)
+  tools/_shared/             Post rendering engine shared by the post tools
   components/ui/             Button, Badge, Input, Textarea, Select, Label, Table, Card
-public/post-assets/          Post artwork + the locked 400-weight font
+public/tools/<tool>/         Each tool's artwork; public/tools/_shared/fonts/ the locked brand font
 public/mascot/               Mascot renders
 ```
 
@@ -45,9 +45,12 @@ public/mascot/               Mascot renders
 2. Register it in `src/lib/tools.ts` with `component: () => import("@/tools/<slug>")`. Without `component` it shows as "Coming soon".
 3. Follow **STYLEGUIDE.md** (tokens, type weights, layout) and use the primitives in `src/components/ui`.
 
-## Post tools (Birthday, New Baby)
+## Post tools (Birthday, New Baby, Just Sold, Just Listed)
 
-Shared engine in `src/tools/_engine/`, ported 1:1 from the original General Post Generator: locked geometry per template, the bundled Google Sans Flex 400 subset with a fingerprint check (posts are never rendered with a substitute font), fit-to-width text, circular photo crop with zoom/nudge/drag, PNG export that falls back to a byte-budgeted JPEG (custom encoder), and a ZIP writer for "Export all".
+Shared engine in `src/tools/_shared/`, ported 1:1 from the original General Post Generator: locked geometry per template, the bundled Google Sans Flex 400 subset with a fingerprint check (posts are never rendered with a substitute font), fit-to-width text, circular photo crop with zoom/nudge/drag, PNG export that falls back to a byte-budgeted JPEG (custom encoder), and a ZIP writer for "Export all".
 
 - **Birthday** — month view over the employee list, live-rendered cards, per-post Adjust/Download, Export all as ZIP, "Create new" manual form for people not in the list.
 - **New Baby** — It's a Boy / It's a Girl, name only.
+- **Just Sold / Just Listed** — property photo, listing line, price, agent (prefilled, editable), mandatory DLD QR image. Both in `src/tools/listing/`.
+
+**Handing tools to another codebase:** read `src/tools/README.md` — each tool folder is self-contained and lists exactly what it needs from the host app.
