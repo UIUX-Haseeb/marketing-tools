@@ -10,7 +10,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 
 | Folder | What it is | Entry | Assets |
 | --- | --- | --- | --- |
-| `_shared/` | Canvas post engine: locked brand font loader, renderer, PNG/JPEG export with byte budget, ZIP writer, editor + UI pieces | — | `public/tools/_shared/fonts/` |
+| `_shared/` | Canvas post engine: locked brand font loader, renderer, PNG/JPEG export with byte budget, ZIP writer, editor + UI pieces, in-browser background removal | — | `public/tools/_shared/fonts/`, `public/tools/_shared/bg-removal/` |
 | `birthday/` | Birthday post — month view over the employee list + manual form | `index.tsx` | `public/tools/birthday/` |
 | `baby/` | New Baby post (Boy / Girl) | `index.tsx` | `public/tools/baby/` |
 | `onboarding/` | Welcome Aboard post for new joiners | `index.tsx` | `public/tools/onboarding/` |
@@ -30,5 +30,15 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 Fonts: `_shared/font.ts` registers Google Sans Flex (300, 400-subset, 500) under a private family name via the FontFace API and refuses to export if a substitute font is detected. Keep the three woff2 files reachable at `/tools/_shared/fonts/` (or change `POST_FONT_URL` / `EXTRA_FACES`).
 
 Styling: Tailwind v4 with the tokens in `src/app/globals.css` (see STYLEGUIDE.md). Tools use semantic classes (`bg-card`, `text-muted-foreground`, `text-brand`…), so bring those token definitions or map them to yours.
+
+## Background removal (`_shared/remove-bg.ts`)
+
+Used by `onboarding/`. Runs `@imgly/background-removal` in a Web Worker (`remove-bg.worker.ts`) against a **self-hosted** model bundle in `public/tools/_shared/bg-removal/` (ISNet quint8 ≈ 42 MB + ONNX runtime wasm ≈ 12 MB, split into 4 MB content-addressed chunks + `resources.json`). Nothing is sent to any server; the first run on a device downloads the bundle (cached with `immutable` headers after that, see `next.config.ts`), later runs take a few seconds.
+
+- npm: `@imgly/background-removal` + peer `onnxruntime-web@1.21.0` (versions must match — the wasm in the bundle comes from that exact onnxruntime-web).
+- Rebuild the bundle: `node scripts/build-bg-removal-assets.mjs <isnet_quint8 model file>` (model from the imgly repo `bundle/models/` or the `@imgly/background-removal-data` package).
+- Speed: the page sends `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: credentialless` so the wasm can use several threads. Without those headers it still works, single-threaded and slower. If the CRM can't set them, drop them and accept the slower run.
+- **Licence:** `@imgly/background-removal` is AGPL-3.0. Fine for an internal tool; if the CRM is ever distributed or offered to third parties, check with IMG.LY (they sell a commercial licence) or swap in an Apache-licensed segmenter (e.g. MediaPipe selfie segmentation) behind the same `removeBackground(file, onProgress)` signature.
+- Loading overlay: `_shared/bg-removal-overlay.tsx` plays `/mascot/robot-paper-plane.mp4` and falls back to `/mascot/robot-dancing.mp4` if that file is missing.
 
 No server code, no environment variables, no database — everything runs in the browser.

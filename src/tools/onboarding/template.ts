@@ -9,7 +9,7 @@
 export const ONBOARDING = {
   id: "provident-onboarding",
   label: "Welcome Aboard",
-  fileStem: "Welcome-Aboard",
+  fileStem: "Welcome",
   ctaLabel: "Generate Welcome Post",
   width: 1080,
   height: 1350,

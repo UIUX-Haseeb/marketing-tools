@@ -18,6 +18,8 @@ import { IDENTITY_TRANSFORM, loadImage, type Drawable, type PhotoTransform } fro
 import { downloadBlob, encodeCanvas, formatBytes, safeFileName, type ExportResult } from "@/tools/_shared/export";
 import { toDrawable } from "@/tools/_shared/use-post";
 import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
+import { preloadBackgroundRemoval, removeBackground, type RemoveBgProgress } from "@/tools/_shared/remove-bg";
+import { BgRemovalOverlay } from "@/tools/_shared/bg-removal-overlay";
 import { photoRect, renderOnboarding } from "./render";
 import { ONBOARDING } from "./template";
 
@@ -38,6 +40,7 @@ export function OnboardingTool() {
       setFontReady(r.ok);
       if (!r.ok) setFontError(r.error ?? "Font failed to load.");
     });
+    preloadBackgroundRemoval();
     return () => {
       alive = false;
     };
@@ -46,23 +49,64 @@ export function OnboardingTool() {
   const [employeeId, setEmployeeId] = useState<string>(MANUAL);
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
-  const [photo, setPhoto] = useState<Drawable | null>(null);
+  // `original` is what was uploaded, `cutout` the same photo with the background removed.
+  const [original, setOriginal] = useState<Drawable | null>(null);
+  const [cutout, setCutout] = useState<Drawable | null>(null);
+  const [useCutout, setUseCutout] = useState(true);
+  const photo = useCutout && cutout ? cutout : original;
   const [photoT, setPhotoT] = useState<PhotoTransform>(IDENTITY_TRANSFORM);
+  const [removing, setRemoving] = useState<RemoveBgProgress | null | false>(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [exported, setExported] = useState<{ key: string; result: ExportResult } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const photoReq = useRef(0);
+  function setPhotoSource(img: Drawable | null) {
+    setOriginal(img);
+    setCutout(null);
+    setUseCutout(true);
+    setRemoveError(null);
+    setPhotoT(IDENTITY_TRANSFORM);
+  }
   function selectEmployee(id: string) {
     setEmployeeId(id);
     const e = EMPLOYEES.find((x) => x.id === id);
     if (!e) return;
     setName(e.fullName);
     setTitle(e.designation);
-    setPhotoT(IDENTITY_TRANSFORM);
     const req = ++photoReq.current;
-    if (e.photoUrl) toDrawable(e.photoUrl).then((img) => req === photoReq.current && setPhoto(img)).catch(() => {});
-    else setPhoto(null);
+    setPhotoSource(null);
+    if (e.photoUrl) toDrawable(e.photoUrl).then((img) => req === photoReq.current && setPhotoSource(img)).catch(() => {});
+  }
+
+  /** Upload → show the original straight away, cut the background out behind the overlay, swap in the result. */
+  async function onUpload(file: File) {
+    const req = ++photoReq.current;
+    try {
+      setPhotoSource(await toDrawable(file));
+      setError(null);
+    } catch (e) {
+      setError((e as Error).message);
+      return;
+    }
+    setRemoving(null);
+    try {
+      const blob = await removeBackground(file, (p) => req === photoReq.current && setRemoving(p));
+      if (req !== photoReq.current) return;
+      setCutout(await toDrawable(blob));
+      setPhotoT(IDENTITY_TRANSFORM);
+    } catch (e) {
+      if (req !== photoReq.current) return;
+      setRemoveError(`Couldn't remove the background (${(e as Error).message}). The original photo is in place — you can still position it.`);
+    } finally {
+      if (req === photoReq.current) setRemoving(false);
+    }
+  }
+  /** "Use the photo as it is" while removal runs: keep the original, ignore the result when it lands. */
+  function cancelRemoval() {
+    photoReq.current++;
+    setRemoving(false);
   }
 
   const bad = useMemo(() => [...unsupportedCharacters(name), ...unsupportedCharacters(title)], [name, title]);
@@ -79,7 +123,7 @@ export function OnboardingTool() {
     () => (background ? { background, bottomFade, photo, photoTransform: photoT, name, title, showPlaceholders: true } : null),
     [background, bottomFade, photo, photoT, name, title],
   );
-  const stateKey = JSON.stringify([!!photo, photoT, name, title]);
+  const stateKey = JSON.stringify([!!photo, useCutout && !!cutout, photoT, name, title]);
   const result = exported?.key === stateKey ? exported.result : null;
 
   // Live preview
@@ -158,20 +202,28 @@ export function OnboardingTool() {
 
         <div className="space-y-2">
           <Label>Photo</Label>
-          <PhotoDropzone
-            compact={!!photo}
-            label={photo ? "Replace photo" : undefined}
-            onFile={async (f) => {
-              try {
-                setPhoto(await toDrawable(f));
-                setPhotoT(IDENTITY_TRANSFORM);
-                setError(null);
-              } catch (e) {
-                setError((e as Error).message);
-              }
-            }}
-          />
-          <p className="text-xs text-muted-foreground">A portrait with the background removed (transparent PNG) sits on the design like the reference. Drag it in the preview to position.</p>
+          <PhotoDropzone compact={!!photo} label={photo ? "Replace photo" : undefined} onFile={onUpload} />
+          <p className="text-xs text-muted-foreground">Upload any portrait — the background is removed for you, right here in the browser. Then drag it in the preview to position.</p>
+          {removeError && <p className="text-xs text-warning">{removeError}</p>}
+          {cutout && (
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="mr-1 text-muted-foreground">Background</span>
+              {[
+                { on: true, label: "Removed" },
+                { on: false, label: "Original" },
+              ].map((o) => (
+                <button
+                  key={o.label}
+                  type="button"
+                  aria-pressed={useCutout === o.on}
+                  onClick={() => setUseCutout(o.on)}
+                  className={cn("h-7 rounded-full border px-2.5 transition-colors", useCutout === o.on ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground")}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          )}
           {photo && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <label htmlFor="ob-size" className="w-8 shrink-0">Size</label>
@@ -219,6 +271,8 @@ export function OnboardingTool() {
         </div>
         <p className="text-center text-xs text-muted-foreground">Drag the photo to position it · final size {ONBOARDING.width}×{ONBOARDING.height}</p>
       </div>
+
+      {removing !== false && <BgRemovalOverlay progress={removing} onCancel={cancelRemoval} />}
     </div>
   );
 }
