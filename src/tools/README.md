@@ -39,6 +39,6 @@ Used by `onboarding/`. Runs `@imgly/background-removal` in a Web Worker (`remove
 - Rebuild the bundle: `node scripts/build-bg-removal-assets.mjs <isnet_quint8 model file>` (model from the imgly repo `bundle/models/` or the `@imgly/background-removal-data` package).
 - Speed: the page sends `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: credentialless` so the wasm can use several threads. Without those headers it still works, single-threaded and slower. If the CRM can't set them, drop them and accept the slower run.
 - **Licence:** `@imgly/background-removal` is AGPL-3.0. Fine for an internal tool; if the CRM is ever distributed or offered to third parties, check with IMG.LY (they sell a commercial licence) or swap in an Apache-licensed segmenter (e.g. MediaPipe selfie segmentation) behind the same `removeBackground(file, onProgress)` signature.
-- Loading overlay: `_shared/bg-removal-overlay.tsx` plays `/mascot/robot-paper-plane.mp4` and falls back to `/mascot/robot-dancing.mp4` if that file is missing.
+- Loading overlay: `_shared/bg-removal-overlay.tsx` plays the transparent running robot — `/mascot/robot-running.webm` (VP9 with alpha) or `/mascot/robot-running.webp` (animated, alpha) on Safari.
 
 No server code, no environment variables, no database — everything runs in the browser.
