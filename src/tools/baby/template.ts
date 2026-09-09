@@ -1,11 +1,16 @@
-/** Baby congrats posts (Boy / Girl) — geometry LOCKED, ported 1:1 from the original General Post Generator. */
+/**
+ * Baby congrats posts (Boy / Girl) — geometry LOCKED.
+ * Sep 2026 redesign: canvas widened from 810 to 1080 (135 px of pattern added each side, Figma
+ * "Birthday-template" nodes 94:2503 / 145:9746). Vertical layout is unchanged, so the name slot only
+ * moved horizontally to the new centre.
+ */
 import { BRAND_COLORS, NAME_MAX_CHARS, type PostTemplate } from "@/tools/_shared/templates";
 
 const BABY_GEOMETRY = {
-  width: 810,
+  width: 1080,
   height: 1440,
   name: {
-    cx: 405,
+    cx: 540,
     // Rendered ink lands on the reference's rows 1272-1293.
     cy: 1285,
     // Width of "Congratulations to", the widest line already on the design.
