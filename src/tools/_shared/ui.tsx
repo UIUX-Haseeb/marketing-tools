@@ -5,7 +5,7 @@
  * Keep these dumb — state lives in the tool.
  */
 import { useCallback, useRef, useState, type ReactNode } from "react";
-import { Minus, Plus, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Upload, RotateCcw } from "lucide-react";
+import { Minus, Plus, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Upload, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -198,7 +198,9 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <h2 className="text-h2 font-normal">{title}</h2>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose}>Close</Button>
+          <Button type="button" variant="ghost" size="icon" className="-mr-2 -mt-1 size-8 text-muted-foreground" onClick={onClose} aria-label="Close">
+            <X />
+          </Button>
         </div>
         {children}
       </div>

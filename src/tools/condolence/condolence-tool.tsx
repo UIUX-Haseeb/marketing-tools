@@ -16,7 +16,7 @@ import { ensurePostFont, isPostFontReady, unsupportedCharacters } from "@/tools/
 import { loadImage } from "@/tools/_shared/render";
 import { downloadBlob, encodeCanvas, formatBytes, safeFileName, type ExportResult } from "@/tools/_shared/export";
 import { Counter, Modal } from "@/tools/_shared/ui";
-import { COLLEAGUE_GENDERS, composeCondolence, firstName, getGender, getRelation, RELATIONS, type GenderId, type RelationId } from "./compose";
+import { COLLEAGUE_GENDERS, composeCondolence, getGender, getRelation, RELATIONS, type GenderId, type RelationId } from "./compose";
 import { renderCondolence } from "./render";
 import { CONDOLENCE } from "./template";
 
@@ -143,14 +143,14 @@ export function CondolenceTool() {
         </div>
 
         <div className="space-y-3 border-t pt-5">
-          <p className="text-sm text-muted-foreground">A condolence post carries a person&apos;s name and family. Read the wording once before you download it.</p>
+          <p className="text-sm text-muted-foreground">Check the preview before you download — this post carries a person&apos;s name and family.</p>
           {fontError && <p className="text-sm text-destructive">{fontError}</p>}
           {error && <p className="text-sm text-destructive">{error}</p>}
           {!fontError && problems.length > 0 && <p className="text-xs text-muted-foreground">{problems[0]}</p>}
           <div className="flex flex-wrap gap-2">
             {!confirmed ? (
               <Button type="button" onClick={() => setConfirmOpen(true)} disabled={!ready}>
-                <Eye /> Check the wording
+                <Eye /> Review &amp; continue
               </Button>
             ) : (
               <Button type="button" onClick={generate} disabled={!ready || busy}>
@@ -170,32 +170,14 @@ export function CondolenceTool() {
         <p className="text-center text-xs text-muted-foreground">Preview updates as you type · final size {CONDOLENCE.width}×{CONDOLENCE.height}</p>
       </div>
 
-      <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)} title="Please read this post before downloading">
+      <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)} title="Ready to download?">
         <div className="space-y-5">
           <p className="text-sm text-muted-foreground">
-            This is a condolence post. The wording below is what it says. Check the name, and check that <strong className="font-normal text-foreground">{g.possessive}</strong> and{" "}
-            <strong className="font-normal text-foreground">{relation.pronoun}</strong> are right.
+            Please check the post once more. Is <span className="text-foreground">{text.name.replace(/\.$/, "")}</span> spelled right, and is it{" "}
+            <span className="text-foreground">{relation.label}</span> / <span className="text-foreground">{g.label.toLowerCase()}</span>?
           </p>
-          <blockquote className="rounded-xl bg-navy p-5 text-paper">
-            <p className="text-lg">
-              <span style={{ color: CONDOLENCE.colors.lead }}>{text.lead} </span>
-              {text.name}
-            </p>
-            <p className="mt-3 text-base" style={{ color: CONDOLENCE.colors.message }}>{text.message}</p>
-          </blockquote>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
-            <dt className="text-muted-foreground">Who has passed away</dt>
-            <dd>{relation.label} of your colleague</dd>
-            <dt className="text-muted-foreground">Post will say</dt>
-            <dd>May {relation.pronoun} soul rest in eternal peace</dd>
-            <dt className="text-muted-foreground">Your colleague</dt>
-            <dd>{name.trim() || "—"}</dd>
-            <dt className="text-muted-foreground">Post will say</dt>
-            <dd>are with {firstName(name)} and {g.possessive} family</dd>
-          </dl>
-          <p className="text-sm text-warning">Once you download it, this post may be sent to a grieving family. There is no undo.</p>
           <div className="flex flex-wrap justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>Let me check again</Button>
+            <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>Let me check</Button>
             <Button
               type="button"
               onClick={() => {
@@ -203,7 +185,7 @@ export function CondolenceTool() {
                 setConfirmOpen(false);
               }}
             >
-              I have read it — enable download
+              Yes, it&apos;s correct
             </Button>
           </div>
         </div>
