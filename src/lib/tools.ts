@@ -53,6 +53,15 @@ export const TOOLS: ToolDef[] = [
 
   // ── HR ────────────────────────────────────────────────────────────────
   {
+    slug: "onboarding",
+    name: "Welcome Aboard",
+    description: "Onboarding post for a new joiner — name, designation and photo.",
+    teams: ["HR"],
+    category: "posts",
+    icon: "UserPlus",
+    component: () => import("@/tools/onboarding"),
+  },
+  {
     slug: "birthday",
     name: "Birthday",
     description: "Birthday posts for the month from the employee list — or create one by hand.",
