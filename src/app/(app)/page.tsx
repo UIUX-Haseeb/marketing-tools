@@ -46,7 +46,6 @@ function Section({ kicker, title, tools }: { kicker: string; title: string; tool
 
 export default function HomePage() {
   const posts = TOOLS.filter((t) => t.category === "posts");
-  const requests = TOOLS.filter((t) => t.category === "requests");
 
   return (
     <div className="space-y-12">
@@ -58,12 +57,11 @@ export default function HomePage() {
           <h1 className="text-display">
             Marketing tools for the whole team<span className="text-brand">.</span>
           </h1>
-          <p className="max-w-md text-sidebar-muted">Create on-brand posts in minutes, or send Marketing exactly what you need.</p>
+          <p className="max-w-md text-sidebar-muted">Create on-brand posts in minutes.</p>
         </div>
       </header>
 
       <Section kicker="Create" title="Posts" tools={posts} />
-      <Section kicker="Ask Marketing" title="Requests" tools={requests} />
     </div>
   );
 }

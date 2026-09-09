@@ -3,7 +3,7 @@
 Front-end-only Next.js 16 / TypeScript app for Provident Estate. Demo data, no auth, no DB, no env vars. Read README.md first.
 
 - Tools live in `src/tools/<slug>/` (self-contained, each with a README; see `src/tools/README.md`) and are registered in `src/lib/tools.ts`. Never hardcode tool lists elsewhere. Tool-specific code and assets stay inside the tool's folder; only truly shared code goes in `_shared/`.
-- Data: employees from `src/lib/demo/employees.ts`; requests + post log in `src/lib/store.ts` (localStorage). Keep the types in `src/lib/demo/types.ts` stable — they are the integration contract.
+- Data: employees from `src/lib/demo/employees.ts`; generated-post log in `src/lib/store.ts` (localStorage). No nav, no requests, no auth — the CRM shell provides those. Keep the types in `src/lib/demo/types.ts` stable — they are the integration contract.
 - UI: Tailwind v4 + primitives in `src/components/ui`. Brand tokens in `src/app/globals.css`; rules in STYLEGUIDE.md. Google Sans Flex only; weights 300 body / 400 headers / 500 tracked caps. Orange is an accent only. Keep screens simple.
 - Post engine in `src/tools/_shared/` is a faithful port — do not change template geometry or the font lock.
 - Next 16: route params/searchParams are Promises.

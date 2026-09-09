@@ -1,6 +1,6 @@
 # Prov Toys — Style guide for tool builders
 
-Live version: `/styleguide`. Tokens live in `src/app/globals.css`. Brand source: `Provident Guidelines Kit/`.
+Tokens live in `src/app/globals.css`. Brand source: `Provident Guidelines Kit/`.
 
 ## Principles
 - **Navy dominates, orange punctuates.** Orange (`text-brand` / `bg-brand`) is the dot — use it for one small accent per screen (active indicator, the trailing dot, a single hero CTA). Never for large fills or body text.

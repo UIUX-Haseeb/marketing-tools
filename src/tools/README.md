@@ -14,7 +14,6 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `birthday/` | Birthday post — month view over the employee list + manual form | `index.tsx` | `public/tools/birthday/` |
 | `baby/` | New Baby post (Boy / Girl) | `index.tsx` | `public/tools/baby/` |
 | `listing/` | Just Sold + Just Listed (one design, two headlines) | `just-sold.tsx`, `just-listed.tsx` | none (photo is uploaded) |
-| `custom-request/` | Request form to Marketing | `index.tsx` | none |
 
 ## Host contract (what the tools import from the app)
 
@@ -23,7 +22,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `@/components/ui/*` | Button, Input, Label, Select, Textarea | `src/components/ui/` | Map to your UI kit, or copy the folder (plain Tailwind, no deps beyond `class-variance-authority`, `clsx`, `tailwind-merge`, `@radix-ui/react-slot`) |
 | `@/lib/utils` → `cn()` | class merging | `src/lib/utils.ts` | copy (3 lines) |
 | `@/lib/demo/employees` → `EMPLOYEES`, `listEmployees()` | employee list (name, designation, DOB, photo) | demo data | **your CRM** — keep the `Employee` type from `src/lib/demo/types.ts` |
-| `@/lib/store` → `logGeneratedPost`, `addRequest`, … | persistence | localStorage | **your API** — same function signatures |
+| `@/lib/store` → `logGeneratedPost` | post log | localStorage | **your API** — same signature |
 | `lucide-react` | icons | npm | npm |
 
 Fonts: `_shared/font.ts` registers Google Sans Flex (300, 400-subset, 500) under a private family name via the FontFace API and refuses to export if a substitute font is detected. Keep the three woff2 files reachable at `/tools/_shared/fonts/` (or change `POST_FONT_URL` / `EXTRA_FACES`).

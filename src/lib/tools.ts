@@ -13,7 +13,7 @@
 import type { ComponentType } from "react";
 import type { Team } from "@/lib/teams";
 
-export type ToolCategory = "posts" | "requests" | "admin";
+export type ToolCategory = "posts";
 
 export interface ToolDef {
   slug: string;
@@ -95,16 +95,6 @@ export const TOOLS: ToolDef[] = [
     icon: "Flower2",
   },
 
-  // ── Shared: custom requests to Marketing ──────────────────────────────
-  {
-    slug: "custom-request",
-    name: "Custom Request",
-    description: "Anything else — videos, campaign ads, printed material, a post we don't have a tool for yet.",
-    teams: ["AGENTS", "HR", "LND", "OTHER", "MARKETING"],
-    category: "requests",
-    icon: "Send",
-    component: () => import("@/tools/custom-request"),
-  },
 ];
 
 export function getTool(slug: string) {

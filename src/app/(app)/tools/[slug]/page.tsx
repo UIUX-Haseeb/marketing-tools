@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getTool, TOOLS } from "@/lib/tools";
 import { ToolIcon } from "@/components/tool-icon";
-import { Button } from "@/components/ui/button";
 import { Mascot } from "@/components/mascot";
 
 export function generateStaticParams() {
@@ -46,11 +45,8 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
           <Mascot size={160} className="-mb-1" />
           <p className="font-normal">This tool is being built</p>
           <p className="max-w-sm text-sm text-muted-foreground">
-            {tool.owner ? `${tool.owner} is working on it.` : "It'll appear here when ready."} In the meantime you can send Marketing a custom request.
+            {tool.owner ? `${tool.owner} is working on it.` : "It'll appear here when ready."}
           </p>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/tools/custom-request">Send a custom request</Link>
-          </Button>
         </div>
       )}
     </div>

@@ -14,20 +14,6 @@ export type Employee = {
   active: boolean;
 };
 
-export type RequestStatus = "NEW" | "IN_PROGRESS" | "DONE" | "REJECTED";
-
-export type MarketingRequest = {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  dueDate: string | null;
-  status: RequestStatus;
-  requester: string;
-  team: string;
-  createdAt: string;
-};
-
 export type GeneratedPost = {
   id: string;
   tool: string;
