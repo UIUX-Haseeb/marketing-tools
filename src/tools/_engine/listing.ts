@@ -42,7 +42,7 @@ export type ListingInput = {
   agentTitle: string;
   headshot: Drawable | null;
   headshotTransform: PhotoTransform;
-  /** The agent's DLD QR permit image, or null to hide the QR slot. Drawn fit-inside the white tile. */
+  /** The agent's DLD QR permit image (mandatory for export; preview shows an empty tile until uploaded). */
   qr: Drawable | null;
   showPlaceholders?: boolean;
 };
@@ -234,14 +234,17 @@ export function renderListing(ctx: CanvasRenderingContext2D, input: ListingInput
     ctx.restore();
   }
 
-  // 6. QR tile (white rounded square with the code inside)
-  if (input.qr) {
+  // 6. QR tile (white rounded square with the DLD permit code inside)
+  if (input.qr || input.showPlaceholders) {
     const q = L.qr;
     ctx.save();
     roundedRect(ctx, q.x, q.y, q.size, q.size, q.radius);
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = input.qr ? "#FFFFFF" : "rgba(255,255,255,0.35)";
     ctx.fill();
     ctx.restore();
+  }
+  if (input.qr) {
+    const q = L.qr;
     // Fit the uploaded QR image inside the tile (keeps its aspect; most permit QRs are square).
     const { w: iw, h: ih } = drawableSize(input.qr);
     const inner = q.size - q.pad * 2;

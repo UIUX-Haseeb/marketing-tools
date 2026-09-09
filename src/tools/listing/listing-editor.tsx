@@ -128,6 +128,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   if (!price.trim()) problems.push("Add the price.");
   if (!agentName.trim()) problems.push("Add the agent name.");
   if (!headshot) problems.push("Add the agent headshot.");
+  if (!qr) problems.push("Upload your DLD permit QR — every listing post needs it.");
   const canGenerate = fontReady && problems.length === 0 && !busy;
 
   const stateKey = JSON.stringify([variant, !!photo, photoT, listing, price, agentName, agentTitle, !!headshot, headshotT, !!qr]);
@@ -224,9 +225,9 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
 
         {/* QR */}
         <div className="space-y-2 border-t pt-5">
-          <Label>DLD QR code <span className="text-muted-foreground">(optional)</span></Label>
+          <Label>DLD QR code</Label>
           <PhotoDropzone compact label={qr ? "Replace QR image" : "Upload your permit QR image"} onFile={load(setQr)} />
-          <p className="text-xs text-muted-foreground">The QR from your Dubai Land Department permit. Leave empty to hide the tile.</p>
+          <p className="text-xs text-muted-foreground">The QR from your Dubai Land Department permit — required on every listing post.</p>
         </div>
 
         {/* Generate */}
