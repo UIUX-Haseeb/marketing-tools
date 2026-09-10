@@ -29,12 +29,16 @@ const MANUAL = "__manual__";
 export function PromotionTool() {
   const [background, setBackground] = useState<HTMLImageElement | null>(null);
   const [frame, setFrame] = useState<HTMLImageElement | null>(null);
+  const [wordmark, setWordmark] = useState<HTMLImageElement | null>(null);
+  const [script, setScript] = useState<HTMLImageElement | null>(null);
   const [fontReady, setFontReady] = useState(false);
   const [fontError, setFontError] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
     loadImage(PROMOTION.assets.background).then((img) => alive && setBackground(img)).catch(() => alive && setFontError("Could not load the design artwork."));
     loadImage(PROMOTION.assets.frame).then((img) => alive && setFrame(img)).catch(() => {});
+    loadImage(PROMOTION.assets.wordmark).then((img) => alive && setWordmark(img)).catch(() => {});
+    loadImage(PROMOTION.assets.script).then((img) => alive && setScript(img)).catch(() => {});
     ensurePostFont().then((r) => {
       if (!alive) return;
       setFontReady(r.ok);
@@ -119,8 +123,8 @@ export function PromotionTool() {
   const ready = !!background && fontReady && problems.length === 0;
 
   const input = useMemo(
-    () => (background ? { background, frame, photo, photoTransform: photoT, name, title, showPlaceholders: true } : null),
-    [background, frame, photo, photoT, name, title],
+    () => (background ? { background, frame, wordmark, script, photo, photoTransform: photoT, name, title, showPlaceholders: true } : null),
+    [background, frame, wordmark, script, photo, photoT, name, title],
   );
   const stateKey = JSON.stringify([!!photo, useCutout && !!cutout, photoT, name, title]);
   const result = exported?.key === stateKey ? exported.result : null;

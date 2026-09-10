@@ -18,7 +18,10 @@ export const ONBOARDING = {
     background: "/tools/onboarding/background.png",
     /** Transparent PNG of the "bottom gradient" layer as it appears (1080×515), drawn at the bottom edge. */
     bottomFade: "/tools/onboarding/bottom-fade.png",
+    /** White "provident." wordmark, centred at the top (not in the Figma frame — added per brand). */
+    wordmark: "/tools/_shared/provident-wordmark-white.svg",
   },
+  wordmark: { x: 448, y: 78, w: 183.9, h: 36.4 },
   photo: { x: 245, y: 443, w: 622, h: 897 },
   fade: { h: 515 },
   headline: { text: "Welcome Aboard!", cy: 242.4, size: 87.9, weight: 400, color: "#FFFFFF", maxWidth: 960 },

@@ -5,6 +5,8 @@ import { PROMOTION } from "./template";
 export type PromotionInput = {
   background: Drawable;
   frame: Drawable | null;
+  wordmark: Drawable | null;
+  script: Drawable | null;
   photo: Drawable | null;
   photoTransform: PhotoTransform;
   name: string;
@@ -84,8 +86,10 @@ export function renderPromotion(ctx: CanvasRenderingContext2D, input: PromotionI
     ctx.restore();
   }
 
-  // 3. Frame outline above the photo
+  // 3. Frame outline above the photo, then the wordmark and the script headline
   if (input.frame) ctx.drawImage(input.frame, 0, 0, T.width, T.height);
+  if (input.wordmark) ctx.drawImage(input.wordmark, T.wordmark.x, T.wordmark.y, T.wordmark.w, T.wordmark.h);
+  if (input.script) ctx.drawImage(input.script, T.script.x, T.script.y, T.script.w, T.script.h);
 
   // 4. Text
   ctx.textAlign = "center";

@@ -5,6 +5,7 @@ import { ONBOARDING } from "./template";
 export type OnboardingInput = {
   background: Drawable;
   bottomFade: Drawable | null;
+  wordmark: Drawable | null;
   photo: Drawable | null;
   photoTransform: PhotoTransform;
   name: string;
@@ -74,6 +75,9 @@ export function renderOnboarding(ctx: CanvasRenderingContext2D, input: Onboardin
 
   // 3. Bottom fade over the photo
   if (input.bottomFade) ctx.drawImage(input.bottomFade, 0, T.height - T.fade.h, T.width, T.fade.h);
+
+  // 3b. Wordmark
+  if (input.wordmark) ctx.drawImage(input.wordmark, T.wordmark.x, T.wordmark.y, T.wordmark.w, T.wordmark.h);
 
   // 4. Text
   ctx.textAlign = "center";

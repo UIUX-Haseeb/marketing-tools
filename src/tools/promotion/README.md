@@ -6,6 +6,6 @@ Layers: `public/tools/promotion/background.png` (flattened: navy gradient, circl
 
 Fields: pick from the employee list (prefills name + photo — the designation field stays empty because it's the *new* role) or type manually; photo upload with size slider + drag. Background removal runs automatically on upload (`_shared/remove-bg.ts`), with the robot overlay and a Removed / Original toggle.
 
-**Assets:** the two PNGs in `public/tools/promotion/` are code-generated stand-ins. Export the real layers from Figma at 1× (1152×1440) and replace them, same file names: `background.png` = everything except the "profile frame" layer and the two editable texts; `frame.png` = the "profile frame" layer alone on a transparent canvas.
+**Assets:** the two PNGs in `public/tools/promotion/` are code-generated stand-ins. Export the real layers from Figma at 1× (1152×1440) and replace them, same file names: `background.png` = everything except the "profile frame", "prov logo", "Congratulations" layers and the two editable texts (the logo and script are drawn from SVG by code); `frame.png` = the "profile frame" layer alone on a transparent canvas.
 
 Depends on: `_shared/` (font, export, remove-bg, `PhotoDropzone`, `Counter`), `@/lib/demo/employees`, `@/lib/store`, `@/components/ui/{button,input,label,select}`, `@/lib/utils`.

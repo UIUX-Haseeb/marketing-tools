@@ -29,12 +29,14 @@ const MANUAL = "__manual__";
 export function OnboardingTool() {
   const [background, setBackground] = useState<HTMLImageElement | null>(null);
   const [bottomFade, setBottomFade] = useState<HTMLImageElement | null>(null);
+  const [wordmark, setWordmark] = useState<HTMLImageElement | null>(null);
   const [fontReady, setFontReady] = useState(false);
   const [fontError, setFontError] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
     loadImage(ONBOARDING.assets.background).then((img) => alive && setBackground(img)).catch(() => alive && setFontError("Could not load the design artwork."));
     loadImage(ONBOARDING.assets.bottomFade).then((img) => alive && setBottomFade(img)).catch(() => {});
+    loadImage(ONBOARDING.assets.wordmark).then((img) => alive && setWordmark(img)).catch(() => {});
     ensurePostFont().then((r) => {
       if (!alive) return;
       setFontReady(r.ok);
@@ -120,8 +122,8 @@ export function OnboardingTool() {
   const ready = !!background && fontReady && problems.length === 0;
 
   const input = useMemo(
-    () => (background ? { background, bottomFade, photo, photoTransform: photoT, name, title, showPlaceholders: true } : null),
-    [background, bottomFade, photo, photoT, name, title],
+    () => (background ? { background, bottomFade, wordmark, photo, photoTransform: photoT, name, title, showPlaceholders: true } : null),
+    [background, bottomFade, wordmark, photo, photoT, name, title],
   );
   const stateKey = JSON.stringify([!!photo, useCutout && !!cutout, photoT, name, title]);
   const result = exported?.key === stateKey ? exported.result : null;
