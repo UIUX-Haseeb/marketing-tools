@@ -15,6 +15,8 @@ export const LISTING = {
   height: 1440,
   wordmark: { text: "provident.", cx: 540, cy: 114, size: 41, weight: 300 },
   headline: { cy: 259, size: 140, weight: 400, tracking: -7, maxWidth: 960 },
+  /** Navy scrim behind the wordmark + headline so they stay readable over a bright/white sky. */
+  topScrim: { h: 520, color: "26,41,66", alpha: 0.72 },
   card: { x: 59.5, y: 1004.5, w: 960, h: 377, radius: 24, fill: "rgba(26,41,66,0.5)", border: "rgba(255,255,255,0.33)", blur: 6.55 },
   // Left column starts at card.x + 50 padding.
   col: { x: 109.5, w: 536 },
@@ -140,6 +142,17 @@ export function renderListing(ctx: CanvasRenderingContext2D, input: ListingInput
     ctx.drawImage(input.photo, r.x, r.y, r.w, r.h);
   } else if (input.showPlaceholders) {
     drawPhotoPlaceholder(ctx);
+  }
+
+  // 1b. Top scrim — eased navy → transparent, so white skies don't wash out the headline
+  {
+    const g = ctx.createLinearGradient(0, 0, 0, L.topScrim.h);
+    for (let i = 0; i <= 8; i++) {
+      const t = i / 8;
+      g.addColorStop(t, `rgba(${L.topScrim.color},${(L.topScrim.alpha * (1 - t) * (1 - t)).toFixed(3)})`);
+    }
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, L.width, L.topScrim.h);
   }
 
   // 2. Wordmark + headline
