@@ -107,5 +107,8 @@ export function renderPromotion(ctx: CanvasRenderingContext2D, input: PromotionI
     ctx.font = font(T.promo.weight, fitted(ctx, line, T.promo.weight, T.promo.size, T.promo.minSize, T.promo.maxWidth));
     ctx.fillText(line, T.width / 2, T.promo.cy);
   }
+  ctx.fillStyle = T.closing.color;
+  ctx.font = font(T.closing.weight, T.closing.size);
+  T.closing.lines.forEach((line, i) => ctx.fillText(line, T.width / 2, T.closing.cy[i]));
   ctx.restore();
 }
