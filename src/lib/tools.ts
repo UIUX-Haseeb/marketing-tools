@@ -82,10 +82,11 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "promotion",
     name: "Promotion",
-    description: "Announce a promotion or new role.",
+    description: "Congratulations post for a colleague's promotion — name, new designation and photo.",
     teams: ["HR"],
     category: "posts",
     icon: "TrendingUp",
+    component: () => import("@/tools/promotion"),
   },
   {
     slug: "marriage",
