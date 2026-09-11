@@ -15,6 +15,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `baby/` | New Baby post (Boy / Girl) | `index.tsx` | `public/tools/baby/` |
 | `onboarding/` | Welcome Aboard post for new joiners | `index.tsx` | `public/tools/onboarding/` |
 | `promotion/` | Promotion congratulations post (name, new designation, cutout photo) | `index.tsx` | `public/tools/promotion/` |
+| `marriage/` | Marriage / engagement congratulations (name, designation, he/she + occasion wording) | `index.tsx` | `public/tools/marriage/` |
 | `condolence/` | Condolence post with read-before-download gate | `index.tsx` | `public/tools/condolence/` |
 | `listing/` | Just Sold + Just Listed (one design, two headlines) | `just-sold.tsx`, `just-listed.tsx` | none (photo is uploaded) |
 

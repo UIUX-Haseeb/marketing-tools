@@ -91,10 +91,11 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "marriage",
     name: "Marriage",
-    description: "Congratulations post for a wedding.",
+    description: "Congratulations post for a colleague's wedding or engagement.",
     teams: ["HR"],
     category: "posts",
     icon: "Heart",
+    component: () => import("@/tools/marriage"),
   },
   {
     slug: "condolence",

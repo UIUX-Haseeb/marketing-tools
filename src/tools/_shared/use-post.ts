@@ -37,8 +37,9 @@ export async function toDrawable(src: Blob | string): Promise<HTMLImageElement> 
   try {
     return await loadImage(url);
   } catch {
-    URL.revokeObjectURL(url);
     throw new Error("That file could not be opened as an image.");
+  } finally {
+    URL.revokeObjectURL(url);
   }
 }
 
