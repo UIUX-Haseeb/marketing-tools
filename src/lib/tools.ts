@@ -50,6 +50,15 @@ export const TOOLS: ToolDef[] = [
     icon: "BadgeCheck",
     component: () => import("@/tools/listing/just-sold"),
   },
+  {
+    slug: "google-review",
+    name: "Google Review",
+    description: "Turn a client's Google review into a shareable post — quote, reviewer, agent and headshot.",
+    teams: ["AGENTS", "MARKETING"],
+    category: "posts",
+    icon: "Star",
+    component: () => import("@/tools/google-review"),
+  },
 
   // ── HR ────────────────────────────────────────────────────────────────
   {
