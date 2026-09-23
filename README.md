@@ -44,13 +44,13 @@ public/mascot/               Mascot renders
 2. Register it in `src/lib/tools.ts` with `component: () => import("@/tools/<slug>")`. Without `component` it shows as "Coming soon".
 3. Follow **STYLEGUIDE.md** (tokens, type weights, layout) and use the primitives in `src/components/ui`.
 
-## Post tools (Birthday, New Baby, Just Sold, Just Listed)
+## Post tools (Birthday, New Baby, Just Sold, Just Listed, Just Rented)
 
 Shared engine in `src/tools/_shared/`, ported 1:1 from the original General Post Generator: locked geometry per template, the bundled Google Sans Flex 400 subset with a fingerprint check (posts are never rendered with a substitute font), fit-to-width text, circular photo crop with zoom/nudge/drag, PNG export that falls back to a byte-budgeted JPEG (custom encoder), and a ZIP writer for "Export all".
 
 - **Birthday** — month view over the employee list, live-rendered cards, per-post Adjust/Download, Export all as ZIP, "Create new" manual form for people not in the list.
 - **New Baby** — It's a Boy / It's a Girl, name only.
-- **Just Sold / Just Listed** — property photo, listing line, price, agent (prefilled, editable), mandatory DLD QR image. Both in `src/tools/listing/`.
+- **Just Sold / Just Listed / Just Rented** — property photo, bedrooms/bathrooms/sqft (Just Listed only), property type, location, price, agent (prefilled, editable), mandatory DLD QR image. A Classic/Minimal design picker on each. All three in `src/tools/listing/`.
 
 The design tokens and rules for building new tools are documented in **STYLEGUIDE.md** (repo only — not shown in the app).
 

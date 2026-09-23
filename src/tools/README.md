@@ -17,7 +17,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `promotion/` | Promotion congratulations post (name, new designation, cutout photo) | `index.tsx` | `public/tools/promotion/` |
 | `marriage/` | Marriage / engagement congratulations (name, designation, he/she + occasion wording) | `index.tsx` | `public/tools/marriage/` |
 | `condolence/` | Condolence post with read-before-download gate | `index.tsx` | `public/tools/condolence/` |
-| `listing/` | Just Sold + Just Listed (one design, two headlines) | `just-sold.tsx`, `just-listed.tsx` | none (photo is uploaded) |
+| `listing/` | Just Sold + Just Listed + Just Rented (two layouts each, Classic/Minimal) | `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx` | none (photo is uploaded) |
 
 ## Host contract (what the tools import from the app)
 

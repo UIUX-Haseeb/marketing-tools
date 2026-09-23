@@ -51,6 +51,15 @@ export const TOOLS: ToolDef[] = [
     component: () => import("@/tools/listing/just-sold"),
   },
   {
+    slug: "just-rented",
+    name: "Just Rented",
+    description: "Create a Just Rented post for a leased property.",
+    teams: ["AGENTS"],
+    category: "posts",
+    icon: "KeyRound",
+    component: () => import("@/tools/listing/just-rented"),
+  },
+  {
     slug: "google-review",
     name: "Google Review",
     description: "Turn a client's Google review into a shareable post — quote, reviewer, agent and headshot.",
