@@ -21,13 +21,38 @@ import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
 import { preloadBackgroundRemoval, removeBackground, type RemoveBgProgress } from "@/tools/_shared/remove-bg";
 import { BgRemovalOverlay } from "@/tools/_shared/bg-removal-overlay";
 import { photoRect, renderPromotion } from "./render";
-import { PROMOTION } from "./template";
+import { PROMOTION, PROMOTION_DESIGNS, PROMOTION_EXECUTIVE, type PromotionDesign } from "./template";
 
 const TOOL = "promotion";
 const MANUAL = "__manual__";
 
+/** Design picker — one shared field set, two layouts. Mirrors listing-editor.tsx's DesignPicker. */
+function DesignPicker({ value, onChange }: { value: PromotionDesign; onChange: (v: PromotionDesign) => void }) {
+  return (
+    <div className="space-y-2">
+      <Label>Design</Label>
+      <div role="radiogroup" aria-label="Design" className="flex flex-wrap gap-1.5">
+        {PROMOTION_DESIGNS.map((d) => (
+          <button
+            key={d.id}
+            type="button"
+            role="radio"
+            aria-checked={d.id === value}
+            onClick={() => onChange(d.id)}
+            className={cn("h-8 rounded-full border px-3 text-sm transition-colors", d.id === value ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-navy-2/60 hover:text-foreground")}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function PromotionTool() {
-  const [background, setBackground] = useState<HTMLImageElement | null>(null);
+  const [design, setDesign] = useState<PromotionDesign>("standard");
+  const [loadedBackground, setLoadedBackground] = useState<{ design: PromotionDesign; img: HTMLImageElement } | null>(null);
+  const background = loadedBackground?.design === design ? loadedBackground.img : null;
   const [frame, setFrame] = useState<HTMLImageElement | null>(null);
   const [wordmark, setWordmark] = useState<HTMLImageElement | null>(null);
   const [script, setScript] = useState<HTMLImageElement | null>(null);
@@ -35,7 +60,6 @@ export function PromotionTool() {
   const [fontError, setFontError] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
-    loadImage(PROMOTION.assets.background).then((img) => alive && setBackground(img)).catch(() => alive && setFontError("Could not load the design artwork."));
     loadImage(PROMOTION.assets.frame).then((img) => alive && setFrame(img)).catch(() => {});
     loadImage(PROMOTION.assets.wordmark).then((img) => alive && setWordmark(img)).catch(() => {});
     loadImage(PROMOTION.assets.script).then((img) => alive && setScript(img)).catch(() => {});
@@ -49,10 +73,19 @@ export function PromotionTool() {
       alive = false;
     };
   }, []);
+  useEffect(() => {
+    let alive = true;
+    const src = design === "executive" ? PROMOTION_EXECUTIVE.assets.background : PROMOTION.assets.background;
+    loadImage(src).then((img) => alive && setLoadedBackground({ design, img })).catch(() => alive && setFontError("Could not load the design artwork."));
+    return () => {
+      alive = false;
+    };
+  }, [design]);
 
   const [employeeId, setEmployeeId] = useState<string>(MANUAL);
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
+  const [department, setDepartment] = useState("");
   // `original` is what was uploaded, `cutout` the same photo with the background removed.
   const [original, setOriginal] = useState<Drawable | null>(null);
   const [cutout, setCutout] = useState<Drawable | null>(null);
@@ -112,21 +145,27 @@ export function PromotionTool() {
     setRemoving(false);
   }
 
-  const bad = useMemo(() => [...unsupportedCharacters(name), ...unsupportedCharacters(title)], [name, title]);
+  const isExecutive = design === "executive";
+  const titleMaxChars = isExecutive ? PROMOTION_EXECUTIVE.role.maxChars : PROMOTION.promo.maxChars;
+  const photoBox = isExecutive ? PROMOTION_EXECUTIVE.photo : PROMOTION.photo;
+
+  const bad = useMemo(() => [...unsupportedCharacters(name), ...unsupportedCharacters(title), ...unsupportedCharacters(department)], [name, title, department]);
   const problems: string[] = [];
   if (!photo) problems.push("Upload your colleague's photo.");
   if (!name.trim()) problems.push("Add the name.");
   if (name.length > PROMOTION.name.maxChars) problems.push(`The name is over ${PROMOTION.name.maxChars} characters.`);
   if (!title.trim()) problems.push("Add the new designation.");
-  if (title.length > PROMOTION.promo.maxChars) problems.push(`The designation is over ${PROMOTION.promo.maxChars} characters.`);
+  if (title.length > titleMaxChars) problems.push(`The designation is over ${titleMaxChars} characters.`);
+  if (isExecutive && !department.trim()) problems.push("Add the department.");
+  if (isExecutive && department.length > PROMOTION_EXECUTIVE.department.maxChars) problems.push(`The department is over ${PROMOTION_EXECUTIVE.department.maxChars} characters.`);
   if (bad.length) problems.push(`The font can't draw: ${bad.join(" ")}`);
   const ready = !!background && fontReady && problems.length === 0;
 
   const input = useMemo(
-    () => (background ? { background, frame, wordmark, script, photo, photoTransform: photoT, name, title, showPlaceholders: true } : null),
-    [background, frame, wordmark, script, photo, photoT, name, title],
+    () => (background ? { design, background, frame, wordmark, script, photo, photoTransform: photoT, name, title, department, showPlaceholders: true } : null),
+    [design, background, frame, wordmark, script, photo, photoT, name, title, department],
   );
-  const stateKey = JSON.stringify([!!photo, useCutout && !!cutout, photoT, name, title]);
+  const stateKey = JSON.stringify([design, !!photo, useCutout && !!cutout, photoT, name, title, department]);
   const result = exported?.key === stateKey ? exported.result : null;
 
   // Live preview
@@ -165,8 +204,9 @@ export function PromotionTool() {
       renderPromotion(ctx, { ...input, showPlaceholders: false }, 1);
       const out = await encodeCanvas(canvas);
       setExported({ key: stateKey, result: out });
-      downloadBlob(out.blob, safeFileName(PROMOTION, name, out.extension));
-      logGeneratedPost({ tool: TOOL, templateId: PROMOTION.id, subject: name.trim(), source: employeeId === MANUAL ? "manual" : "demo", employeeId: employeeId === MANUAL ? undefined : employeeId, format: out.extension, bytes: out.bytes });
+      const T = isExecutive ? PROMOTION_EXECUTIVE : PROMOTION;
+      downloadBlob(out.blob, safeFileName(T, name, out.extension));
+      logGeneratedPost({ tool: TOOL, templateId: T.id, subject: name.trim(), source: employeeId === MANUAL ? "manual" : "demo", employeeId: employeeId === MANUAL ? undefined : employeeId, format: out.extension, bytes: out.bytes });
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -177,6 +217,8 @@ export function PromotionTool() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_1fr]">
       <div className="space-y-6">
+        <DesignPicker value={design} onChange={(d) => { setDesign(d); setPhotoT(IDENTITY_TRANSFORM); }} />
+
         <div className="space-y-2">
           <Label htmlFor="pr-employee">Colleague</Label>
           <Select id="pr-employee" value={employeeId} onChange={(e) => selectEmployee(e.target.value)}>
@@ -197,11 +239,21 @@ export function PromotionTool() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="pr-title">New designation</Label>
-              <Counter value={title} max={PROMOTION.promo.maxChars} />
+              <Counter value={title} max={titleMaxChars} />
             </div>
             <Input id="pr-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Chief Technology Officer" autoComplete="off" />
           </div>
         </div>
+
+        {isExecutive && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="pr-department">Department</Label>
+              <Counter value={department} max={PROMOTION_EXECUTIVE.department.maxChars} />
+            </div>
+            <Input id="pr-department" value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="e.g. Secondary Sales" autoComplete="off" />
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label>Photo</Label>
@@ -231,7 +283,7 @@ export function PromotionTool() {
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <label htmlFor="pr-size" className="w-8 shrink-0">Size</label>
               <Minus className="size-3" />
-              <input id="pr-size" type="range" min={1} max={3} step={0.01} value={photoT.zoom} onChange={(e) => setPhotoT((t) => photoRect(photo, { ...t, zoom: Number(e.target.value) }).clamped)} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-navy" />
+              <input id="pr-size" type="range" min={1} max={3} step={0.01} value={photoT.zoom} onChange={(e) => setPhotoT((t) => photoRect(photo, photoBox, { ...t, zoom: Number(e.target.value) }).clamped)} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-navy" />
               <Plus className="size-3" />
               <button type="button" onClick={() => setPhotoT(IDENTITY_TRANSFORM)} className="ml-1 underline-offset-4 hover:text-foreground hover:underline">Reset</button>
             </div>
@@ -264,7 +316,7 @@ export function PromotionTool() {
               const k = PROMOTION.width / e.currentTarget.getBoundingClientRect().width;
               const dx = (e.clientX - drag.current.x) * k;
               const dy = (e.clientY - drag.current.y) * k;
-              setPhotoT((t) => photoRect(photo, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
+              setPhotoT((t) => photoRect(photo, photoBox, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
               drag.current = { x: e.clientX, y: e.clientY };
             }}
             onPointerUp={() => (drag.current = null)}
