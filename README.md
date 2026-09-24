@@ -50,7 +50,7 @@ Shared engine in `src/tools/_shared/`, ported 1:1 from the original General Post
 
 - **Birthday** — month view over the employee list, live-rendered cards, per-post Adjust/Download, Export all as ZIP, "Create new" manual form for people not in the list.
 - **New Baby** — It's a Boy / It's a Girl, name only.
-- **Just Sold / Just Listed / Just Rented** — property photo, bedrooms/bathrooms/sqft (Just Listed only), property type, location, price, agent (prefilled, editable), mandatory DLD QR image. A Classic/Minimal design picker on each. All three in `src/tools/listing/`.
+- **Just Sold / Just Listed / Just Rented** — property photo, bedrooms/bathrooms/sqft (Just Listed only), property type, location, price, agent (prefilled, editable), mandatory DLD QR image. Classic/Minimal design and Post/Story format pickers on each. All three in `src/tools/listing/`.
 
 The design tokens and rules for building new tools are documented in **STYLEGUIDE.md** (repo only — not shown in the app).
 

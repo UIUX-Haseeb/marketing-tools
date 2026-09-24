@@ -16,7 +16,7 @@ import { logGeneratedPost } from "@/lib/store";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import { ensurePostFont, isPostFontReady } from "@/tools/_shared/font";
 import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
-import { coverRect, headshotBoxFor, HEADLINES, LISTING, LISTING_DESIGNS, LISTING_LIMITS, PHOTO_BOX, renderListing, type ListingDesign, type ListingVariant } from "./listing";
+import { canvasSize, coverRect, headshotBoxFor, HEADLINES, LISTING_DESIGNS, LISTING_FORMATS, LISTING_LIMITS, photoBoxFor, renderListing, type ListingDesign, type ListingFormat, type ListingVariant } from "./listing";
 import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_shared/export";
 import { toDrawable } from "@/tools/_shared/use-post";
 import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
@@ -39,6 +39,29 @@ function DesignPicker({ value, onChange }: { value: ListingDesign; onChange: (v:
             className={cn("h-8 rounded-full border px-3 text-sm transition-colors", d.id === value ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-navy-2/60 hover:text-foreground")}
           >
             {d.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Format picker — same content, two canvas sizes. */
+function FormatPicker({ value, onChange }: { value: ListingFormat; onChange: (v: ListingFormat) => void }) {
+  return (
+    <div className="space-y-2">
+      <Label>Format</Label>
+      <div role="radiogroup" aria-label="Format" className="flex flex-wrap gap-1.5">
+        {LISTING_FORMATS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            role="radio"
+            aria-checked={f.id === value}
+            onClick={() => onChange(f.id)}
+            className={cn("h-8 rounded-full border px-3 text-sm transition-colors", f.id === value ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-navy-2/60 hover:text-foreground")}
+          >
+            {f.label}
           </button>
         ))}
       </div>
@@ -73,6 +96,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   const showBedBathSqft = variant === "just-listed";
 
   const [design, setDesign] = useState<ListingDesign>("classic");
+  const [format, setFormat] = useState<ListingFormat>("post");
   const [photo, setPhoto] = useState<Drawable | null>(null);
   const [photoT, setPhotoT] = useState<PhotoTransform>(IDENTITY_TRANSFORM);
   const [bedrooms, setBedrooms] = useState("");
@@ -116,9 +140,12 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   }, []);
 
   const input = useMemo(
-    () => ({ variant, design, photo, photoTransform: photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, headshot, headshotTransform: headshotT, qr, showPlaceholders: true }),
-    [variant, design, photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, headshot, headshotT, qr],
+    () => ({ variant, design, format, photo, photoTransform: photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, headshot, headshotTransform: headshotT, qr, showPlaceholders: true }),
+    [variant, design, format, photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, headshot, headshotT, qr],
   );
+
+  const size = canvasSize(format);
+  const photoBox = photoBoxFor(format);
 
   // Live preview
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -126,10 +153,10 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
     const canvas = canvasRef.current;
     if (!canvas || !fontReady) return;
     const frame = requestAnimationFrame(() => {
-      const scale = Math.min(1, 1080 / LISTING.height);
+      const scale = Math.min(1, 1080 / size.height);
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      const w = Math.round(LISTING.width * scale * dpr);
-      const h = Math.round(LISTING.height * scale * dpr);
+      const w = Math.round(size.width * scale * dpr);
+      const h = Math.round(size.height * scale * dpr);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -138,21 +165,21 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
       if (ctx) renderListing(ctx, input, scale * dpr);
     });
     return () => cancelAnimationFrame(frame);
-  }, [input, fontReady]);
+  }, [input, fontReady, size.width, size.height]);
 
-  const headshotBox = headshotBoxFor(variant, design);
+  const headshotBox = headshotBoxFor(variant, design, format);
 
   // Drag in the preview: inside the headshot circle moves the headshot, anywhere else moves the property photo.
   const drag = useRef<{ x: number; y: number; target: "photo" | "headshot" } | null>(null);
   function hitTarget(e: React.PointerEvent<HTMLCanvasElement>): "photo" | "headshot" {
     const r = e.currentTarget.getBoundingClientRect();
-    const k = LISTING.width / r.width;
+    const k = size.width / r.width;
     const x = (e.clientX - r.left) * k;
     const y = (e.clientY - r.top) * k;
     return headshot && Math.hypot(x - headshotBox.cx, y - headshotBox.cy) <= headshotBox.w / 2 ? "headshot" : "photo";
   }
   function moveBy(target: "photo" | "headshot", dx: number, dy: number) {
-    if (target === "photo" && photo) setPhotoT((t) => coverRect(photo, PHOTO_BOX, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
+    if (target === "photo" && photo) setPhotoT((t) => coverRect(photo, photoBox, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
     if (target === "headshot" && headshot) setHeadshotT((t) => coverRect(headshot, headshotBox, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
   }
 
@@ -169,7 +196,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   if (!qr) problems.push("Upload your DLD permit QR — every listing post needs it.");
   const canGenerate = fontReady && problems.length === 0 && !busy;
 
-  const stateKey = JSON.stringify([variant, design, !!photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, !!headshot, headshotT, !!qr]);
+  const stateKey = JSON.stringify([variant, design, format, !!photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, !!headshot, headshotT, !!qr]);
   const result = exported?.key === stateKey ? exported.result : null;
 
   async function generate() {
@@ -178,8 +205,8 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
     setError(null);
     try {
       const canvas = document.createElement("canvas");
-      canvas.width = LISTING.width;
-      canvas.height = LISTING.height;
+      canvas.width = size.width;
+      canvas.height = size.height;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("Canvas is not available in this browser.");
       renderListing(ctx, { ...input, showPlaceholders: false }, 1);
@@ -209,12 +236,13 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
     <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_1fr]">
       <div className="space-y-6">
         <DesignPicker value={design} onChange={(d) => { setDesign(d); setHeadshotT(IDENTITY_TRANSFORM); }} />
+        <FormatPicker value={format} onChange={(f) => { setFormat(f); setPhotoT(IDENTITY_TRANSFORM); setHeadshotT(IDENTITY_TRANSFORM); }} />
 
         {/* Property */}
         <div className="space-y-2">
           <Label>Property photo</Label>
           <PhotoDropzone compact={!!photo} label={photo ? "Replace photo" : undefined} onFile={load(setPhoto, () => setPhotoT(IDENTITY_TRANSFORM))} />
-          {photo && <SizeRow id="photo-size" transform={photoT} onZoom={(z) => setPhotoT((t) => coverRect(photo, PHOTO_BOX, { ...t, zoom: z }).clamped)} onReset={() => setPhotoT(IDENTITY_TRANSFORM)} />}
+          {photo && <SizeRow id="photo-size" transform={photoT} onZoom={(z) => setPhotoT((t) => coverRect(photo, photoBox, { ...t, zoom: z }).clamped)} onReset={() => setPhotoT(IDENTITY_TRANSFORM)} />}
         </div>
 
         <div className={cn("grid gap-3", showBedBathSqft ? "grid-cols-3" : "grid-cols-1")}>
@@ -321,13 +349,13 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
           <Button type="button" onClick={generate} disabled={!canGenerate}>
             <Download /> {busy ? "Generating…" : result ? "Download again" : `Generate ${HEADLINES[variant]} Post`}
           </Button>
-          {result && <p className="text-xs text-muted-foreground">Saved as {result.format.toUpperCase()} · {formatBytes(result.bytes)} · {LISTING.width}×{LISTING.height}</p>}
+          {result && <p className="text-xs text-muted-foreground">Saved as {result.format.toUpperCase()} · {formatBytes(result.bytes)} · {size.width}×{size.height}</p>}
         </div>
       </div>
 
       {/* Preview */}
       <div className="space-y-2">
-        <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${LISTING.width} / ${LISTING.height}` }}>
+        <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${size.width} / ${size.height}` }}>
           <canvas
             ref={canvasRef}
             className={cn("block h-full w-full touch-none", (photo || headshot) && "cursor-grab active:cursor-grabbing")}
@@ -338,7 +366,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
             }}
             onPointerMove={(e) => {
               if (!drag.current) return;
-              const k = LISTING.width / e.currentTarget.getBoundingClientRect().width;
+              const k = size.width / e.currentTarget.getBoundingClientRect().width;
               moveBy(drag.current.target, (e.clientX - drag.current.x) * k, (e.clientY - drag.current.y) * k);
               drag.current = { ...drag.current, x: e.clientX, y: e.clientY };
             }}
