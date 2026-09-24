@@ -298,9 +298,16 @@ function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D) {
   ctx.fillText("Property photo", LISTING.width / 2, 640);
 }
 
-/** Flat navy → transparent gradient, `h` tall starting at `y`: solid through `flatTo`, then a straight linear fade to 0. The one shape behind every scrim on both designs — see TOP_SCRIM's comment. */
-function scrimGradient(ctx: CanvasRenderingContext2D, y: number, s: { h: number; color: string; flatAlpha: number; flatTo: number }) {
-  const g = ctx.createLinearGradient(0, y, 0, y + s.h);
+/**
+ * Flat navy → transparent gradient, `h` tall starting at `y`: solid through `flatTo`, then a
+ * straight linear fade to 0. The one shape behind every scrim on both designs — see
+ * TOP_SCRIM's comment. `anchor: "top"` (the default) is solid at `y` and fades out going
+ * down, for scrims that sit at the top of the canvas; `anchor: "bottom"` flips that — solid
+ * at `y + h` and fading out going up — for MINIMAL_BOTTOM_SCRIM, which grounds the
+ * headshot/agent block against the bottom edge rather than fading into it.
+ */
+function scrimGradient(ctx: CanvasRenderingContext2D, y: number, s: { h: number; color: string; flatAlpha: number; flatTo: number }, anchor: "top" | "bottom" = "top") {
+  const g = anchor === "top" ? ctx.createLinearGradient(0, y, 0, y + s.h) : ctx.createLinearGradient(0, y + s.h, 0, y);
   g.addColorStop(0, `rgba(${s.color},${s.flatAlpha})`);
   g.addColorStop(s.flatTo, `rgba(${s.color},${s.flatAlpha})`);
   g.addColorStop(1, `rgba(${s.color},0)`);
@@ -503,11 +510,11 @@ function renderMinimal(ctx: CanvasRenderingContext2D, input: ListingInput) {
   drawPhoto(ctx, input);
 
   // Top scrim behind the headline/tagline/chips/listing line/price, and a second, softer
-  // scrim low on the canvas behind the headshot/agent block — minimal has no card, so both
-  // ends of the text need their own contrast against the photo.
+  // scrim low on the canvas grounding the headshot/agent block against the bottom edge —
+  // minimal has no card, so both ends of the text need their own contrast against the photo.
   ctx.fillStyle = scrimGradient(ctx, 0, MINIMAL_SCRIM);
   ctx.fillRect(0, 0, L.width, MINIMAL_SCRIM.h);
-  ctx.fillStyle = scrimGradient(ctx, MINIMAL_BOTTOM_SCRIM.y, MINIMAL_BOTTOM_SCRIM);
+  ctx.fillStyle = scrimGradient(ctx, MINIMAL_BOTTOM_SCRIM.y, MINIMAL_BOTTOM_SCRIM, "bottom");
   ctx.fillRect(0, MINIMAL_BOTTOM_SCRIM.y, L.width, MINIMAL_BOTTOM_SCRIM.h);
 
   ctx.fillStyle = L.color;
