@@ -71,11 +71,17 @@ const SCRIM_COLOR = "26,41,66";
  * Just Listed's stack is denser but its headline/price also run smaller to compensate) AND a
  * second `MINIMAL_BOTTOM_SCRIM` low on the canvas for the headshot/agent block, which classic
  * doesn't need because that block sits on the card there too.
+ *
+ * `MINIMAL_BOTTOM_SCRIM`'s `flatTo` runs past Figma's own measured value (0.24): that scrim's
+ * literal Figma shape fades out by y≈1168, well above the agent name (cy 1293) and title (cy
+ * 1347), so on an evenly bright photo those two lines lose their contrast right before the
+ * fade reaches the canvas edge. Extending the flat run to cover both lines (and the QR tile,
+ * which is opaque anyway) keeps the whole block readable regardless of what photo sits under it.
  */
 const TOP_SCRIM = { h: 419, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
 const TOP_SCRIM_CHIPS = { h: 663, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
 const MINIMAL_SCRIM = { h: 628, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
-const MINIMAL_BOTTOM_SCRIM = { y: 1083, h: 355, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.24 } as const;
+const MINIMAL_BOTTOM_SCRIM = { y: 1083, h: 357, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.8 } as const;
 const CHIP_STYLE = { h: 54, padX: 20, radius: 10, gap: 14, size: 17, weight: 500, tracking: 17 * 0.14, border: "rgba(255,255,255,1)", borderWidth: 0.5 } as const;
 /** "minimal" only — wordmark + agent/headshot block sit at this left edge; headline/tagline/chips/listing line/price are right-aligned to this edge. */
 const MINIMAL_LEFT = 98;

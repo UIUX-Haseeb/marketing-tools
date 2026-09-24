@@ -58,8 +58,11 @@ lower text sits on the frosted card while minimal's doesn't:
 - **Minimal** — no card, so both ends of the text stack need their own contrast: `MINIMAL_SCRIM`
   (628px from the top, same for all three variants — Just Listed's headline/price run smaller
   to compensate for its denser stack) behind the headline→price column, plus
-  `MINIMAL_BOTTOM_SCRIM` (355px, starting at y=1083, weaker at 60% flat opacity) behind the
-  headshot/agent block near the foot.
+  `MINIMAL_BOTTOM_SCRIM` (357px, starting at y=1083, weaker at 60% flat opacity) behind the
+  headshot/agent block near the foot. Its `flatTo` (0.8) runs past what's actually in Figma
+  (0.24, which fades out by y≈1168 — above the agent name/title) so the flat run keeps the
+  whole block, agent name and title included, protected on an evenly bright photo instead of
+  just the top of the headshot.
 
 Depends on: `_shared/` (font, render helpers, export, `PhotoDropzone`, `Counter`), `@/lib/demo/employees` (`EMPLOYEES` — replace with the CRM), `@/lib/store` (`logGeneratedPost`), `@/components/ui/{button,input,label,select}`, `@/lib/utils`.
 
