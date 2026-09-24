@@ -20,7 +20,7 @@ import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/
 import { downloadBlob, encodeCanvas, formatBytes, safeFileName, type ExportResult } from "@/tools/_shared/export";
 import { toDrawable } from "@/tools/_shared/use-post";
 import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
-import { coverRect, HEADSHOT_BOX, REVIEW, REVIEW_LIMITS, renderReview } from "./review";
+import { canvasSize, coverRect, headshotBoxFor, REVIEW, REVIEW_FORMATS, REVIEW_LIMITS, renderReview, reviewGeometryFor, type ReviewFormat } from "./review";
 
 const MANUAL = "__manual__";
 
@@ -33,6 +33,29 @@ function SizeRow({ id, transform, onZoom, onReset }: { id: string; transform: Ph
       <input id={id} type="range" min={1} max={3} step={0.01} value={transform.zoom} onChange={(e) => onZoom(Number(e.target.value))} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-navy" />
       <Plus className="size-3" />
       <button type="button" onClick={onReset} className="ml-1 underline-offset-4 hover:text-foreground hover:underline">Reset</button>
+    </div>
+  );
+}
+
+/** Format picker — same content, two canvas sizes. Mirrors listing-editor.tsx's FormatPicker. */
+function FormatPicker({ value, onChange }: { value: ReviewFormat; onChange: (v: ReviewFormat) => void }) {
+  return (
+    <div className="space-y-2">
+      <Label>Format</Label>
+      <div role="radiogroup" aria-label="Format" className="flex flex-wrap gap-1.5">
+        {REVIEW_FORMATS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            role="radio"
+            aria-checked={f.id === value}
+            onClick={() => onChange(f.id)}
+            className={cn("h-8 rounded-full border px-3 text-sm transition-colors", f.id === value ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-navy-2/60 hover:text-foreground")}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -62,19 +85,22 @@ function StarPicker({ value, onChange }: { value: number; onChange: (n: number) 
 export function GoogleReviewTool() {
   const [fontReady, setFontReady] = useState(false);
   const [fontError, setFontError] = useState<string | null>(null);
-  const [artwork, setArtwork] = useState<HTMLImageElement | null>(null);
+  const [format, setFormat] = useState<ReviewFormat>("post");
+  const [loadedArtwork, setLoadedArtwork] = useState<{ format: ReviewFormat; img: HTMLImageElement } | null>(null);
+  const artwork = loadedArtwork?.format === format ? loadedArtwork.img : null;
   useEffect(() => {
-    let alive = true;
-    toDrawable(REVIEW.src).then((img) => alive && setArtwork(img)).catch(() => alive && setFontError("Could not load the design artwork."));
     ensurePostFont().then((r) => {
-      if (!alive) return;
       setFontReady(r.ok);
       if (!r.ok) setFontError(r.error ?? "Font failed to load.");
     });
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    toDrawable(reviewGeometryFor(format).src).then((img) => alive && setLoadedArtwork({ format, img })).catch(() => alive && setFontError("Could not load the design artwork."));
     return () => {
       alive = false;
     };
-  }, []);
+  }, [format]);
 
   const [stars, setStars] = useState(5);
   const [quote, setQuote] = useState("");
@@ -111,9 +137,12 @@ export function GoogleReviewTool() {
   }, []);
 
   const input = useMemo(
-    () => (artwork ? { artwork, stars, quote, reviewerName, agentName, agentTitle, headshot, headshotTransform: headshotT, showPlaceholders: true } : null),
-    [artwork, stars, quote, reviewerName, agentName, agentTitle, headshot, headshotT],
+    () => (artwork ? { format, artwork, stars, quote, reviewerName, agentName, agentTitle, headshot, headshotTransform: headshotT, showPlaceholders: true } : null),
+    [format, artwork, stars, quote, reviewerName, agentName, agentTitle, headshot, headshotT],
   );
+
+  const size = canvasSize(format);
+  const headshotBox = headshotBoxFor(format);
 
   // Live preview
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -121,10 +150,10 @@ export function GoogleReviewTool() {
     const canvas = canvasRef.current;
     if (!canvas || !input || !fontReady) return;
     const frame = requestAnimationFrame(() => {
-      const scale = Math.min(1, 1080 / REVIEW.height);
+      const scale = Math.min(1, 1080 / size.height);
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      const w = Math.round(REVIEW.width * scale * dpr);
-      const h = Math.round(REVIEW.height * scale * dpr);
+      const w = Math.round(size.width * scale * dpr);
+      const h = Math.round(size.height * scale * dpr);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -133,17 +162,16 @@ export function GoogleReviewTool() {
       if (ctx) renderReview(ctx, input, scale * dpr);
     });
     return () => cancelAnimationFrame(frame);
-  }, [input, fontReady]);
+  }, [input, fontReady, size.width, size.height]);
 
   // Drag inside the headshot circle to move it.
   const drag = useRef<{ x: number; y: number } | null>(null);
   function inHeadshot(e: React.PointerEvent<HTMLCanvasElement>) {
     const r = e.currentTarget.getBoundingClientRect();
-    const k = REVIEW.width / r.width;
+    const k = size.width / r.width;
     const x = (e.clientX - r.left) * k;
     const y = (e.clientY - r.top) * k;
-    const h = REVIEW.headshot;
-    return Math.hypot(x - h.cx, y - h.cy) <= h.r;
+    return Math.hypot(x - headshotBox.cx, y - headshotBox.cy) <= headshotBox.w / 2;
   }
 
   // Newlines are a structural paragraph break (see review.ts's layoutQuote) — never drawn as a glyph, so they don't count as "unsupported".
@@ -156,7 +184,7 @@ export function GoogleReviewTool() {
   if (bad.length) problems.push(`The font can't draw: ${bad.join(" ")}`);
   const canGenerate = fontReady && !!artwork && problems.length === 0 && !busy;
 
-  const stateKey = JSON.stringify([stars, quote, reviewerName, agentName, agentTitle, !!headshot, headshotT]);
+  const stateKey = JSON.stringify([format, stars, quote, reviewerName, agentName, agentTitle, !!headshot, headshotT]);
   const result = exported?.key === stateKey ? exported.result : null;
 
   async function generate() {
@@ -166,8 +194,8 @@ export function GoogleReviewTool() {
     setError(null);
     try {
       const canvas = document.createElement("canvas");
-      canvas.width = REVIEW.width;
-      canvas.height = REVIEW.height;
+      canvas.width = size.width;
+      canvas.height = size.height;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("Canvas is not available in this browser.");
       renderReview(ctx, { ...input, showPlaceholders: false }, 1);
@@ -195,6 +223,8 @@ export function GoogleReviewTool() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_1fr]">
       <div className="space-y-6">
+        <FormatPicker value={format} onChange={(f) => { setFormat(f); setHeadshotT(IDENTITY_TRANSFORM); }} />
+
         <div className="space-y-2">
           <Label>Rating</Label>
           <StarPicker value={stars} onChange={setStars} />
@@ -243,7 +273,7 @@ export function GoogleReviewTool() {
           </div>
           <div className="space-y-2">
             <PhotoDropzone compact label={headshot ? "Replace headshot" : "Add headshot"} onFile={load(setHeadshot, () => setHeadshotT(IDENTITY_TRANSFORM))} />
-            {headshot && <SizeRow id="headshot-size" transform={headshotT} onZoom={(z) => setHeadshotT((t) => coverRect(headshot, HEADSHOT_BOX, { ...t, zoom: z }).clamped)} onReset={() => setHeadshotT(IDENTITY_TRANSFORM)} />}
+            {headshot && <SizeRow id="headshot-size" transform={headshotT} onZoom={(z) => setHeadshotT((t) => coverRect(headshot, headshotBox, { ...t, zoom: z }).clamped)} onReset={() => setHeadshotT(IDENTITY_TRANSFORM)} />}
           </div>
         </div>
 
@@ -255,12 +285,12 @@ export function GoogleReviewTool() {
           <Button type="button" onClick={generate} disabled={!canGenerate}>
             <Download /> {busy ? "Generating…" : result ? "Download again" : REVIEW.ctaLabel}
           </Button>
-          {result && <p className="text-xs text-muted-foreground">Saved as {result.format.toUpperCase()} · {formatBytes(result.bytes)} · {REVIEW.width}×{REVIEW.height}</p>}
+          {result && <p className="text-xs text-muted-foreground">Saved as {result.format.toUpperCase()} · {formatBytes(result.bytes)} · {size.width}×{size.height}</p>}
         </div>
       </div>
 
       <div className="space-y-2">
-        <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${REVIEW.width} / ${REVIEW.height}` }}>
+        <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${size.width} / ${size.height}` }}>
           <canvas
             ref={canvasRef}
             className={cn("block h-full w-full touch-none", headshot && "cursor-grab active:cursor-grabbing")}
@@ -271,10 +301,10 @@ export function GoogleReviewTool() {
             }}
             onPointerMove={(e) => {
               if (!drag.current || !headshot) return;
-              const k = REVIEW.width / e.currentTarget.getBoundingClientRect().width;
+              const k = size.width / e.currentTarget.getBoundingClientRect().width;
               const dx = (e.clientX - drag.current.x) * k;
               const dy = (e.clientY - drag.current.y) * k;
-              setHeadshotT((t) => coverRect(headshot, HEADSHOT_BOX, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
+              setHeadshotT((t) => coverRect(headshot, headshotBox, { ...t, offsetX: t.offsetX + dx, offsetY: t.offsetY + dy }).clamped);
               drag.current = { x: e.clientX, y: e.clientY };
             }}
             onPointerUp={() => (drag.current = null)}
@@ -282,7 +312,7 @@ export function GoogleReviewTool() {
           />
           {(!artwork || !fontReady) && !fontError && <div className="absolute inset-0 flex items-center justify-center text-sm text-paper/70">Loading design…</div>}
         </div>
-        <p className="text-center text-xs text-muted-foreground">Drag inside the circle to move the headshot · final size {REVIEW.width}×{REVIEW.height}</p>
+        <p className="text-center text-xs text-muted-foreground">Drag inside the circle to move the headshot · final size {size.width}×{size.height}</p>
       </div>
     </div>
   );

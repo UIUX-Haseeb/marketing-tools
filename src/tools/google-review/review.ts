@@ -1,22 +1,46 @@
 /**
- * GOOGLE REVIEW POST — geometry measured from Figma: "Birthday-template" file, node 215:116
- * (frame "Frame" inside "Templates and reference"), 1080 × 1440.
+ * GOOGLE REVIEW — two FORMATS (canvas size), picked in the form like listing's Post/Story
+ * toggle (`listing/listing.ts`). "post" (1080×1440) geometry measured from Figma:
+ * "Birthday-template" file, node 215:116 (frame "Frame" inside "Templates and reference").
+ * "story" (1080×1920) measured from node 265:463. `canvasSize(format)` gives the pixel
+ * dimensions; `reviewGeometryFor(format)` picks `REVIEW` (post) or `REVIEW_STORY`.
  *
  * Background: the dotted navy texture is baked into `public/tools/google-review/background.webp`
- * (exported straight off the Figma layer — it is a static image fill, not a generated pattern).
- * Everything else is drawn in code: the star row, the review quote, the reviewer's name, a
- * bordered card outline, the agent's circular headshot and the agent's name + tracked-caps
- * designation — the same split "Just Sold / Just Listed" uses (`listing/listing.ts`).
+ * (post) / `background-story.webp` (story) — exported straight off the Figma layer, a static
+ * image fill, not a generated pattern, so each format needs its own asset rather than a shared
+ * one stretched to fit. Everything else is drawn in code: the star row, the review quote, the
+ * reviewer's name, a bordered card outline, the agent's circular headshot and the agent's name
+ * + tracked-caps designation — the same split "Just Sold / Just Listed" uses.
  *
- * The card outline carries no fill in the design — the texture shows straight through it,
- * it is a 1px hairline only. The headshot is centred ON the card's bottom edge by design:
- * cy 1047 sits inside a card that ends at y 1056.49, so roughly the lower half of the photo
- * hangs below the card border. Draw the card before the headshot so the photo's own ring
- * covers the border where the two overlap, exactly as the reference shows.
+ * The card outline carries no fill in the design — the texture shows straight through it, it's
+ * a hairline only (post: 1px `rgba(255,255,255,0.33)`; story: 0.5px `#ECE7DF`, measured
+ * separately — Kelvin's story revision uses a different stroke). The headshot overlaps the
+ * card's bottom edge by design on both formats: draw the card before the headshot so the
+ * photo's own ring covers the border where the two overlap, exactly as the reference shows.
+ * Story's headshot ring is also its own measured value (`rgba(255,255,255,0.3)`, vs. post's
+ * `0.9`) — not a copy-paste, a genuine difference between the two frames.
+ *
+ * Story's text runs larger across the board than post's (wordmark 49 vs. 41, reviewer/
+ * agentName 42 vs. 35, agentTitle 29 vs. 24) with its own tracked-caps value measured directly
+ * off the frame (0.5px at size 29 — not scaled from post's 3.36 at size 24, a different,
+ * measured constant) — the same "each size is its own value, not a derived scale" pattern
+ * `LISTING_MINIMAL_STORY` documents. Card width (910) and headshot radius (148) are identical
+ * between formats — only the taller canvas and repositioned block change.
  */
 import { POST_FONT_STACK } from "@/tools/_shared/font";
 import type { Drawable, PhotoTransform } from "@/tools/_shared/render";
 import { drawableSize } from "@/tools/_shared/render";
+
+export type ReviewFormat = "post" | "story";
+
+export const REVIEW_FORMATS: { id: ReviewFormat; label: string }[] = [
+  { id: "post", label: "Post" },
+  { id: "story", label: "Story" },
+];
+
+export function canvasSize(format: ReviewFormat): { width: number; height: number } {
+  return format === "story" ? { width: 1080, height: 1920 } : { width: 1080, height: 1440 };
+}
 
 export const REVIEW = {
   id: "provident-google-review",
@@ -39,9 +63,34 @@ export const REVIEW = {
   agentTitle: { cy: 1324.46, size: 24, weight: 500, tracking: 3.36, color: "#FFFFFF", maxWidth: 700, minSize: 16 },
 } as const;
 
+/** "story" — measured off Figma node 265:463. See the file-level comment for what differs from "post" and why. */
+export const REVIEW_STORY = {
+  id: "provident-google-review",
+  label: "Google Review",
+  fileStem: "Google-Review",
+  ctaLabel: "Generate Review Post",
+  src: "/tools/google-review/background-story.webp",
+  width: 1080,
+  height: 1920,
+  color: "#FFFFFF",
+  wordmark: { text: "provident.", cx: 540, cy: 221.5, size: 49, weight: 300 },
+  card: { x: 85, y: 373, w: 910, h: 1167, radius: 30, border: "#ECE7DF" },
+  stars: { cx: 540.42, cy: 517.02, size: 38.03, gap: 11, color: "#B0905C", max: 5 },
+  quote: { top: 596, size: 35, weight: 300, lineHeight: 47, paraGap: 24, maxWidth: 714, minSize: 24, maxLines: 8, color: "#FFFFFF" },
+  reviewer: { cy: 1232.5, size: 42, weight: 400, color: "#FFFFFF", maxWidth: 700, minSize: 24 },
+  headshot: { cx: 540, cy: 1513, r: 148, border: "rgba(255,255,255,0.3)" },
+  agentName: { cy: 1745.5, size: 42, weight: 400, color: "#FFFFFF", maxWidth: 700, minSize: 24 },
+  agentTitle: { cy: 1807, size: 29, weight: 500, tracking: 0.5, color: "#FFFFFF", maxWidth: 700, minSize: 16 },
+} as const;
+
+export function reviewGeometryFor(format: ReviewFormat) {
+  return format === "story" ? REVIEW_STORY : REVIEW;
+}
+
 export const REVIEW_LIMITS = { quote: 600, reviewerName: 40, agentName: 32, agentTitle: 28 } as const;
 
 export type ReviewInput = {
+  format: ReviewFormat;
   artwork: Drawable;
   stars: number; // 1–5
   quote: string;
@@ -72,7 +121,12 @@ export function coverRect(img: Drawable, box: { cx: number; cy: number; w: numbe
   return { x: box.cx + ox - w / 2, y: box.cy + oy - h / 2, w, h, clamped: { zoom: clamp(t.zoom, 1, 3), offsetX: ox, offsetY: oy } };
 }
 
-export const HEADSHOT_BOX = { cx: REVIEW.headshot.cx, cy: REVIEW.headshot.cy, w: REVIEW.headshot.r * 2, h: REVIEW.headshot.r * 2 };
+const HEADSHOT_BOX_POST = { cx: REVIEW.headshot.cx, cy: REVIEW.headshot.cy, w: REVIEW.headshot.r * 2, h: REVIEW.headshot.r * 2 };
+const HEADSHOT_BOX_STORY = { cx: REVIEW_STORY.headshot.cx, cy: REVIEW_STORY.headshot.cy, w: REVIEW_STORY.headshot.r * 2, h: REVIEW_STORY.headshot.r * 2 };
+
+export function headshotBoxFor(format: ReviewFormat) {
+  return format === "story" ? HEADSHOT_BOX_STORY : HEADSHOT_BOX_POST;
+}
 
 function roundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
@@ -152,8 +206,8 @@ function layoutQuote(ctx: CanvasRenderingContext2D, quote: string, maxWidth: num
   return { rows, lines };
 }
 
-function drawStars(ctx: CanvasRenderingContext2D, count: number) {
-  const S = REVIEW.stars;
+function drawStars(ctx: CanvasRenderingContext2D, T: ReturnType<typeof reviewGeometryFor>, count: number) {
+  const S = T.stars;
   const n = clamp(Math.round(count), 0, S.max);
   if (n <= 0) return;
   const total = n * S.size + (n - 1) * S.gap;
@@ -183,14 +237,13 @@ function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: numb
   ctx.fill();
 }
 
-function drawHeadshotPlaceholder(ctx: CanvasRenderingContext2D) {
-  const h = REVIEW.headshot;
+function drawHeadshotPlaceholder(ctx: CanvasRenderingContext2D, h: { cx: number; cy: number; r: number }) {
   ctx.fillStyle = "rgba(255,255,255,0.12)";
   ctx.fillRect(h.cx - h.r, h.cy - h.r, h.r * 2, h.r * 2);
 }
 
 export function renderReview(ctx: CanvasRenderingContext2D, input: ReviewInput, scale = 1) {
-  const T = REVIEW;
+  const T = reviewGeometryFor(input.format);
   ctx.save();
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   ctx.clearRect(0, 0, T.width, T.height);
@@ -216,7 +269,7 @@ export function renderReview(ctx: CanvasRenderingContext2D, input: ReviewInput, 
   ctx.stroke();
 
   // 3. Stars
-  drawStars(ctx, input.stars);
+  drawStars(ctx, T, input.stars);
 
   // 4. Quote — shrink to fit `maxLines`, then draw each row.
   const Q = T.quote;
@@ -258,10 +311,10 @@ export function renderReview(ctx: CanvasRenderingContext2D, input: ReviewInput, 
   ctx.arc(h.cx, h.cy, h.r, 0, Math.PI * 2);
   ctx.clip();
   if (input.headshot) {
-    const r = coverRect(input.headshot, HEADSHOT_BOX, input.headshotTransform);
+    const r = coverRect(input.headshot, headshotBoxFor(input.format), input.headshotTransform);
     ctx.drawImage(input.headshot, r.x, r.y, r.w, r.h);
   } else if (input.showPlaceholders) {
-    drawHeadshotPlaceholder(ctx);
+    drawHeadshotPlaceholder(ctx, h);
   }
   ctx.restore();
   if (input.headshot || input.showPlaceholders) {
