@@ -51,12 +51,22 @@ The frosted card (classic only) is drawn live so it blurs whatever photo is behi
 top edge moves to fit the chip row while its bottom edge (divider, agent block) stays put —
 except the QR tile, which on "story" detaches from the card entirely and sits as its own
 centred tile below it (same x/y regardless of variant, since the card's height differs but
-the tile doesn't need to track it). In minimal, the headline and price also shrink for Just
-Listed (97px / 38px vs. 117px / 55px on Just Sold/Rented) to leave room for the tagline + chip
-row without pushing into the agent block — and on "story" specifically, the whole minimal
+the tile doesn't need to track it). In minimal post, the headline and price also shrink for
+Just Listed (97px / 38px vs. 117px / 55px on Just Sold/Rented) to leave room for the tagline +
+chip row without pushing into the agent block — and on "story" specifically, the whole minimal
 text column sits well below the wordmark (y=233 vs. y=91 on "post") because "post" could
 place the headline right next to the wordmark only by keeping them in separate left/right
 columns; "story" puts both on the same left edge, so they need the vertical gap instead.
+
+Minimal story's own text also runs larger across the board than post's — wordmark, headline,
+primary and price all got individually re-sized in Figma (not a single scale factor: price
+went from 55/38px to a shared 66px on both variants, primary from 27px to a shared 38px,
+while headline and wordmark moved by a more modest ~1.2×), so every size in
+`LISTING_MINIMAL_STORY` / `LISTING_CHIPS_MINIMAL_STORY` is its own measured value. Just
+Listed's agent/headshot/QR block also moved independently of Just Sold/Rented's this time —
+about 27px higher, with a taller scrim to match (`MINIMAL_BOTTOM_SCRIM_CHIPS_STORY`,
+`HEADSHOT_BOX_MINIMAL_CHIPS_STORY`) — where every other minimal variant/format shares one
+block position across chips/non-chips.
 
 **Scrims.** Every scrim on both designs is the same shape — flat at `flatAlpha` opacity
 through the first quarter (`flatTo`), then a straight linear fade to transparent by `h` —

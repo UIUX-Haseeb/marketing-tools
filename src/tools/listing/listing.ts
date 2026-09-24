@@ -100,8 +100,12 @@ const MINIMAL_SCRIM = { h: 628, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24
 const MINIMAL_SCRIM_STORY = { h: 762, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
 const MINIMAL_SCRIM_CHIPS_STORY = { h: 1040, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
 const MINIMAL_BOTTOM_SCRIM = { y: 1083, h: 357, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.8 } as const;
-const MINIMAL_BOTTOM_SCRIM_STORY = { y: 1565, h: 357, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.8 } as const;
+const MINIMAL_BOTTOM_SCRIM_STORY = { y: 1565, h: 355, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.8 } as const;
+/** Just Listed minimal story only — its agent/headshot block sits higher up and needs a taller scrim than the other two story variants (see LISTING_CHIPS_MINIMAL_STORY's comment). */
+const MINIMAL_BOTTOM_SCRIM_CHIPS_STORY = { y: 1444, h: 473, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.8 } as const;
 const CHIP_STYLE = { h: 54, padX: 20, radius: 10, gap: 14, size: 17, weight: 500, tracking: 17 * 0.14, border: "rgba(255,255,255,1)", borderWidth: 0.5 } as const;
+/** Structural shape of a chip style — `CHIP_STYLE` values widened to plain numbers so per-geometry overrides (e.g. minimal chips-story's larger pills) aren't pinned to CHIP_STYLE's own literals. */
+type ChipStyle = { h: number; padX: number; radius: number; gap: number; size: number; weight: number; tracking: number; border: string; borderWidth: number };
 /** "minimal" only — the edge the wordmark and the agent/headshot block always anchor to; the text column anchors here too on "story" (left-aligned), or to MINIMAL_RIGHT on "post" (right-aligned). */
 const MINIMAL_LEFT = 98;
 const MINIMAL_RIGHT = 996;
@@ -241,21 +245,25 @@ export const LISTING_CHIPS_MINIMAL = {
  * the taller canvas. Because both now share that left edge, the column also drops well below
  * the wordmark (headline top at y=233, vs. y=91 in "post") so they don't crowd each other —
  * "post" could set the headline right next to the wordmark since they sat in separate left/
- * right columns. The headshot/agent/QR block sits at the exact same offset from the bottom
- * edge as "post" (+482px lower, matching the extra canvas height).
+ * right columns.
+ *
+ * Every text size here (wordmark included) also runs larger than "post"'s — not a uniform
+ * multiplier, each element was tuned by hand (e.g. price jumped from 55 to 66, ~1.2×, while
+ * primary jumped from 27 to 38, ~1.4×) — so each is its own measured value rather than a
+ * derived scale.
  */
 export const LISTING_MINIMAL_STORY = {
   width: 1080,
   height: 1920,
-  wordmark: { ...WORDMARK, x: MINIMAL_LEFT, cy: 116.5 },
-  headline: { size: 117, weight: 400, tracking: -7, maxWidth: 900, cy: 306 },
+  wordmark: { ...WORDMARK, size: 49, x: MINIMAL_LEFT, cy: 151.83 },
+  headline: { size: 140, weight: 400, tracking: -7, maxWidth: 900, cy: 320.5 },
   topScrim: MINIMAL_SCRIM_STORY,
   col: { x: MINIMAL_LEFT, align: "left" as const },
-  primary: { cy: 416, size: 27, weight: 300, maxWidth: 900 },
-  price: { cy: 487.5, size: 55, weight: 400, maxWidth: 900 },
-  agentName: { cy: 1775, size: 35, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
-  agentTitle: { cy: 1829, size: 24, weight: 500, tracking: 0.5, maxWidth: 700, x: MINIMAL_LEFT },
-  headshot: { cx: 218.5, cy: 1605.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
+  primary: { cy: 452, size: 38, weight: 300, maxWidth: 900 },
+  price: { cy: 537.5, size: 66, weight: 400, maxWidth: 900 },
+  agentName: { cy: 1764.5, size: 42, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
+  agentTitle: { cy: 1826, size: 29, weight: 500, tracking: 0.5, maxWidth: 700, x: MINIMAL_LEFT },
+  headshot: { cx: 218.5, cy: 1590.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
   qr: { x: 848, y: 1676, size: 168, pad: 3, radius: 14 },
   bottomScrim: MINIMAL_BOTTOM_SCRIM_STORY,
   color: "#FFFFFF",
@@ -265,26 +273,34 @@ export const LISTING_MINIMAL_STORY = {
  * "minimal", Just Listed, "story" — measured off Figma node 265:210. Same left-aligned
  * column as LISTING_MINIMAL_STORY, at the same y=233 top edge, plus the tagline and the chip
  * row (also left-aligned, the mirror of "post"'s right-aligned row) in between; the headline
- * itself runs smaller (97px vs. 117px) to leave room for that extra content without pushing
- * the primary line/price any lower. The agent/headshot/QR block is unchanged from
+ * itself runs smaller (117px vs. 140px) to leave room for that extra content. Text sizes are
+ * scaled up the same way as LISTING_MINIMAL_STORY (see its comment) — price in particular
+ * lands on the exact same 66px both variants share, despite starting from different sizes
+ * (55 vs. 38 on "post").
+ *
+ * Unlike "post" (where the agent/headshot/QR block is identical for every minimal variant),
+ * this block sits noticeably higher here — headshot cy 1563.5 vs. 1590.5, agent name/title
+ * ~27px higher too — with its own taller/earlier-starting bottom scrim
+ * (MINIMAL_BOTTOM_SCRIM_CHIPS_STORY) to match. `headshotBoxFor()` and the bottomScrim/
+ * headshot/agentName/agentTitle/qr fields below are this variant's own, not shared with
  * LISTING_MINIMAL_STORY.
  */
 export const LISTING_CHIPS_MINIMAL_STORY = {
   width: 1080,
   height: 1920,
-  wordmark: { ...WORDMARK, x: MINIMAL_LEFT, cy: 147 },
-  headline: { size: 97, weight: 400, tracking: -7, maxWidth: 900, cy: 293.5 },
+  wordmark: { ...WORDMARK, size: 49, x: MINIMAL_LEFT, cy: 151.83 },
+  headline: { size: 117, weight: 400, tracking: -7, maxWidth: 900, cy: 306 },
   topScrim: MINIMAL_SCRIM_CHIPS_STORY,
-  tagline: { cy: 391, size: 27, weight: 300, maxWidth: 900 },
+  tagline: { cy: 423, size: 38, weight: 300, maxWidth: 900 },
   col: { x: MINIMAL_LEFT, align: "left" as const },
-  chips: { ...CHIP_STYLE, top: 428, align: "left" as const },
-  primary: { cy: 520, size: 27, weight: 300, maxWidth: 900 },
-  price: { cy: 581, size: 38, weight: 400, maxWidth: 900 },
-  agentName: { cy: 1775, size: 35, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
-  agentTitle: { cy: 1829, size: 24, weight: 500, tracking: 0.5, maxWidth: 700, x: MINIMAL_LEFT },
-  headshot: { cx: 218.5, cy: 1605.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
-  qr: { x: 848, y: 1676, size: 168, pad: 3, radius: 14 },
-  bottomScrim: MINIMAL_BOTTOM_SCRIM_STORY,
+  chips: { ...CHIP_STYLE, h: 59, size: 20, tracking: 20 * 0.14, borderWidth: 1, top: 467, align: "left" as const },
+  primary: { cy: 570, size: 38, weight: 300, maxWidth: 900 },
+  price: { cy: 655.5, size: 66, weight: 400, maxWidth: 900 },
+  agentName: { cy: 1737.5, size: 42, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
+  agentTitle: { cy: 1799, size: 29, weight: 500, tracking: 0.5, maxWidth: 700, x: MINIMAL_LEFT },
+  headshot: { cx: 218.5, cy: 1563.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
+  qr: { x: 848, y: 1649, size: 168, pad: 3, radius: 14 },
+  bottomScrim: MINIMAL_BOTTOM_SCRIM_CHIPS_STORY,
   color: "#FFFFFF",
 } as const;
 
@@ -363,10 +379,19 @@ const HEADSHOT_BOX_CLASSIC_STORY = { cx: LISTING_STORY.headshot.cx, cy: LISTING_
 const HEADSHOT_BOX_CLASSIC_CHIPS_STORY = { cx: LISTING_CHIPS_STORY.headshot.cx, cy: LISTING_CHIPS_STORY.headshot.cy, w: LISTING_CHIPS_STORY.headshot.r * 2, h: LISTING_CHIPS_STORY.headshot.r * 2 };
 const HEADSHOT_BOX_MINIMAL = { cx: LISTING_MINIMAL.headshot.cx, cy: LISTING_MINIMAL.headshot.cy, w: LISTING_MINIMAL.headshot.r * 2, h: LISTING_MINIMAL.headshot.r * 2 };
 const HEADSHOT_BOX_MINIMAL_STORY = { cx: LISTING_MINIMAL_STORY.headshot.cx, cy: LISTING_MINIMAL_STORY.headshot.cy, w: LISTING_MINIMAL_STORY.headshot.r * 2, h: LISTING_MINIMAL_STORY.headshot.r * 2 };
+const HEADSHOT_BOX_MINIMAL_CHIPS_STORY = { cx: LISTING_CHIPS_MINIMAL_STORY.headshot.cx, cy: LISTING_CHIPS_MINIMAL_STORY.headshot.cy, w: LISTING_CHIPS_MINIMAL_STORY.headshot.r * 2, h: LISTING_CHIPS_MINIMAL_STORY.headshot.r * 2 };
 
-/** The headshot's cover-fit box for whichever variant + design + format is selected. Minimal shares one box across variants (the agent block never moves); classic has a distinct box per variant. */
+/**
+ * The headshot's cover-fit box for whichever variant + design + format is selected. Minimal
+ * shares one box across variants on "post" (the agent block never moves there); on "story"
+ * Just Listed's agent block sits higher than the other two variants', so it gets its own box.
+ * Classic has a distinct box per variant on both formats.
+ */
 export function headshotBoxFor(variant: ListingVariant, design: ListingDesign, format: ListingFormat) {
-  if (design === "minimal") return format === "story" ? HEADSHOT_BOX_MINIMAL_STORY : HEADSHOT_BOX_MINIMAL;
+  if (design === "minimal") {
+    if (format === "story") return usesChips(variant) ? HEADSHOT_BOX_MINIMAL_CHIPS_STORY : HEADSHOT_BOX_MINIMAL_STORY;
+    return HEADSHOT_BOX_MINIMAL;
+  }
   if (format === "story") return usesChips(variant) ? HEADSHOT_BOX_CLASSIC_CHIPS_STORY : HEADSHOT_BOX_CLASSIC_STORY;
   return usesChips(variant) ? HEADSHOT_BOX_CLASSIC_CHIPS : HEADSHOT_BOX_CLASSIC;
 }
@@ -458,7 +483,7 @@ function drawPhoto(ctx: CanvasRenderingContext2D, input: ListingInput, box: { cx
 }
 
 /** One bordered, unfilled pill: e.g. "2 BED". Returns its drawn width. */
-function drawChip(ctx: CanvasRenderingContext2D, text: string, x: number, cy: number, style: typeof CHIP_STYLE) {
+function drawChip(ctx: CanvasRenderingContext2D, text: string, x: number, cy: number, style: ChipStyle) {
   ctx.font = font(style.weight, style.size);
   const textW = trackedWidth(ctx, text, style.tracking);
   const w = textW + style.padX * 2;
@@ -476,7 +501,7 @@ function drawChip(ctx: CanvasRenderingContext2D, text: string, x: number, cy: nu
 }
 
 /** The bed / bath / sqft chip row — left-aligned at `anchorX` (classic, minimal story), centred on it (unused currently), or right-aligned to it (minimal post). Empty values are skipped. */
-function drawChipRow(ctx: CanvasRenderingContext2D, input: ListingInput, chips: typeof CHIP_STYLE & { top: number; align: "left" | "center" | "right" }, anchorX: number) {
+function drawChipRow(ctx: CanvasRenderingContext2D, input: ListingInput, chips: ChipStyle & { top: number; align: "left" | "center" | "right" }, anchorX: number) {
   const values: [string, string][] = [
     [input.bedrooms.trim(), "BED"],
     [input.bathrooms.trim(), "BATHROOM"],
