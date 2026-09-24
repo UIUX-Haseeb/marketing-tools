@@ -41,15 +41,25 @@ Just Listed (`drawChipRow`'s `align: "left" | "center" | "right"`).
 
 The frosted card (classic only) is drawn live so it blurs whatever photo is behind it; its
 top edge moves to fit the chip row while its bottom edge (divider, agent block, QR) stays
-put. A navy scrim sits behind the top of every design so the text stays readable on bright
-photos — classic uses `TOP_SCRIM` (520px, eased to transparent) behind just the wordmark +
-headline, since everything else sits on the frosted card. Minimal has no card, so its whole
-stack (headline through price, ~460px tall on Just Listed) sits directly on the photo; it uses
-the taller, flatter `MINIMAL_SCRIM` instead (628px, flat at 80% opacity through the first
-quarter, then a straight fade to transparent — measured off the scrim rect in Figma node
-229:159) via `minimalScrimGradient()`. In minimal, the headline and price also shrink for Just
-Listed (97px / 38px vs. 117px / 55px on Just Sold/Rented) to leave room for the tagline + chip
-row without pushing into the agent block.
+put. In minimal, the headline and price also shrink for Just Listed (97px / 38px vs. 117px /
+55px on Just Sold/Rented) to leave room for the tagline + chip row without pushing into the
+agent block.
+
+**Scrims.** Every scrim on both designs is the same shape — flat at `flatAlpha` opacity
+through the first quarter (`flatTo`), then a straight linear fade to transparent by `h` —
+drawn by the one `scrimGradient()` helper. This is measured directly off the scrim
+rectangles in Figma (not an eased approximation), and differs by design because classic's
+lower text sits on the frosted card while minimal's doesn't:
+
+- **Classic** — one scrim behind the wordmark + headline (+ tagline on Just Listed);
+  everything below that sits on the card, so nothing else is needed. `TOP_SCRIM` (419px) for
+  Just Sold/Rented, the taller `TOP_SCRIM_CHIPS` (663px) for Just Listed since its tagline
+  extends further down.
+- **Minimal** — no card, so both ends of the text stack need their own contrast: `MINIMAL_SCRIM`
+  (628px from the top, same for all three variants — Just Listed's headline/price run smaller
+  to compensate for its denser stack) behind the headline→price column, plus
+  `MINIMAL_BOTTOM_SCRIM` (355px, starting at y=1083, weaker at 60% flat opacity) behind the
+  headshot/agent block near the foot.
 
 Depends on: `_shared/` (font, render helpers, export, `PhotoDropzone`, `Counter`), `@/lib/demo/employees` (`EMPLOYEES` — replace with the CRM), `@/lib/store` (`logGeneratedPost`), `@/components/ui/{button,input,label,select}`, `@/lib/utils`.
 

@@ -55,16 +55,27 @@ function usesChips(variant: ListingVariant) {
 
 const WORDMARK = { text: "provident.", weight: 300, size: 41 } as const;
 const HEADLINE_STYLE = { size: 140, weight: 400, tracking: -7, maxWidth: 960 } as const;
-const TOP_SCRIM = { h: 520, color: "26,41,66", alpha: 0.72 } as const;
+const SCRIM_COLOR = "26,41,66";
 /**
- * "minimal" only — flat at 80% opacity through the first quarter, then fades linearly to
- * transparent by `h`. Taller and stronger than the classic scrim (measured off Figma node
- * 229:159's own scrim rect) because minimal has no frosted card behind its text — the whole
- * headline/tagline/chips/listing line/price stack sits directly on the photo, all the way
- * down to ~460px on Just Listed, so the fade has to reach further than classic's wordmark +
- * headline ever needed to.
+ * Every scrim on both designs is the same shape — flat at `flatAlpha` through the first
+ * quarter (`flatTo`), then a straight linear fade to transparent by `h` — measured directly
+ * off the scrim rectangles in Figma (node 228:113/228:129/222:113 for classic, 229:128/
+ * 229:159/229:200 for minimal), not an eased approximation.
+ *
+ * `TOP_SCRIM` / `TOP_SCRIM_CHIPS` sit behind classic's wordmark + headline (+ tagline on
+ * Just Listed, hence the taller `_CHIPS` variant); everything below that sits on the frosted
+ * card instead, so classic needs nothing else.
+ *
+ * Minimal has no card — the whole headline→price stack sits directly on the photo — so it
+ * needs both a taller/stronger `MINIMAL_SCRIM` at the top (same height for all three variants;
+ * Just Listed's stack is denser but its headline/price also run smaller to compensate) AND a
+ * second `MINIMAL_BOTTOM_SCRIM` low on the canvas for the headshot/agent block, which classic
+ * doesn't need because that block sits on the card there too.
  */
-const MINIMAL_SCRIM = { h: 628, color: "26,41,66", flatAlpha: 0.8, flatTo: 0.24 } as const;
+const TOP_SCRIM = { h: 419, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
+const TOP_SCRIM_CHIPS = { h: 663, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
+const MINIMAL_SCRIM = { h: 628, color: SCRIM_COLOR, flatAlpha: 0.8, flatTo: 0.24 } as const;
+const MINIMAL_BOTTOM_SCRIM = { y: 1083, h: 355, color: SCRIM_COLOR, flatAlpha: 0.6, flatTo: 0.24 } as const;
 const CHIP_STYLE = { h: 54, padX: 20, radius: 10, gap: 14, size: 17, weight: 500, tracking: 17 * 0.14, border: "rgba(255,255,255,1)", borderWidth: 0.5 } as const;
 /** "minimal" only — wordmark + agent/headshot block sit at this left edge; headline/tagline/chips/listing line/price are right-aligned to this edge. */
 const MINIMAL_LEFT = 98;
@@ -96,7 +107,7 @@ export const LISTING_CHIPS = {
   wordmark: { ...WORDMARK, cx: 540, cy: 114 },
   headline: { ...HEADLINE_STYLE, cy: 259 },
   tagline: { top: 354, size: 27, weight: 300, lineHeight: 34, maxWidth: 900 },
-  topScrim: TOP_SCRIM,
+  topScrim: TOP_SCRIM_CHIPS,
   card: { x: 60, y: 949, w: 960, h: 432, radius: 24, fill: "rgba(26,41,66,0.5)", border: "rgba(255,255,255,0.33)", blur: 6.55 },
   col: { x: 109.5, w: 536 },
   chips: { ...CHIP_STYLE, top: 983, align: "left" as const },
@@ -281,19 +292,9 @@ function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D) {
   ctx.fillText("Property photo", LISTING.width / 2, 640);
 }
 
-/** Eased navy → transparent gradient, `h` tall — used by the classic design's top scrim (wordmark + headline sit on it; everything below sits on the frosted card instead). */
-function topScrimGradient(ctx: CanvasRenderingContext2D, color: string, alpha: number, h: number) {
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-  for (let i = 0; i <= 8; i++) {
-    const t = i / 8;
-    g.addColorStop(t, `rgba(${color},${(alpha * (1 - t) * (1 - t)).toFixed(3)})`);
-  }
-  return g;
-}
-
-/** Flat navy → transparent gradient for the minimal design: solid through `flatTo`, then a straight linear fade to 0 by `h`. See MINIMAL_SCRIM for why this needs to be flatter/taller than the classic scrim. */
-function minimalScrimGradient(ctx: CanvasRenderingContext2D, s: typeof MINIMAL_SCRIM) {
-  const g = ctx.createLinearGradient(0, 0, 0, s.h);
+/** Flat navy → transparent gradient, `h` tall starting at `y`: solid through `flatTo`, then a straight linear fade to 0. The one shape behind every scrim on both designs — see TOP_SCRIM's comment. */
+function scrimGradient(ctx: CanvasRenderingContext2D, y: number, s: { h: number; color: string; flatAlpha: number; flatTo: number }) {
+  const g = ctx.createLinearGradient(0, y, 0, y + s.h);
   g.addColorStop(0, `rgba(${s.color},${s.flatAlpha})`);
   g.addColorStop(s.flatTo, `rgba(${s.color},${s.flatAlpha})`);
   g.addColorStop(1, `rgba(${s.color},0)`);
@@ -400,8 +401,8 @@ function renderClassic(ctx: CanvasRenderingContext2D, input: ListingInput) {
   const L = usesChips(input.variant) ? LISTING_CHIPS : LISTING;
   drawPhoto(ctx, input);
 
-  // Top scrim — eased navy → transparent, so white skies don't wash out the headline
-  ctx.fillStyle = topScrimGradient(ctx, L.topScrim.color, L.topScrim.alpha, L.topScrim.h);
+  // Top scrim, so white skies don't wash out the wordmark/headline/tagline
+  ctx.fillStyle = scrimGradient(ctx, 0, L.topScrim);
   ctx.fillRect(0, 0, L.width, L.topScrim.h);
 
   // Wordmark + headline
@@ -495,8 +496,13 @@ function renderMinimal(ctx: CanvasRenderingContext2D, input: ListingInput) {
   const L = usesChips(input.variant) ? LISTING_CHIPS_MINIMAL : LISTING_MINIMAL;
   drawPhoto(ctx, input);
 
-  ctx.fillStyle = minimalScrimGradient(ctx, MINIMAL_SCRIM);
+  // Top scrim behind the headline/tagline/chips/listing line/price, and a second, softer
+  // scrim low on the canvas behind the headshot/agent block — minimal has no card, so both
+  // ends of the text need their own contrast against the photo.
+  ctx.fillStyle = scrimGradient(ctx, 0, MINIMAL_SCRIM);
   ctx.fillRect(0, 0, L.width, MINIMAL_SCRIM.h);
+  ctx.fillStyle = scrimGradient(ctx, MINIMAL_BOTTOM_SCRIM.y, MINIMAL_BOTTOM_SCRIM);
+  ctx.fillRect(0, MINIMAL_BOTTOM_SCRIM.y, L.width, MINIMAL_BOTTOM_SCRIM.h);
 
   ctx.fillStyle = L.color;
   ctx.textBaseline = "middle";
