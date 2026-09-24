@@ -38,13 +38,14 @@ executive only, required, free text — no `Employee` field prefills it); photo 
 slider + drag. Background removal runs automatically on upload (`_shared/remove-bg.ts`), with
 the robot overlay and a Removed / Original toggle.
 
-**Assets:** `background.png` and `background-executive.png` are exported straight off their
-Figma frame's own flattened background layer (1080×1440 each) — no text, no logo, no script, no
-photo, no frame; `frame.png` ("standard" only) is the "profile frame" outline layer alone on a
-transparent canvas. `background.png`/`frame.png` are code-generated stand-ins per the original
-note below; `background-executive.png` is a real export (converted from Figma's PNG export with
-`sharp`, since a straight PNG re-save left it at ~1.5 MB). Export the real "standard" layers
+**Assets:** `background.png` is a code-generated stand-in — export the real "standard" layers
 from Figma at 1× as 1080×1440 (crop 36 px off each side of the 1152 frame, or resize the frame
-to 1080 keeping content centred) and replace them, same file names.
+to 1080 keeping content centred) and replace it, same file name; `frame.png` ("standard" only,
+the "profile frame" outline layer alone on a transparent canvas) is likewise a stand-in.
+`background-executive.png` is the real asset — it's a directly-supplied 1500×2000 export of the
+diagonal gradient artwork (the same design as Figma node 265:597's flattened background layer,
+including its `2F4960`→`1A2942` top-to-bottom Linear fill darkening the lower half; re-verified
+against that node's Fill panel), resized to 1080×1440 with `sharp`. No text, no logo, no script,
+no photo, no frame in any of the three.
 
 Depends on: `_shared/` (font, export, remove-bg, `PhotoDropzone`, `Counter`), `@/lib/demo/employees`, `@/lib/store`, `@/components/ui/{button,input,label,select}`, `@/lib/utils`.
