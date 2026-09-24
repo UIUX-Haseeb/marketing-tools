@@ -41,10 +41,15 @@ Just Listed (`drawChipRow`'s `align: "left" | "center" | "right"`).
 
 The frosted card (classic only) is drawn live so it blurs whatever photo is behind it; its
 top edge moves to fit the chip row while its bottom edge (divider, agent block, QR) stays
-put. A navy scrim (`topScrim`, 520 px, eased to transparent) sits behind the wordmark +
-headline on every design so they stay readable on white-sky photos. In minimal, the headline
-and price shrink for Just Listed (97px / 38px vs. 117px / 55px on Just Sold/Rented) to leave
-room for the tagline + chip row without pushing into the agent block.
+put. A navy scrim sits behind the top of every design so the text stays readable on bright
+photos — classic uses `TOP_SCRIM` (520px, eased to transparent) behind just the wordmark +
+headline, since everything else sits on the frosted card. Minimal has no card, so its whole
+stack (headline through price, ~460px tall on Just Listed) sits directly on the photo; it uses
+the taller, flatter `MINIMAL_SCRIM` instead (628px, flat at 80% opacity through the first
+quarter, then a straight fade to transparent — measured off the scrim rect in Figma node
+229:159) via `minimalScrimGradient()`. In minimal, the headline and price also shrink for Just
+Listed (97px / 38px vs. 117px / 55px on Just Sold/Rented) to leave room for the tagline + chip
+row without pushing into the agent block.
 
 Depends on: `_shared/` (font, render helpers, export, `PhotoDropzone`, `Counter`), `@/lib/demo/employees` (`EMPLOYEES` — replace with the CRM), `@/lib/store` (`logGeneratedPost`), `@/components/ui/{button,input,label,select}`, `@/lib/utils`.
 

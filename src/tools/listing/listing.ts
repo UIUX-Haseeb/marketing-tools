@@ -56,6 +56,15 @@ function usesChips(variant: ListingVariant) {
 const WORDMARK = { text: "provident.", weight: 300, size: 41 } as const;
 const HEADLINE_STYLE = { size: 140, weight: 400, tracking: -7, maxWidth: 960 } as const;
 const TOP_SCRIM = { h: 520, color: "26,41,66", alpha: 0.72 } as const;
+/**
+ * "minimal" only — flat at 80% opacity through the first quarter, then fades linearly to
+ * transparent by `h`. Taller and stronger than the classic scrim (measured off Figma node
+ * 229:159's own scrim rect) because minimal has no frosted card behind its text — the whole
+ * headline/tagline/chips/listing line/price stack sits directly on the photo, all the way
+ * down to ~460px on Just Listed, so the fade has to reach further than classic's wordmark +
+ * headline ever needed to.
+ */
+const MINIMAL_SCRIM = { h: 628, color: "26,41,66", flatAlpha: 0.8, flatTo: 0.24 } as const;
 const CHIP_STYLE = { h: 54, padX: 20, radius: 10, gap: 14, size: 17, weight: 500, tracking: 17 * 0.14, border: "rgba(255,255,255,1)", borderWidth: 0.5 } as const;
 /** "minimal" only — wordmark + agent/headshot block sit at this left edge; headline/tagline/chips/listing line/price are right-aligned to this edge. */
 const MINIMAL_LEFT = 98;
@@ -111,7 +120,6 @@ export const LISTING_MINIMAL = {
   height: 1440,
   wordmark: { ...WORDMARK, x: MINIMAL_LEFT, cy: 116.5 },
   headline: { size: 117, weight: 400, tracking: -7, maxWidth: 900, x: MINIMAL_RIGHT, cy: 164 },
-  topScrim: TOP_SCRIM,
   primary: { cy: 274, size: 27, weight: 300, maxWidth: 900, x: MINIMAL_RIGHT },
   price: { cy: 345.5, size: 55, weight: 400, maxWidth: 900, x: MINIMAL_RIGHT },
   agentName: { cy: 1293, size: 35, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
@@ -132,7 +140,6 @@ export const LISTING_CHIPS_MINIMAL = {
   height: 1440,
   wordmark: { ...WORDMARK, x: MINIMAL_LEFT, cy: 116.5 },
   headline: { size: 97, weight: 400, tracking: -7, maxWidth: 900, x: MINIMAL_RIGHT, cy: 151.5 },
-  topScrim: TOP_SCRIM,
   tagline: { cy: 249, size: 27, weight: 300, maxWidth: 900, x: MINIMAL_RIGHT },
   chips: { ...CHIP_STYLE, top: 286, align: "right" as const },
   primary: { cy: 378, size: 27, weight: 300, maxWidth: 900, x: MINIMAL_RIGHT },
@@ -274,13 +281,22 @@ function drawPhotoPlaceholder(ctx: CanvasRenderingContext2D) {
   ctx.fillText("Property photo", LISTING.width / 2, 640);
 }
 
-/** Eased navy → transparent gradient, `h` tall — used by every design's top scrim. */
+/** Eased navy → transparent gradient, `h` tall — used by the classic design's top scrim (wordmark + headline sit on it; everything below sits on the frosted card instead). */
 function topScrimGradient(ctx: CanvasRenderingContext2D, color: string, alpha: number, h: number) {
   const g = ctx.createLinearGradient(0, 0, 0, h);
   for (let i = 0; i <= 8; i++) {
     const t = i / 8;
     g.addColorStop(t, `rgba(${color},${(alpha * (1 - t) * (1 - t)).toFixed(3)})`);
   }
+  return g;
+}
+
+/** Flat navy → transparent gradient for the minimal design: solid through `flatTo`, then a straight linear fade to 0 by `h`. See MINIMAL_SCRIM for why this needs to be flatter/taller than the classic scrim. */
+function minimalScrimGradient(ctx: CanvasRenderingContext2D, s: typeof MINIMAL_SCRIM) {
+  const g = ctx.createLinearGradient(0, 0, 0, s.h);
+  g.addColorStop(0, `rgba(${s.color},${s.flatAlpha})`);
+  g.addColorStop(s.flatTo, `rgba(${s.color},${s.flatAlpha})`);
+  g.addColorStop(1, `rgba(${s.color},0)`);
   return g;
 }
 
@@ -479,8 +495,8 @@ function renderMinimal(ctx: CanvasRenderingContext2D, input: ListingInput) {
   const L = usesChips(input.variant) ? LISTING_CHIPS_MINIMAL : LISTING_MINIMAL;
   drawPhoto(ctx, input);
 
-  ctx.fillStyle = topScrimGradient(ctx, L.topScrim.color, L.topScrim.alpha, L.topScrim.h);
-  ctx.fillRect(0, 0, L.width, L.topScrim.h);
+  ctx.fillStyle = minimalScrimGradient(ctx, MINIMAL_SCRIM);
+  ctx.fillRect(0, 0, L.width, MINIMAL_SCRIM.h);
 
   ctx.fillStyle = L.color;
   ctx.textBaseline = "middle";
