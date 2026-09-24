@@ -2,7 +2,8 @@
  * LISTING POSTS — "Just Sold" / "Just Listed" / "Just Rented".
  * Three VARIANTS (headline + a couple of composition rules) × two DESIGNS (layout) — the
  * user picks the design, the tool page picks the variant. All share one field set: bedrooms,
- * bathrooms, sqft, property type, location, price, agent, headshot, QR.
+ * bathrooms, sqft, property type, location, price, agent, headshot, QR, plus a Just-Listed-only
+ * tagline (`listingLine`).
  *
  * "classic" — geometry measured from Figma: Images-Vol.02 › "Instagram Story – 22 2"
  * (node 685:60), 1080 × 1440, refined since in "Birthday-template" nodes 228:113 (Just Sold),
@@ -11,16 +12,19 @@
  * really blurs whatever photo sits behind it.
  *
  * "minimal" — geometry measured from Figma "Birthday-template" nodes 229:128 (Just Sold v1),
- * 229:159 (Just Listed v1), 229:200 (Just Rented v1). No card, no divider, no blur: the
- * listing line and price sit centred directly under the headline, and a smaller headshot
- * floats free near the bottom next to the QR tile.
+ * 229:159 (Just Listed v1), 229:200 (Just Rented v1). No card, no blur: the wordmark and the
+ * agent/headshot block sit left-aligned; the headline, tagline, chips, listing line and price
+ * sit right-aligned in a column on the right, and a smaller headshot floats free near the
+ * bottom next to the QR tile.
  *
  * The PRIMARY LINE is composed from bedrooms + property type + location, never typed as one
  * string:
  *   - Just Sold / Just Rented: "{bedrooms}-Bed {propertyType} in {location}", one line.
  *   - Just Listed: bedrooms moves into its own chip (alongside bathrooms and sqft — three
  *     bordered pills, "2 BED" / "7 BATHROOM" / "20,298 SQFT"), so the line below them is just
- *     "{propertyType} in {location}".
+ *     "{propertyType} in {location}". Just Listed also gets a free-text tagline
+ *     (`listingLine`, e.g. "Largest Layout Corner 2BR | Spacious | Pool View") drawn directly
+ *     under the headline — the other two variants don't have it.
  * Just Rented additionally appends " /year" to the price.
  */
 import { POST_FONT_STACK } from "@/tools/_shared/font";
@@ -53,6 +57,9 @@ const WORDMARK = { text: "provident.", weight: 300, size: 41 } as const;
 const HEADLINE_STYLE = { size: 140, weight: 400, tracking: -7, maxWidth: 960 } as const;
 const TOP_SCRIM = { h: 520, color: "26,41,66", alpha: 0.72 } as const;
 const CHIP_STYLE = { h: 54, padX: 20, radius: 10, gap: 14, size: 17, weight: 500, tracking: 17 * 0.14, border: "rgba(255,255,255,1)", borderWidth: 0.5 } as const;
+/** "minimal" only — wordmark + agent/headshot block sit at this left edge; headline/tagline/chips/listing line/price are right-aligned to this edge. */
+const MINIMAL_LEFT = 98;
+const MINIMAL_RIGHT = 996;
 
 /** "classic", Just Sold / Just Rented — measured off Figma nodes 228:113 / 222:113. */
 export const LISTING = {
@@ -73,12 +80,13 @@ export const LISTING = {
   color: "#FFFFFF",
 } as const;
 
-/** "classic", Just Listed — measured off Figma node 228:129. Adds the bed/bath/sqft chip row; the card grows to hold it (bottom edge unchanged, top extends up). */
+/** "classic", Just Listed — measured off Figma node 228:129. Adds the tagline under the headline and the bed/bath/sqft chip row; the card grows to hold the chips (bottom edge unchanged, top extends up). */
 export const LISTING_CHIPS = {
   width: 1080,
   height: 1440,
   wordmark: { ...WORDMARK, cx: 540, cy: 114 },
   headline: { ...HEADLINE_STYLE, cy: 259 },
+  tagline: { top: 354, size: 27, weight: 300, lineHeight: 34, maxWidth: 900 },
   topScrim: TOP_SCRIM,
   card: { x: 60, y: 949, w: 960, h: 432, radius: 24, fill: "rgba(26,41,66,0.5)", border: "rgba(255,255,255,0.33)", blur: 6.55 },
   col: { x: 109.5, w: 536 },
@@ -93,40 +101,50 @@ export const LISTING_CHIPS = {
   color: "#FFFFFF",
 } as const;
 
-/** "minimal", Just Sold / Just Rented — measured off Figma nodes 229:128 / 229:200. No card, no divider. */
+/**
+ * "minimal", Just Sold / Just Rented — measured off Figma nodes 229:128 / 229:200. No card, no
+ * blur. The wordmark and the agent/headshot block sit left-aligned at MINIMAL_LEFT; the
+ * headline, listing line and price are right-aligned to MINIMAL_RIGHT, stacked in a column.
+ */
 export const LISTING_MINIMAL = {
   width: 1080,
   height: 1440,
-  wordmark: { ...WORDMARK, cx: 540, cy: 98.5 },
-  headline: { ...HEADLINE_STYLE, cy: 206.5 },
+  wordmark: { ...WORDMARK, x: MINIMAL_LEFT, cy: 116.5 },
+  headline: { size: 117, weight: 400, tracking: -7, maxWidth: 900, x: MINIMAL_RIGHT, cy: 164 },
   topScrim: TOP_SCRIM,
-  primary: { cy: 335, size: 27, weight: 300, maxWidth: 900 },
-  price: { cy: 399.5, size: 55, weight: 400, maxWidth: 900 },
-  agentName: { cy: 1293, size: 35, weight: 400, maxWidth: 700 },
-  agentTitle: { cy: 1347, size: 24, weight: 500, tracking: 0.5, maxWidth: 700 },
-  headshot: { cx: 540, cy: 1133.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
+  primary: { cy: 274, size: 27, weight: 300, maxWidth: 900, x: MINIMAL_RIGHT },
+  price: { cy: 345.5, size: 55, weight: 400, maxWidth: 900, x: MINIMAL_RIGHT },
+  agentName: { cy: 1293, size: 35, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
+  agentTitle: { cy: 1347, size: 24, weight: 500, tracking: 0.5, maxWidth: 700, x: MINIMAL_LEFT },
+  headshot: { cx: 218.5, cy: 1123.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
   qr: { x: 848, y: 1194, size: 168, pad: 3, radius: 14 },
   color: "#FFFFFF",
 } as const;
 
-/** "minimal", Just Listed — measured off Figma node 229:159. Chip row sits between the headline and the primary line; the agent block below is unchanged from the other minimal designs. */
+/**
+ * "minimal", Just Listed — measured off Figma node 229:159. Same left/right split as
+ * LISTING_MINIMAL, but the right column also carries the tagline (directly under the
+ * headline) and the bed/bath/sqft chip row (right-aligned to MINIMAL_RIGHT); the headline and
+ * price sit smaller to make room. The agent/headshot block is unchanged.
+ */
 export const LISTING_CHIPS_MINIMAL = {
   width: 1080,
   height: 1440,
-  wordmark: { ...WORDMARK, cx: 540, cy: 98.5 },
-  headline: { ...HEADLINE_STYLE, cy: 206.5 },
+  wordmark: { ...WORDMARK, x: MINIMAL_LEFT, cy: 116.5 },
+  headline: { size: 97, weight: 400, tracking: -7, maxWidth: 900, x: MINIMAL_RIGHT, cy: 151.5 },
   topScrim: TOP_SCRIM,
-  chips: { ...CHIP_STYLE, top: 387, align: "center" as const },
-  primary: { cy: 492, size: 27, weight: 300, maxWidth: 900 },
-  price: { cy: 554.5, size: 55, weight: 400, maxWidth: 900 },
-  agentName: { cy: 1293, size: 35, weight: 400, maxWidth: 700 },
-  agentTitle: { cy: 1347, size: 24, weight: 500, tracking: 0.5, maxWidth: 700 },
-  headshot: { cx: 540, cy: 1133.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
+  tagline: { cy: 249, size: 27, weight: 300, maxWidth: 900, x: MINIMAL_RIGHT },
+  chips: { ...CHIP_STYLE, top: 286, align: "right" as const },
+  primary: { cy: 378, size: 27, weight: 300, maxWidth: 900, x: MINIMAL_RIGHT },
+  price: { cy: 439, size: 38, weight: 400, maxWidth: 900, x: MINIMAL_RIGHT },
+  agentName: { cy: 1293, size: 35, weight: 400, maxWidth: 700, x: MINIMAL_LEFT },
+  agentTitle: { cy: 1347, size: 24, weight: 500, tracking: 0.5, maxWidth: 700, x: MINIMAL_LEFT },
+  headshot: { cx: 218.5, cy: 1123.5, r: 120.5, border: "rgba(255,255,255,0.9)" },
   qr: { x: 848, y: 1194, size: 168, pad: 3, radius: 14 },
   color: "#FFFFFF",
 } as const;
 
-export const LISTING_LIMITS = { bedrooms: 4, bathrooms: 4, sqft: 12, propertyType: 24, location: 32, price: 20, agentName: 32, agentTitle: 28 } as const;
+export const LISTING_LIMITS = { bedrooms: 4, bathrooms: 4, sqft: 12, propertyType: 24, location: 32, price: 20, listingLine: 60, agentName: 32, agentTitle: 28 } as const;
 
 export type ListingInput = {
   variant: ListingVariant;
@@ -139,6 +157,8 @@ export type ListingInput = {
   propertyType: string;
   location: string;
   price: string;
+  /** Just Listed only — a free-text tagline drawn directly under the headline, e.g. "Largest Layout Corner 2BR | Spacious | Pool View". */
+  listingLine: string;
   agentName: string;
   agentTitle: string;
   headshot: Drawable | null;
@@ -221,14 +241,14 @@ function fitLine(ctx: CanvasRenderingContext2D, text: string, weight: number, si
   }
 }
 
-function drawTracked(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, tracking: number, align: "left" | "center") {
+function drawTracked(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, tracking: number, align: "left" | "center" | "right") {
   if (!tracking) {
     ctx.textAlign = align;
     ctx.fillText(text, x, y);
     return;
   }
   const total = ctx.measureText(text).width + tracking * (text.length - 1);
-  let cx = align === "center" ? x - total / 2 : x;
+  let cx = align === "center" ? x - total / 2 : align === "right" ? x - total : x;
   ctx.textAlign = "left";
   for (const ch of text) {
     ctx.fillText(ch, cx, y);
@@ -291,8 +311,8 @@ function drawChip(ctx: CanvasRenderingContext2D, text: string, x: number, cy: nu
   return w;
 }
 
-/** The bed / bath / sqft chip row — left-aligned at `startX` (classic) or centred on `cx` (minimal). Empty values are skipped. */
-function drawChipRow(ctx: CanvasRenderingContext2D, input: ListingInput, chips: typeof CHIP_STYLE & { top: number; align: "left" | "center" }, anchorX: number) {
+/** The bed / bath / sqft chip row — left-aligned at `anchorX` (classic), centred on it (minimal Just Sold-style), or right-aligned to it (minimal Just Listed). Empty values are skipped. */
+function drawChipRow(ctx: CanvasRenderingContext2D, input: ListingInput, chips: typeof CHIP_STYLE & { top: number; align: "left" | "center" | "right" }, anchorX: number) {
   const values: [string, string][] = [
     [input.bedrooms.trim(), "BED"],
     [input.bathrooms.trim(), "BATHROOM"],
@@ -306,11 +326,11 @@ function drawChipRow(ctx: CanvasRenderingContext2D, input: ListingInput, chips: 
     for (const [value, label] of values) x += drawChip(ctx, `${value} ${label}`, x, cy, chips) + chips.gap;
     return;
   }
-  // Centred: measure every chip's width first so the row can be centred as a whole.
+  // Centred or right-aligned: measure every chip's width first so the row can be placed as a whole.
   ctx.font = font(chips.weight, chips.size);
   const widths = values.map(([value, label]) => trackedWidth(ctx, `${value} ${label}`, chips.tracking) + chips.padX * 2);
   const total = widths.reduce((a, b) => a + b, 0) + chips.gap * (values.length - 1);
-  let x = anchorX - total / 2;
+  let x = chips.align === "right" ? anchorX - total : anchorX - total / 2;
   values.forEach(([value, label], i) => {
     drawChip(ctx, `${value} ${label}`, x, cy, chips);
     x += widths[i] + chips.gap;
@@ -380,6 +400,17 @@ function renderClassic(ctx: CanvasRenderingContext2D, input: ListingInput) {
   ctx.font = font(L.headline.weight, hf.fontSize);
   drawTracked(ctx, headline, L.width / 2, L.headline.cy, L.headline.tracking * (hf.fontSize / L.headline.size), "center");
 
+  // Tagline (Just Listed only) — centred directly under the headline
+  if ("tagline" in L) {
+    const tagline = input.listingLine.trim();
+    if (tagline) {
+      const f = fitLine(ctx, tagline, L.tagline.weight, L.tagline.size, L.tagline.maxWidth);
+      ctx.font = font(L.tagline.weight, f.fontSize);
+      ctx.textAlign = "center";
+      ctx.fillText(tagline, L.width / 2, L.tagline.top + L.tagline.lineHeight / 2);
+    }
+  }
+
   // Frosted card: blurred copy of the photo clipped to the card, then tint + border
   const c = L.card;
   ctx.save();
@@ -443,6 +474,7 @@ function renderClassic(ctx: CanvasRenderingContext2D, input: ListingInput) {
   drawQr(ctx, input, L.qr);
 }
 
+/** "minimal" — wordmark + agent/headshot block left-aligned at MINIMAL_LEFT; headline/tagline/chips/listing line/price right-aligned to MINIMAL_RIGHT. */
 function renderMinimal(ctx: CanvasRenderingContext2D, input: ListingInput) {
   const L = usesChips(input.variant) ? LISTING_CHIPS_MINIMAL : LISTING_MINIMAL;
   drawPhoto(ctx, input);
@@ -452,47 +484,58 @@ function renderMinimal(ctx: CanvasRenderingContext2D, input: ListingInput) {
 
   ctx.fillStyle = L.color;
   ctx.textBaseline = "middle";
-  ctx.textAlign = "center";
+  ctx.textAlign = "left";
   ctx.font = font(L.wordmark.weight, L.wordmark.size);
-  ctx.fillText(L.wordmark.text, L.wordmark.cx, L.wordmark.cy);
+  ctx.fillText(L.wordmark.text, L.wordmark.x, L.wordmark.cy);
 
   const headline = HEADLINES[input.variant];
   const hf = fitLine(ctx, headline, L.headline.weight, L.headline.size, L.headline.maxWidth, L.headline.tracking);
   ctx.font = font(L.headline.weight, hf.fontSize);
-  drawTracked(ctx, headline, L.width / 2, L.headline.cy, L.headline.tracking * (hf.fontSize / L.headline.size), "center");
+  drawTracked(ctx, headline, L.headline.x, L.headline.cy, L.headline.tracking * (hf.fontSize / L.headline.size), "right");
 
-  // Bed / bath / sqft chips (Just Listed only) — centred, between the headline and the primary line
-  if ("chips" in L) drawChipRow(ctx, input, L.chips, L.width / 2);
+  // Tagline (Just Listed only) — right-aligned, directly under the headline
+  if ("tagline" in L) {
+    const tagline = input.listingLine.trim();
+    if (tagline) {
+      const f = fitLine(ctx, tagline, L.tagline.weight, L.tagline.size, L.tagline.maxWidth);
+      ctx.font = font(L.tagline.weight, f.fontSize);
+      ctx.textAlign = "right";
+      ctx.fillText(tagline, L.tagline.x, L.tagline.cy);
+    }
+  }
 
-  // Primary line + price — centred, no card
+  // Bed / bath / sqft chips (Just Listed only) — right-aligned to the same column
+  if ("chips" in L) drawChipRow(ctx, input, L.chips, MINIMAL_RIGHT);
+
+  // Primary line + price — right-aligned, no card
   const primary = primaryLine(input);
   if (primary) {
     const f = fitLine(ctx, primary, L.primary.weight, L.primary.size, L.primary.maxWidth);
     ctx.font = font(L.primary.weight, f.fontSize);
-    ctx.textAlign = "center";
-    ctx.fillText(primary, L.width / 2, L.primary.cy);
+    ctx.textAlign = "right";
+    ctx.fillText(primary, L.primary.x, L.primary.cy);
   }
   const price = priceLine(input);
   if (price) {
     const f = fitLine(ctx, price, L.price.weight, L.price.size, L.price.maxWidth);
     ctx.font = font(L.price.weight, f.fontSize);
-    ctx.textAlign = "center";
-    ctx.fillText(price, L.width / 2, L.price.cy);
+    ctx.textAlign = "right";
+    ctx.fillText(price, L.price.x, L.price.cy);
   }
 
-  // Agent name + designation — centred, near the foot, no divider
+  // Agent name + designation — left-aligned, near the foot, no divider
   const name = input.agentName.trim();
   if (name) {
     const f = fitLine(ctx, name, L.agentName.weight, L.agentName.size, L.agentName.maxWidth);
     ctx.font = font(L.agentName.weight, f.fontSize);
-    ctx.textAlign = "center";
-    ctx.fillText(name, L.width / 2, L.agentName.cy);
+    ctx.textAlign = "left";
+    ctx.fillText(name, L.agentName.x, L.agentName.cy);
   }
   const title = input.agentTitle.trim().toUpperCase();
   if (title) {
     const f = fitLine(ctx, title, L.agentTitle.weight, L.agentTitle.size, L.agentTitle.maxWidth, L.agentTitle.tracking);
     ctx.font = font(L.agentTitle.weight, f.fontSize);
-    drawTracked(ctx, title, L.width / 2, L.agentTitle.cy, L.agentTitle.tracking, "center");
+    drawTracked(ctx, title, L.agentTitle.x, L.agentTitle.cy, L.agentTitle.tracking, "left");
   }
 
   drawHeadshot(ctx, input, L.headshot, headshotBoxFor(input.variant, input.design));

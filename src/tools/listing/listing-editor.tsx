@@ -81,6 +81,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   const [propertyType, setPropertyType] = useState("");
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
+  const [listingLine, setListingLine] = useState("");
   const [agentId, setAgentId] = useState<string>(EMPLOYEES[0]?.id ?? MANUAL);
   const [agentName, setAgentName] = useState(EMPLOYEES[0]?.fullName ?? "");
   const [agentTitle, setAgentTitle] = useState(EMPLOYEES[0]?.designation ?? "");
@@ -115,8 +116,8 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   }, []);
 
   const input = useMemo(
-    () => ({ variant, design, photo, photoTransform: photoT, bedrooms, bathrooms, sqft, propertyType, location, price, agentName, agentTitle, headshot, headshotTransform: headshotT, qr, showPlaceholders: true }),
-    [variant, design, photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, agentName, agentTitle, headshot, headshotT, qr],
+    () => ({ variant, design, photo, photoTransform: photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, headshot, headshotTransform: headshotT, qr, showPlaceholders: true }),
+    [variant, design, photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, headshot, headshotT, qr],
   );
 
   // Live preview
@@ -168,7 +169,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   if (!qr) problems.push("Upload your DLD permit QR — every listing post needs it.");
   const canGenerate = fontReady && problems.length === 0 && !busy;
 
-  const stateKey = JSON.stringify([variant, design, !!photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, agentName, agentTitle, !!headshot, headshotT, !!qr]);
+  const stateKey = JSON.stringify([variant, design, !!photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, !!headshot, headshotT, !!qr]);
   const result = exported?.key === stateKey ? exported.result : null;
 
   async function generate() {
@@ -264,6 +265,15 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
           </div>
           <Input id="price" value={price} onChange={(e) => setPrice(e.target.value)} placeholder={isRented ? "e.g. AED 120,000" : "e.g. AED 12 Million"} />
         </div>
+        {showBedBathSqft && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="listingLine">Listing line <span className="text-muted-foreground">· optional</span></Label>
+              <Counter value={listingLine} max={LISTING_LIMITS.listingLine} />
+            </div>
+            <Input id="listingLine" value={listingLine} onChange={(e) => setListingLine(e.target.value)} placeholder="e.g. Largest Layout Corner 2BR | Spacious | Pool View" />
+          </div>
+        )}
 
         {/* Agent */}
         <div className="space-y-3 border-t pt-5">
