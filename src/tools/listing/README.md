@@ -62,11 +62,12 @@ Minimal story's own text also runs larger across the board than post's — wordm
 primary and price all got individually re-sized in Figma (not a single scale factor: price
 went from 55/38px to a shared 66px on both variants, primary from 27px to a shared 38px,
 while headline and wordmark moved by a more modest ~1.2×), so every size in
-`LISTING_MINIMAL_STORY` / `LISTING_CHIPS_MINIMAL_STORY` is its own measured value. Just
-Listed's agent/headshot/QR block also moved independently of Just Sold/Rented's this time —
-about 27px higher, with a taller scrim to match (`MINIMAL_BOTTOM_SCRIM_CHIPS_STORY`,
-`HEADSHOT_BOX_MINIMAL_CHIPS_STORY`) — where every other minimal variant/format shares one
-block position across chips/non-chips.
+`LISTING_MINIMAL_STORY` / `LISTING_CHIPS_MINIMAL_STORY` is its own measured value. Kelvin has
+since repositioned the whole minimal-story block a second time (frame top now y=307.67, was
+233) — Just Sold/Rented and Just Listed's agent/headshot/QR block, top scrim and bottom scrim
+now converge on one shared position (`MINIMAL_SCRIM_STORY`, `MINIMAL_BOTTOM_SCRIM_STORY`,
+`HEADSHOT_BOX_MINIMAL_STORY`), where an earlier pass had Just Listed's block sitting ~27px
+higher with its own taller scrim; that split no longer exists.
 
 **Scrims.** Every scrim on both designs is the same shape — flat at `flatAlpha` opacity
 through the first quarter (`flatTo`), then a straight linear fade to transparent by `h` —
@@ -82,16 +83,15 @@ is its own measured constant rather than a formula:
   doesn't); `TOP_SCRIM_CHIPS` (663px) for Just Listed post, `TOP_SCRIM_CHIPS_STORY` (884px)
   for Just Listed story.
 - **Minimal** — no card, so both ends of the text stack need their own contrast:
-  `MINIMAL_SCRIM` (628px, post, both variants) / `MINIMAL_SCRIM_STORY` (762px, story Just
-  Sold/Rented) / `MINIMAL_SCRIM_CHIPS_STORY` (1040px, story Just Listed) behind the
-  headline→price column, plus `MINIMAL_BOTTOM_SCRIM` / `MINIMAL_BOTTOM_SCRIM_STORY` (357px,
-  weaker at 60% flat opacity, y=1083 post / y=1565 story) behind the headshot/agent block near
-  the foot, grounded against the bottom edge (`scrimGradient`'s `anchor: "bottom"` — solid at
-  `y + h`, fading out going up into the photo, the mirror of every other scrim here which is
-  solid at the top and fades going down). Its `flatTo` (0.8) runs past what's actually in
-  Figma (0.24, which fades out well above the agent name/title) so the flat run keeps the
-  whole block, agent name and title included, protected on an evenly bright photo instead of
-  just the top of the headshot.
+  `MINIMAL_SCRIM` (628px, post, both variants) / `MINIMAL_SCRIM_STORY` (1229px, story, shared
+  by all three variants) behind the headline→price column, plus `MINIMAL_BOTTOM_SCRIM` /
+  `MINIMAL_BOTTOM_SCRIM_STORY` (357px post / 569px story, weaker at 60% flat opacity, y=1083
+  post / y=1351 story) behind the headshot/agent block near the foot, grounded against the
+  bottom edge (`scrimGradient`'s `anchor: "bottom"` — solid at `y + h`, fading out going up
+  into the photo, the mirror of every other scrim here which is solid at the top and fades
+  going down). Its `flatTo` (0.8) runs past what's actually in Figma (0.24, which fades out
+  well above the agent name/title) so the flat run keeps the whole block, agent name and title
+  included, protected on an evenly bright photo instead of just the top of the headshot.
 
 Depends on: `_shared/` (font, render helpers, export, `PhotoDropzone`, `Counter`), `@/lib/demo/employees` (`EMPLOYEES` — replace with the CRM), `@/lib/store` (`logGeneratedPost`), `@/components/ui/{button,input,label,select}`, `@/lib/utils`.
 
