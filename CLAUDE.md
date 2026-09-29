@@ -6,6 +6,7 @@ Front-end-only Next.js 16 / TypeScript app for Provident Estate. Demo data, no a
 - Data: employees from `src/lib/demo/employees.ts`; generated-post log in `src/lib/store.ts` (localStorage). No nav, no requests, no auth — the CRM shell provides those. Keep the types in `src/lib/demo/types.ts` stable — they are the integration contract.
 - UI: Tailwind v4 + primitives in `src/components/ui`. Brand tokens in `src/app/globals.css`; rules in STYLEGUIDE.md. Google Sans Flex only; weights 300 body / 400 headers / 500 tracked caps. Orange is an accent only. Keep screens simple.
 - Post engine in `src/tools/_shared/` is a faithful port — do not change template geometry or the font lock.
+- Project Booklet (`src/tools/project-booklet/`, README there) is HTML/CSS artwork, not the post engine: pages are fixed 1080-wide layouts in `booklet.module.css` / `social.module.css`, matched to the approved Figma frames — change geometry deliberately. Its saved projects (`projects/*.json` + `public/tools/project-booklet/projects/`) come from `npm run snapshot` — re-run it, don't hand-edit the JSON — and `scrape.ts` must keep its local imports type-only (`import type`) and its TypeScript erasable (no enums) so plain Node can run it.
 - Next 16: route params/searchParams are Promises.
 
 <!-- BEGIN:nextjs-agent-rules -->

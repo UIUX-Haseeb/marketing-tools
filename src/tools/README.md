@@ -18,6 +18,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `marriage/` | Marriage / engagement congratulations (name, designation, he/she + occasion wording) | `index.tsx` | `public/tools/marriage/` |
 | `condolence/` | Condolence post with read-before-download gate | `index.tsx` | `public/tools/condolence/` |
 | `listing/` | Just Sold + Just Listed + Just Rented (Classic/Minimal design × Post/Story format, four layouts each) | `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx` | none (photo is uploaded) |
+| `project-booklet/` | Off-plan project → 4:5 PDF brochure, feed/story post or carousel (two designs each). Does **not** need `_shared/` — its upload helpers and ZIP writer are its own copies. Also copy the `/sheet` route (`src/app/sheet/`) and `scripts/snapshot-projects.mjs` if you want the template sheet and the project refresh | `index.tsx` | `public/tools/project-booklet/` (closing photo + each saved project's pictures) |
 
 ## Host contract (what the tools import from the app)
 
@@ -28,6 +29,8 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `@/lib/demo/employees` → `EMPLOYEES`, `listEmployees()` | employee list (name, designation, DOB, photo) | demo data | **your CRM** — keep the `Employee` type from `src/lib/demo/types.ts` |
 | `@/lib/store` → `logGeneratedPost` | post log | localStorage | **your API** — same signature |
 | `lucide-react` | icons | npm | npm |
+| `html-to-image` | draws the booklet's HTML pages to canvas for download (`project-booklet/` only) | npm | npm |
+| `node-html-parser` | parses project pages in `project-booklet/scrape.ts` — used by `npm run snapshot` only, never in the browser | npm | npm (or drop it with the snapshot script) |
 
 Fonts: `_shared/font.ts` registers Google Sans Flex (300, 400-subset, 500) under a private family name via the FontFace API and refuses to export if a substitute font is detected. Keep the three woff2 files reachable at `/tools/_shared/fonts/` (or change `POST_FONT_URL` / `EXTRA_FACES`).
 

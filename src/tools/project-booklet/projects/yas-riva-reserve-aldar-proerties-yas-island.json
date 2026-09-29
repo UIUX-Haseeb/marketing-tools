@@ -1,0 +1,262 @@
+{
+  "id": "yas-riva-reserve-aldar-proerties-yas-island",
+  "savedOn": "2026-09-29",
+  "sources": {
+    "gallery-01.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-7-16.jpg",
+    "gallery-02.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-6-16.jpg",
+    "gallery-03.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-5-17.jpg",
+    "gallery-04.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-4-17.jpg",
+    "gallery-05.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-3-17.jpg",
+    "gallery-06.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-2-17.jpg",
+    "gallery-07.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-1-17.jpg",
+    "gallery-08.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-27.jpg",
+    "hero.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Hero-image-offplan-30.jpg",
+    "map.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Map-12.jpg",
+    "developer-logo.svg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/08/aldar-1-1.svg",
+    "developer.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/08/Aldar.jpg",
+    "area.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/08/Feature-image-1.jpg",
+    "thumbnail.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Feature-image-30.jpg"
+  },
+  "data": {
+    "url": "https://www.abudhabipropertyhub.com/yas-riva-reserve-aldar-proerties-yas-island/",
+    "name": "Yas Riva Reserve",
+    "developer": "Aldar Properties",
+    "location": "Yas Island",
+    "city": "Abu Dhabi",
+    "heroImage": "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/hero.jpg",
+    "heroStats": [
+      {
+        "label": "Starting Price",
+        "value": "AED 7.9M"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "50/50"
+      },
+      {
+        "label": "Handover",
+        "value": "2030"
+      }
+    ],
+    "overview": [
+      "Yas Riva Reserve by Aldar Properties is a gated villa community located to the northeast of Yas Island, Abu Dhabi, offering **4, 5, and 6-bedroom villas.** Designed around modern family living, the community features contemporary architecture, generous layouts, private landscaped areas, and strong indoor-outdoor connections, with selected homes offering direct waterway access.",
+      "Yas Riva Reserve Yas Island combines privacy, waterfront surroundings, and family-focused amenities including a clubhouse, swimming pool, indoor and outdoor fitness spaces, children’s play areas, and sports and padel courts. Interconnected parks and landscaped open spaces further support an active, community-oriented lifestyle. The development also offers strong potential for high capital appreciation within one of Abu Dhabi’s most established destinations."
+    ],
+    "highlights": [
+      {
+        "title": "Prime Yas Island Location",
+        "text": "Positioned northeast of Yas Island, with a new bridge connecting residents directly to the island’s attractions and amenities."
+      },
+      {
+        "title": "Exclusive Villa Collection",
+        "text": "A gated collection of 292 four, five, and six-bedroom villas designed around privacy, space, and modern family living."
+      },
+      {
+        "title": "Waterway-Fronted Homes",
+        "text": "Includes 45 waterway-fronted villas, with flexibility to add pontoons for boat mooring beside selected homes."
+      },
+      {
+        "title": "Extensive Community Amenities",
+        "text": "Clubhouse, pool, fitness areas, play spaces, sports courts, retail, and a mosque support everyday community living."
+      },
+      {
+        "title": "Developed by Aldar Properties",
+        "text": "Developed by Aldar Properties, extending the Yas Riva destination with a new villa-focused waterfront community."
+      },
+      {
+        "title": "Starting Price",
+        "text": "Starting from AED 7.9M, the villas offer entry into a newly launched gated community on Yas Island."
+      },
+      {
+        "title": "Capital Appreciation Potential",
+        "text": "Yas Island’s established attractions, connectivity, and evolving destination appeal support the project’s high capital appreciation potential."
+      },
+      {
+        "title": "Nature-Led Community",
+        "text": "Interconnected linear parks, pocket gardens, and landscaped open spaces create a walkable, nature-led environment for residents."
+      }
+    ],
+    "details": [
+      {
+        "label": "Starting Price",
+        "value": "AED 7,900,000"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "50/50"
+      },
+      {
+        "label": "Property Types",
+        "value": "Villas"
+      },
+      {
+        "label": "Developer",
+        "value": "Aldar Properties"
+      },
+      {
+        "label": "Handover",
+        "value": "2030"
+      },
+      {
+        "label": "Size Range",
+        "value": "850 – 3,200 sq.ft"
+      },
+      {
+        "label": "Bedrooms",
+        "value": "4, 5, 6"
+      },
+      {
+        "label": "Location",
+        "value": "Yas Island"
+      }
+    ],
+    "gallery": [
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-01.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-02.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-03.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-04.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-05.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-06.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-07.jpg",
+      "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/gallery-08.jpg"
+    ],
+    "amenitiesIntro": "Yas Riva Reserve offers an exceptional array of world-class amenities designed to enhance every aspect of modern living.",
+    "amenities": [
+      "The Clubhouse",
+      "Gardens",
+      "Community Retail",
+      "Community-Wide Jogging and Cycling Tracks",
+      "Canal Viewing Deck",
+      "Indoor & Outdoor Fitness Areas",
+      "Outdoor Swimming Pools (Adult & Kids)",
+      "Indoor Games Room",
+      "Meditation Area & Yoga Deck",
+      "Kids’ Play Areas"
+    ],
+    "payment": [
+      {
+        "label": "On Booking",
+        "share": "5%",
+        "amount": "AED 395,000"
+      },
+      {
+        "label": "During Construction",
+        "share": "45%",
+        "amount": "AED 3,555,000"
+      },
+      {
+        "label": "On Handover",
+        "share": "50%",
+        "amount": "AED 3,950,000"
+      }
+    ],
+    "paymentNote": "Starting Price AED 7.9M. Handover 2030. Payment plans: 50/50.",
+    "locationText": [
+      "Yas Riva Reserve Abu Dhabi is positioned northeast of Yas Island, directly opposite Yas Riva. A new bridge will connect the community to Yas Island, while convenient road connections provide access to Abu Dhabi city, Zayed International Airport, and Dubai."
+    ],
+    "mapImage": "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/map.jpg",
+    "distances": [],
+    "investmentIntro": "This off-plan project presents strong investment potential across the UAE, with projected rental yields of 6–8%, long-term capital appreciation, and growing demand from both residents and international investors.",
+    "investmentStats": [
+      {
+        "value": "6–8%",
+        "label": "Projected Rental Yield"
+      },
+      {
+        "value": "10–15%",
+        "label": "Potential Capital Appreciation"
+      },
+      {
+        "value": "AED 2M+",
+        "label": "Golden Visa Eligibility Potential"
+      }
+    ],
+    "marketTitle": "Market Context",
+    "marketContext": [
+      "UAE off-plan properties continue to attract strong local and international investor demand.",
+      "Selected communities may offer rental yields of around 6–8%, depending on location and unit type.",
+      "Buyers may benefit from 10–15% potential price growth by handover in high-demand areas.",
+      "Properties from AED 2 million may qualify for UAE Golden Visa eligibility, subject to regulations."
+    ],
+    "financing": [
+      "Low Down Payment",
+      "Developer Payment Plans",
+      "Post-Handover Plans",
+      "Mortgage Assistance",
+      "Interest-Free Installments",
+      "Resident & Non-Resident Financing"
+    ],
+    "developerLogo": "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/developer-logo.svg",
+    "developerText": "Aldar Properties is a leading UAE real estate developer and manager, with a strong presence across Abu Dhabi and an expanding regional and international portfolio.",
+    "developerImage": "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/developer.jpg",
+    "unitTypes": [
+      {
+        "name": "Inland 4-Bedroom Villas",
+        "area": "7,653 Sq. Ft.",
+        "price": "AED 7.9M"
+      },
+      {
+        "name": "Inland 5-Bedroom Villas",
+        "area": "8,912 Sq. Ft.",
+        "price": "AED 9.3M"
+      },
+      {
+        "name": "Inland 6-Bedroom Villas",
+        "area": "1,0075 Sq. Ft.",
+        "price": "AED 10.5M"
+      },
+      {
+        "name": "Waterfront 5-Bedroom Villas",
+        "area": "8,632 Sq. Ft.",
+        "price": "AED 13.3M"
+      },
+      {
+        "name": "Waterfront 6-Bedroom Villas",
+        "area": "1,3928 Sq. Ft.",
+        "price": "AED 14.5M"
+      }
+    ],
+    "areaTitle": "About Yas Island",
+    "areaText": "Yas Island is a purpose-built entertainment and residential destination spanning roughly 25 sq. km between mainland Abu Dhabi and Zayed International Airport. Miral leads the island’s attractions and destination development, while Aldar Properties, Abu Dhabi’s largest listed property developer, has delivered much of the residential…",
+    "areaImage": "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/area.jpg",
+    "faqs": [
+      {
+        "question": "Where is Yas Riva Reserve located?",
+        "answer": "Yas Riva Reserve Abu Dhabi is located northeast of Yas Island, directly opposite Yas Riva, with a new bridge planned to connect the community to the island."
+      },
+      {
+        "question": "Who is the developer of Yas Riva Reserve?",
+        "answer": "Yas Riva Reserve is developed by Aldar Properties as a gated villa community extending the residential offering around Yas Island."
+      },
+      {
+        "question": "What villa types are available at Yas Riva Reserve?",
+        "answer": "Yas Riva Reserve by Aldar Properties comprises 4, 5, and 6-bedroom villas."
+      },
+      {
+        "question": "What is the starting price of Yas Riva Reserve?",
+        "answer": "Villas at Yas Riva Reserve start from AED 7.9 million."
+      },
+      {
+        "question": "How can I buy Yas Riva Reserve villas?",
+        "answer": "Browse our Yas Riva Reserve listings to explore available properties, then contact our property experts for guidance throughout the purchase process."
+      },
+      {
+        "question": "What amenities are available at Yas Riva Reserve?",
+        "answer": "Yas Riva Reserve amenities include a clubhouse, swimming pools, indoor and outdoor fitness spaces, play areas, sports and padel courts, retail, and a mosque."
+      },
+      {
+        "question": "Does Yas Riva Reserve offer waterfront villas?",
+        "answer": "Yes. The community includes 45 waterway-fronted homes."
+      },
+      {
+        "question": "How many villas are planned at Yas Riva Reserve?",
+        "answer": "Yas Riva Reserve Yas Island will comprise 292 villas with four, five, or six bedrooms, including 45 waterway-fronted residences."
+      },
+      {
+        "question": "What attractions are near Yas Riva Reserve?",
+        "answer": "Nearby destinations include Yas Acres, Yas Riva, SeaWorld Abu Dhabi, Warner Bros. World Abu Dhabi, Yas Mall, and Yas Marina Circuit."
+      }
+    ],
+    "thumbnail": "/tools/project-booklet/projects/yas-riva-reserve-aldar-proerties-yas-island/thumbnail.jpg"
+  }
+}

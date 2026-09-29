@@ -1,0 +1,282 @@
+{
+  "id": "binghatti-spectre-al-jaddaf",
+  "savedOn": "2026-09-25",
+  "sources": {
+    "gallery-01.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-7-2.jpg",
+    "gallery-02.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-12.jpg",
+    "gallery-03.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-1-2.jpg",
+    "gallery-04.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-2-2.jpg",
+    "gallery-05.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-3-2.jpg",
+    "gallery-06.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-4-2.jpg",
+    "gallery-07.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-5-2.jpg",
+    "gallery-08.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Gallery-6-2.jpg",
+    "hero.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Hero-image-offplan-10.jpg",
+    "map.jpg": "https://www.offplan-dubai.com/wp-content/themes/offplan-dubai/assets/images/map.jpg",
+    "developer-logo.svg": "https://www.offplan-dubai.com/wp-content/uploads/2026/04/binghatti.svg",
+    "developer.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Binghati-1.jpg",
+    "area.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Feature-image-28.jpg",
+    "thumbnail.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/09/Feature-image-11.jpg"
+  },
+  "data": {
+    "url": "https://www.offplan-dubai.com/binghatti-spectre-al-jaddaf/",
+    "name": "Binghatti Spectre",
+    "developer": "Binghatti",
+    "location": "Al Jaddaf",
+    "city": "Dubai",
+    "heroImage": "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/hero.jpg",
+    "heroStats": [
+      {
+        "label": "Starting Price",
+        "value": "AED 774.9K"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "50/50"
+      },
+      {
+        "label": "Handover",
+        "value": "2028"
+      }
+    ],
+    "overview": [
+      "Binghatti Spectre Dubai is a mixed-use development by Binghatti positioned at the northern gateway of Al Jaddaf Waterfront. The project features a twin-tower composition rising from a shared multi-level podium, combining residential apartments with office and retail spaces. The residential collection comprises 712 homes, including 81 studios, 546 one-bedroom apartments, 82 two-bedroom apartments and three 3-bedroom residences.",
+      "Binghatti Spectre apartments are designed around a central amenity offering with more than 20 leisure, wellness and family facilities. Residents can access swimming pools, fitness areas, a padel tennis court, jogging facilities, children’s spaces and landscaped social areas. The Binghatti Spectre location also provides access to Al Khail Road, nearby metro stations and views towards Dubai Creek, Downtown Dubai and Dubai Festival City."
+    ],
+    "highlights": [
+      {
+        "title": "Al Jaddaf Waterfront Location",
+        "text": "Binghatti Spectre Al Jaddaf Waterfront occupies a position at the northern gateway of the district, close to Dubai Creek and key parts of central Dubai."
+      },
+      {
+        "title": "Twin-Tower Architecture",
+        "text": "The development features two towers rising from a unified multi-level podium, creating a distinctive mixed-use composition of residences, offices and retail."
+      },
+      {
+        "title": "712 Residential Apartments",
+        "text": "The residential collection includes 81 studios, 546 one-bedroom homes, 82 two-bedroom apartments and three 3-bedroom residences."
+      },
+      {
+        "title": "20+ Lifestyle Amenities",
+        "text": "Binghatti Spectre amenities include adults’ and children’s pools, fitness facilities, yoga and aerobics space, padel tennis, jogging facilities and social seating areas."
+      },
+      {
+        "title": "Strong Road Connectivity",
+        "text": "The site provides direct access towards Al Khail Road and the D68 intersection, supporting connections to major areas of Dubai."
+      },
+      {
+        "title": "Metro Access",
+        "text": "Al Jaddaf Metro Station and Creek Metro Station are described as being within a short walk of the development."
+      },
+      {
+        "title": "Dubai Skyline Views",
+        "text": "Selected orientations provide views towards Dubai Creek, Dubai Festival City, Downtown Dubai, Burj Khalifa and Dubai Creek Harbour."
+      },
+      {
+        "title": "Flexible Apartment Collection",
+        "text": "Binghatti Spectre by Binghatti offers studios and 1, 2 and 3-bedroom apartments, supporting a range of resident and investor requirements."
+      }
+    ],
+    "details": [
+      {
+        "label": "Starting Price",
+        "value": "AED 774,999"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "50/50"
+      },
+      {
+        "label": "Property Types",
+        "value": "Apartments"
+      },
+      {
+        "label": "Developer",
+        "value": "Binghatti"
+      },
+      {
+        "label": "Handover",
+        "value": "2028"
+      },
+      {
+        "label": "Size Range",
+        "value": "850 – 3,200 sq.ft"
+      },
+      {
+        "label": "Bedrooms",
+        "value": "1, Studio"
+      },
+      {
+        "label": "Location",
+        "value": "Al Jaddaf"
+      }
+    ],
+    "gallery": [
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-01.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-02.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-03.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-04.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-05.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-06.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-07.jpg",
+      "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/gallery-08.jpg"
+    ],
+    "amenitiesIntro": "Binghatti Spectre offers an exceptional array of world-class amenities designed to enhance every aspect of modern living.",
+    "amenities": [
+      "Adults' & Kids' Swimming Pool",
+      "Fitness Facilities",
+      "Aerobics / Yoga Platform",
+      "Padel Tennis Court",
+      "90-Metre Jogging / Sprint Lane",
+      "Children's Play Area",
+      "Family Sitting & Social Nooks",
+      "Lounge Sitting Platforms",
+      "Activity Tables & Ping Pong",
+      "Open Lawn"
+    ],
+    "payment": [
+      {
+        "label": "On Booking",
+        "share": "10%",
+        "amount": "AED 77,500"
+      },
+      {
+        "label": "During Construction",
+        "share": "40%",
+        "amount": "AED 310,000"
+      },
+      {
+        "label": "On Handover",
+        "share": "50%",
+        "amount": "AED 387,500"
+      }
+    ],
+    "paymentNote": "Starting Price AED 774,999. Indicative handover in 2028. Payment plan: 50/50.",
+    "locationText": [
+      "The Binghatti Spectre location is at Al Jaddaf Waterfront, positioned near Dubai Creek and with direct access towards Al Khail Road. The development is also close to Al Jaddaf Metro Station and Creek Metro Station, while major destinations including Dubai Mall, Burj Khalifa, Dubai Festival City and Dubai International Airport are connected through the surrounding road network."
+    ],
+    "mapImage": "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/map.jpg",
+    "distances": [
+      {
+        "time": "2",
+        "place": "Al Jaddaf Metro Station"
+      },
+      {
+        "time": "2",
+        "place": "Creek Metro Station"
+      },
+      {
+        "time": "5",
+        "place": "Dubai Festival City"
+      },
+      {
+        "time": "5",
+        "place": "Dubai Mall & Burj Khalifa"
+      },
+      {
+        "time": "8",
+        "place": "Dubai International Airport"
+      }
+    ],
+    "investmentIntro": "This off-plan project presents strong investment potential across the UAE, with projected rental yields of 6–8%, long-term capital appreciation, and growing demand from both residents and international investors.",
+    "investmentStats": [
+      {
+        "value": "6–8%",
+        "label": "Projected Rental Yield"
+      },
+      {
+        "value": "10–15%",
+        "label": "Potential Capital Appreciation"
+      },
+      {
+        "value": "AED 2M+",
+        "label": "Golden Visa Eligibility Potential"
+      }
+    ],
+    "marketTitle": "Market Context",
+    "marketContext": [
+      "UAE off-plan properties continue to attract strong local and international investor demand.",
+      "Selected communities may offer rental yields of around 6–8%, depending on location and unit type.",
+      "Buyers may benefit from 10–15% potential price growth by handover in high-demand areas.",
+      "Properties from AED 2 million may qualify for UAE Golden Visa eligibility, subject to regulations."
+    ],
+    "financing": [
+      "Low Down Payment",
+      "Developer Payment Plans",
+      "Post-Handover Plans",
+      "Mortgage Assistance",
+      "Interest-Free Installments",
+      "Resident & Non-Resident Financing"
+    ],
+    "developerLogo": "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/developer-logo.svg",
+    "developerText": "Step into the world of Binghatti, one of Dubai’s fastest-rising and most distinctive developers, instantly recognisable for its signature interwoven balcony architecture and bold, design-led identity.",
+    "developerImage": "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/developer.jpg",
+    "unitTypes": [
+      {
+        "name": "Studio Apartments",
+        "area": "From 372.32 Sq. Ft.",
+        "price": "AED 774,999"
+      },
+      {
+        "name": "1-Bedroom Apartments",
+        "area": "From 698.58 Sq. Ft.",
+        "price": "AED 1.2M"
+      },
+      {
+        "name": "2-Bedroom Apartments",
+        "area": "From 1,012.45 Sq. Ft.",
+        "price": "AED 1.95M"
+      },
+      {
+        "name": "3-Bedroom Apartments",
+        "area": "From 1,458.51 Sq. Ft.",
+        "price": "AED 3.1M"
+      }
+    ],
+    "areaTitle": "About Al Jaddaf",
+    "areaText": "Al Jaddaf Dubai is a rapidly evolving waterfront district located along the western bank of Dubai Creek, between Bur Dubai, Zabeel and Dubai Healthcare City. Historically recognised as one of Dubai’s traditional dhow-building areas, the community has transformed into a modern residential and hospitality destination…",
+    "areaImage": "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/area.jpg",
+    "faqs": [
+      {
+        "question": "What is Binghatti Spectre?",
+        "answer": "Binghatti Spectre Dubai is a mixed-use twin-tower development in Al Jaddaf Waterfront comprising residences, offices and retail spaces. The residential component includes 712 apartments."
+      },
+      {
+        "question": "Where is Binghatti Spectre located?",
+        "answer": "Binghatti Spectre Al Jaddaf is located at the northern gateway of Al Jaddaf Waterfront, close to Dubai Creek and with access towards Al Khail Road."
+      },
+      {
+        "question": "Who is the developer of Binghatti Spectre?",
+        "answer": "Binghatti Spectre is developed by Binghatti. The developer’s official website currently lists the project among its new releases in Al Jaddaf."
+      },
+      {
+        "question": "What is the Binghatti Spectre Dubai price?",
+        "answer": "The current starting price for Binghatti Spectre is AED 774,999. Prices vary by unit type, size, floor and availability"
+      },
+      {
+        "question": "What is the Binghatti Spectre payment plan?",
+        "answer": "The currently published Binghatti Spectre payment plan is 50/50, structured as 10% on booking, 40% during construction and 50% on handover. Terms remain subject to developer confirmation."
+      },
+      {
+        "question": "What types of apartments are available at Binghatti Spectre?",
+        "answer": "Binghatti Spectre apartments include studios and 1, 2 and 3-bedroom residences. The development comprises 81 studios, 546 one-bedroom apartments, 82 two-bedroom apartments and three 3-bedroom units."
+      },
+      {
+        "question": "What are the Binghatti Spectre amenities?",
+        "answer": "Binghatti Spectre amenities include swimming pools, fitness facilities, children’s play areas, a yoga and aerobics platform, padel tennis court, jogging and sprint lane, open lawn and social seating spaces."
+      },
+      {
+        "question": "What are the apartment sizes at Binghatti Spectre?",
+        "answer": "Floor plans include studios from 372.32 sq. ft., one-bedroom apartments from 698.58 sq. ft., two-bedroom apartments from 1,012.45 sq. ft. and 3-bedroom layouts from approximately 1,458.51 sq. ft."
+      },
+      {
+        "question": "What views are available from Binghatti Spectre?",
+        "answer": "Depending on orientation, residences can overlook Dubai Creek, Mohammed bin Rashid Library and Dubai Festival City, while other views extend towards Downtown Dubai, Burj Khalifa and Dubai Creek Harbour."
+      },
+      {
+        "question": "Where can I find the Binghatti Spectre brochure and floor plans?",
+        "answer": "The Binghatti Spectre brochure and floor plans provide information on the apartment layouts, amenities, location, architecture and residential configurations. Available unit details should be checked at the time of enquiry, as sizes and availability can vary."
+      }
+    ],
+    "thumbnail": "/tools/project-booklet/projects/binghatti-spectre-al-jaddaf/thumbnail.jpg"
+  }
+}

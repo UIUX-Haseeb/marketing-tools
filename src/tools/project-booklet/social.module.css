@@ -1,0 +1,333 @@
+/*
+ * Social posts. The single post — both designs, feed and story — is the design as refined in
+ * Figma (ProvToys-Templates · Single post); its numbers are that file's. The carousel follows
+ * the Organic Post Studio's Carousel template (Provident Organic Studio.dc.html, `CS`):
+ *   · Organic's feed is 3:4 (1440) — the 4:5 carousel keeps its grid (105 / 94 insets) and its
+ *     vertical anchors (a top block starts 158 down, a bottom block ends 219 above the floor).
+ * The carousel's B · White is these slides on white with brochure design B's photo bands and
+ * panels, in Campaign's light inks (PAL.light).
+ * Brand rules kept: shades sized to the copy (never a wash over the whole photo), QR a small
+ * rounded square; the carousel keeps the wordmark left.
+ */
+
+.post {
+  --ink: #ffffff;
+  --soft: #ece7df;
+  --mute: #d4cfc4;
+  --brass: #b0905c;
+  --navy: #1a2942;
+  --chip: rgba(236, 231, 223, 0.45);
+  --rule: rgba(236, 231, 223, 0.55);
+  --hair: rgba(255, 255, 255, 0.4);
+  --r: 16px;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  color: var(--ink);
+  font-family: var(--font-google-sans), "Google Sans Flex", system-ui, sans-serif;
+  font-weight: 300;
+  font-feature-settings: normal;
+  -webkit-font-smoothing: antialiased;
+  text-align: left;
+}
+.post * { box-sizing: border-box; }
+.bg { position: absolute; inset: 0; background: #000; overflow: hidden; }
+.bg img, .pic img, .band img, .inset img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pic { overflow: hidden; background: #0f1b2d; }
+.scrim { position: absolute; inset: 0; pointer-events: none; }
+/* On the carousel the lower shade is sized to the copy (Organic: the scrim starts 250 above the
+   copy): it rides on the copy block — the cover's name block, the bullets list — so a two-line
+   name or a longer list lifts it with the copy instead of leaving the first line on bare photo.
+   It spans the canvas; the slide clips it. `.scrim` keeps only the top shade. */
+.front .bot, .blist { z-index: 0; }
+.front .bot::before, .blist::before { content: ""; position: absolute; z-index: -1; top: -250px; left: -1080px; right: -1080px; bottom: -1920px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(26, 41, 66, 0) 0, rgba(26, 41, 66, 0.62) 250px, rgba(26, 41, 66, 0.88) 500px, rgba(26, 41, 66, 0.95) 800px); }
+/* the wordmark sits above every shade */
+.wm { position: absolute; z-index: 1; display: block; width: auto; color: #fff; }
+.empty { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: rgba(255, 255, 255, 0.35);
+  font-weight: 500; font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; }
+.fit { overflow: hidden; }
+
+/* QR — the brand's small rounded square on a white plate */
+.qr { position: absolute; background: #fff; border-radius: 8px; overflow: hidden; }
+.qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.qr-empty { display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.12); border: 1.5px dashed rgba(236, 231, 223, 0.55); }
+.qr-empty span { font-weight: 500; font-size: 12px; letter-spacing: 0.2em; color: var(--mute); }
+
+/* ══ SINGLE POST — both designs as refined in Figma (ProvToys-Templates · Single post) ══════
+   A · Stacked: the photo across the top (755 of the feed, 968 of the story); at its foot one
+   group — the glass card (the location in brass caps, name, developer — beside the name on the
+   feed — figures, + chips on the story), the agent card, then wordmark and QR — on a navy
+   gradient sized to the group, solid a quarter (feed) or a fifth (story) of the way down it.
+   B · Split: the photo across the top (610 of the feed, 926 of the story); at its foot one
+   centred group on a navy gradient that closes in quickly (solid 15% / 13% of the way down) —
+   the cream location tag, name, the developer in brass, figures (+ chips on the story), the
+   agent card, then wordmark and QR. Both designs share the agent card.
+   Line heights are the design's rounded up to the pixel, the way Figma sizes its text boxes, so
+   every block lands where the frames have it. CSS also tracks the last letter of spaced caps and
+   Figma doesn't: a negative end margin (the tag: less end padding) takes it back, so they measure
+   and centre as drawn. */
+.feed { width: 1080px; height: 1350px; }
+.story { width: 1080px; height: 1920px; }
+.stacked, .split { background: var(--navy); }
+
+.wmi { display: block; width: auto; flex: none; color: #fff; }
+.qrs { position: relative; flex: none; background: #fff; border-radius: 8px; overflow: hidden; }
+.qrs img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.titles { align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; }
+.pname { margin: 0; align-self: stretch; font-weight: 300; font-size: calc(71px * var(--k, 1)); color: #fff; }
+.phook { font-weight: 300; font-size: 41px; line-height: 52px; color: var(--soft); }
+
+/* Figures — label over value, a hairline between */
+.specs { display: flex; align-items: flex-start; align-self: stretch; }
+.sc { flex: 0 1 auto; min-width: 0; display: flex; flex-direction: column; padding: 0 28px; border-left: 1px solid rgba(236, 231, 223, 0.55); }
+.sc:first-child { padding-left: 0; border-left: 0; }
+.sl { margin-right: -3.584px; font-weight: 500; font-size: 16px; line-height: 30px; letter-spacing: 3.584px; text-transform: uppercase; color: var(--mute); white-space: nowrap; }
+.sv { font-weight: 300; font-size: calc(49px * var(--k, 1)); line-height: 71px; color: #fff; white-space: nowrap; overflow: hidden; }
+/* A's feed: larger labels, values on a 60 line; its first and third columns keep the frame's
+   widths as minimums (277 / 324), so the figures sit as evenly as drawn */
+.stacked.feed .sl { margin-right: -3.072px; font-size: 19px; line-height: 25px; letter-spacing: 3.072px; }
+.stacked.feed .sv { font-size: calc(42px * var(--k, 1)); line-height: 60px; padding-top: 8px; }
+.stacked.feed .sc:nth-child(1) { min-width: 277.36px; }
+.stacked.feed .sc:nth-child(3) { min-width: 324.2px; }
+/* B's feed sets the values a size down */
+.split.feed .sv { font-size: calc(41px * var(--k, 1)); }
+
+/* Amenity chips (story) */
+/* rows the design's 847 wide (a hair past the card's content box, as drawn), so the chips wrap the same way on every project */
+.chips { display: flex; flex-wrap: wrap; gap: 12px; align-self: flex-start; width: 847px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 12px 20px; border: 2px solid rgba(236, 231, 223, 0.45); border-radius: 999px;
+  font-weight: 300; font-size: 28px; line-height: 42px; color: var(--soft); white-space: nowrap; }
+.chip svg { width: 30px; height: 30px; flex: none; color: var(--soft); }
+
+/* The agent card, on both designs — headshot (134 on the feed, 170 on the story), the name with
+   the BRN at the right, the designation, then phone and email */
+.acard { align-self: stretch; display: flex; align-items: center; gap: 40px; padding: 30px; border-radius: 20px; background: rgba(255, 255, 255, 0.12); text-align: left; }
+.ashot { position: relative; width: 170px; height: 170px; flex: none; border-radius: 50%; overflow: hidden; background: rgba(255, 255, 255, 0.12); }
+.feed .ashot { width: 134px; height: 134px; }
+.ashot img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: center; }
+/* the text block is the design's 139 tall, its three rows spread down it */
+.abody { flex: 1 1 0; min-width: 0; min-height: 139px; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; }
+.ahead { display: flex; justify-content: space-between; align-items: flex-start; gap: 44px; }
+.an { height: 48px; font-weight: 400; font-size: 34px; line-height: 58px; color: #fff; } /* the design's name box, shorter than its line */
+.brn { margin-right: -4px; font-weight: 500; font-size: 20px; line-height: 26px; letter-spacing: 4px; color: var(--mute); white-space: nowrap; }
+.ap { font-weight: 300; font-size: 20px; line-height: 36px; letter-spacing: 3.36px; text-transform: uppercase; color: var(--mute); }
+.stacked.feed .ap { color: var(--brass); }
+.acontact { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.aline { display: flex; align-items: center; gap: 8px; font-weight: 300; font-size: 23px; line-height: 37px; color: var(--soft); white-space: nowrap; }
+.aline svg { width: 28px; height: 28px; flex: none; color: var(--mute); }
+
+/* A · Stacked */
+.stacked.feed .bg { bottom: auto; height: 755px; }
+.stacked.story .bg { bottom: auto; height: 968px; }
+.stack { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; }
+.stacked.feed .stack { gap: 20px; padding: 80px 60px; background: linear-gradient(180deg, rgba(26, 41, 66, 0) 0%, #1a2942 25%); }
+/* the story's group is the design's 1087 wide from x −3, so its content runs 57 in from the left and 56 from the right */
+.stacked.story .stack { gap: 30px; padding: 80px 56px 80px 57px; background: linear-gradient(180deg, rgba(26, 41, 66, 0) 0%, #1a2942 20%); }
+.glassc { align-self: stretch; display: flex; flex-direction: column; padding: 40px; border-radius: 30px;
+  background: rgba(26, 41, 66, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+.feed .glassc { gap: 30px; }
+.story .glassc { gap: 50px; }
+.stacked.feed .titles { gap: 8px; }
+.stacked.story .titles { gap: 20px; }
+/* the location: brass caps over the name */
+.loc { margin-right: -4.48px; font-weight: 500; line-height: 37px; letter-spacing: 4.48px; text-transform: uppercase; color: var(--brass); }
+.feed .loc { font-size: 23px; }
+.story .loc { font-size: 28px; }
+/* the feed puts the developer at the right end of the name's line (under it when both don't
+   fit, so a long name keeps to one line); the story keeps it under */
+.nrow { align-self: stretch; display: flex; }
+.feed .nrow { flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.feed .nrow .pname { flex: 0 1 auto; min-width: 0; align-self: auto; font-size: calc(59px * var(--k, 1)); line-height: 1.5593; } /* 92 at 59 */
+.feed .nrow .phook { flex: none; font-size: 34px; white-space: nowrap; }
+.story .nrow { flex-direction: column; align-items: flex-start; gap: 20px; }
+/* 92 at 71; the frame's name box is 83, so the developer comes up under it the same way */
+.stacked.story .pname { line-height: 1.293; margin-bottom: -8.8px; }
+.foot { align-self: stretch; display: flex; justify-content: space-between; align-items: flex-end; }
+.stacked.feed .wmi { height: 40px; }
+.stacked.feed .qrs { width: 86px; height: 86px; }
+.stacked.story .wmi { height: 49px; }
+.stacked.story .qrs { width: 104px; height: 104px; }
+
+/* B · Split */
+.split .bg { bottom: auto; }
+.split.feed .bg { height: 610px; }
+.split.story .bg { height: 926px; }
+.split .stack { padding: 100px 60px; text-align: center; }
+.split.feed .stack { gap: 30px; background: linear-gradient(180deg, rgba(26, 41, 66, 0) 0%, rgba(26, 41, 66, 0.84) 7.32%, #1a2942 15%); }
+.split.story .stack { gap: 40px; background: linear-gradient(180deg, rgba(26, 41, 66, 0) 0%, rgba(26, 41, 66, 0.84) 6.53%, #1a2942 13.03%); }
+.split .titles { align-items: center; }
+.split.feed .titles { gap: 0; }
+.split.story .titles { gap: 10px; }
+.tag { padding: 10px 15.52px 10px 20px; background: #ece7df; color: #1a2942; font-weight: 500; font-size: 23px; line-height: 37px; letter-spacing: 4.48px; text-transform: uppercase; }
+.split .pname { line-height: 1.5775; } /* 112 at 71 */
+/* the story's name box is 95 in the frame, so the developer comes up under it the same way */
+.split.story .pname { margin-bottom: -17px; }
+.split .phook { color: var(--brass); }
+.split .specs { justify-content: center; }
+.split .chips { align-self: center; justify-content: center; align-content: center; }
+.split .foot { align-items: center; }
+.split .wmi { height: 40px; }
+.split .qrs { width: 86px; height: 86px; }
+
+/* ══ CAROUSEL · Organic Post Studio (4:5 slides) ═════════════════════════ */
+
+.slide { width: 1080px; height: 1350px; }
+.slide .wm { left: 105px; top: 90px; height: 40px; }
+.col { position: absolute; left: 105px; right: 94px; }
+.top { top: 158px; }
+.bot { bottom: 219px; }
+.ceye { font-weight: 500; font-size: 28px; line-height: 35px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); margin-bottom: 20px; }
+.ctitle { font-weight: 400; font-size: calc(68px * var(--k, 1)); line-height: 1.03; letter-spacing: -0.005em; margin: 0; }
+.cbody { font-weight: 400; font-size: calc(32px * var(--k, 1)); line-height: 1.27; color: var(--soft); margin-top: 29px; }
+.cbody p { margin: 0 0 calc(18px * var(--k, 1)); }
+.cbody p:last-child { margin-bottom: 0; }
+.cbody b { font-weight: 500; color: var(--ink); }
+.swipe { position: absolute; right: 94px; top: 1243px; height: 35px; display: flex; align-items: center; gap: 26px;
+  font-weight: 300; font-size: 28px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+.swipe svg { width: 14px; height: 22px; display: block; }
+
+/* Front page: name, support line, the three figures */
+.front .scrim { background: linear-gradient(180deg, rgba(26, 41, 66, 0.6) 0, rgba(26, 41, 66, 0) 260px); }
+.fname { font-weight: 400; font-size: calc(112px * var(--k, 1)); line-height: 1.02; letter-spacing: -0.02em; margin: 0; }
+.fsub { font-weight: 400; font-size: 32px; line-height: 49.8px; color: var(--soft); margin-top: 31px; }
+.frow { display: flex; margin-top: 44px; border-top: 1px solid var(--rule); padding-top: 30px; }
+.frow > div { flex: 1 1 0; min-width: 0; padding: 0 24px; border-left: 0.5px solid var(--rule); }
+.frow > div:first-child { padding-left: 0; border-left: 0; }
+.fval { font-weight: 300; font-size: 50px; line-height: 1.1; white-space: nowrap; }
+.flab { font-weight: 300; font-size: 22px; line-height: 1.3; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin-top: 11px; }
+.front .qr { left: 105px; top: 1182px; width: 96px; height: 96px; }
+
+/* Pages whose copy hangs from the top: solid at the top edge, clear by the canvas centre */
+.topwash .scrim { background: linear-gradient(180deg, rgba(26, 41, 66, 0.95) 0, rgba(26, 41, 66, 0.88) 28%, rgba(26, 41, 66, 0) 62%),
+  linear-gradient(180deg, rgba(26, 41, 66, 0) 80%, rgba(26, 41, 66, 0.6) 100%); }
+.topwash.long .scrim { background: linear-gradient(180deg, rgba(26, 41, 66, 0.95) 0, rgba(26, 41, 66, 0.9) 55%, rgba(26, 41, 66, 0.2) 88%, rgba(26, 41, 66, 0.6) 100%); }
+/* …and from the bottom */
+.botwash .scrim { background: linear-gradient(180deg, rgba(26, 41, 66, 0.55) 0, rgba(26, 41, 66, 0) 22%); }
+.navy { background: var(--navy); }
+/* Stats pages: title at the top, grid growing up past the centre — so the wash covers both
+   (Organic: when the copy climbs past the centre the scrim starts 250 above it). */
+.statwash .scrim { background: linear-gradient(180deg, rgba(26, 41, 66, 0.95) 0, rgba(26, 41, 66, 0.82) 26%, rgba(26, 41, 66, 0.86) 50%, rgba(26, 41, 66, 0.95) 100%); }
+
+/* Text page body box: the room between the title and SWIPE */
+.tbox { max-height: 820px; }
+
+/* Stats grid — two columns 402 apart on the canvas axis, growing upward off the floor */
+.grid { position: absolute; left: 0; right: 0; bottom: 208px; display: grid; grid-template-columns: repeat(2, 402px); justify-content: center; row-gap: 48px; }
+.grid.one { grid-template-columns: repeat(var(--n), 300px); }
+.stat { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; padding: 0 12px; }
+.stat svg { width: 72px; height: 72px; color: var(--soft); margin-bottom: 18px; }
+.sval { font-weight: 300; font-size: calc(58px * var(--k, 1)); line-height: 1.15; white-space: nowrap; max-width: 100%; }
+.slab { font-weight: 300; font-size: 24px; line-height: 1.3; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin-top: 11px; }
+
+/* Gallery page — four inset photos, so rounded */
+.mosaic { position: absolute; left: 105px; right: 94px; top: 360px; bottom: 150px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 17px; }
+.mosaic .pic { border-radius: var(--r); }
+
+/* Bullets — a 472 column against the right inset, 89.5 a row, hairline above each and one closing */
+.bhead { position: absolute; z-index: 1; left: 105px; width: 380px; bottom: 219px; }
+.blist { position: absolute; right: 94px; width: 472px; bottom: 210px; border-bottom: 0.5px solid var(--hair); }
+.brow { display: flex; align-items: flex-start; gap: 22px; min-height: 89.5px; padding: 26px 0 24px 32px; border-top: 0.5px solid var(--hair);
+  font-weight: 400; font-size: 32px; line-height: 1.2; }
+.brow svg { width: 34px; height: 34px; flex: none; margin-top: 1px; }
+
+/* Payment plan — the brochure's proportional bar, in the carousel's type */
+.pbar { position: absolute; left: 105px; right: 94px; top: 560px; height: 6px; display: grid; column-gap: 8px; }
+.pbar i { display: block; border-radius: 3px; background: rgba(255, 255, 255, 0.34); }
+.pbar i:first-child { background: var(--brass); }
+.pcols { position: absolute; left: 105px; right: 94px; top: 610px; display: grid; column-gap: 8px; }
+.pcols > div { min-width: 0; }
+.pn { font-weight: 500; font-size: 22px; letter-spacing: 0.2em; color: var(--brass); }
+.ppct { font-weight: 300; font-size: 150px; line-height: 1; letter-spacing: -0.04em; margin: 22px 0 0 -6px; }
+.pcols.n3 .ppct { font-size: 110px; }
+.pcols.n4 .ppct { font-size: 88px; }
+.plab { font-weight: 300; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin-top: 22px; }
+.pamt { font-weight: 400; font-size: 34px; margin-top: 10px; }
+.pnote { position: absolute; left: 105px; right: 94px; top: 1040px; font-weight: 300; font-size: 24px; line-height: 1.45; color: var(--mute); }
+
+/* Location — the map band, then the distances as a list */
+.mapband { position: absolute; left: 0; right: 0; top: 0; height: 470px; overflow: hidden; background: var(--navy); }
+.mapband img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.07); }
+.locttl { top: 540px; }
+.dlist { position: absolute; left: 105px; right: 94px; bottom: 210px; border-bottom: 0.5px solid var(--hair); }
+.drow { display: grid; grid-template-columns: 170px 1fr; align-items: baseline; min-height: 89.5px; padding: 24px 0; border-top: 0.5px solid var(--hair); }
+.dtime { font-weight: 500; font-size: 28px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); }
+.dplace { font-weight: 400; font-size: 32px; line-height: 1.2; }
+
+/* Developer */
+.dlogo { height: 64px; overflow: hidden; margin-bottom: 26px; }
+.dlogo img { display: block; height: 64px; width: auto; max-width: 320px; object-fit: contain; object-position: left center; filter: brightness(0) invert(1); }
+.dlogo.crop img { height: 180px; max-width: none; margin-top: -58px; }
+.dpic { position: absolute; left: 105px; bottom: 150px; width: 520px; height: 325px; border-radius: var(--r); }
+.dtbox { max-height: 380px; }
+
+/* Agent contact — Organic's closing card: its own surface, 70 of padding, brass rule on top */
+.card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 870px; padding: 70px; border-radius: 28px;
+  background: rgba(26, 41, 66, 0.9); border: 1px solid rgba(236, 231, 223, 0.22); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.crule { width: 78px; height: 4px; background: var(--brass); border-radius: 2px; }
+.cshot { position: relative; width: 170px; height: 170px; border-radius: 50%; overflow: hidden; margin-top: 44px; background: rgba(255, 255, 255, 0.12); }
+.cshot img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: center; }
+.cshot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9); }
+.cname { font-weight: 400; font-size: 52px; line-height: 1.1; margin-top: 32px; }
+.cpos { font-weight: 300; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); margin-top: 14px; }
+.clines { display: grid; gap: 10px; margin-top: 30px; font-weight: 300; font-size: 28px; line-height: 1.3; color: var(--soft); }
+.clines svg { display: inline-block; width: 28px; height: 28px; vertical-align: -5px; margin-right: 12px; color: var(--mute); }
+.clines b { font-weight: 500; font-size: 20px; letter-spacing: 0.2em; margin-right: 6px; color: var(--mute); }
+.cqr { position: relative; width: 210px; height: 210px; margin-top: 38px; padding: 10px; border-radius: 16px; background: #fff; }
+.cqr img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cqr.qr-empty { background: rgba(255, 255, 255, 0.08); }
+.cwm { height: 34px; width: auto; display: block; margin-top: 44px; color: var(--soft); }
+
+
+/* ══ CAROUSEL B · White ═══════════════════════════════════════════════════════════════════
+   The same slides and grid on white: brochure design B's white pages, photo bands and rounded
+   panels, in Campaign's light inks (navy #1A2942, slate #2F4960, grey #6B7280, navy hairlines;
+   brass eyebrows, which Campaign measures at 3:1 on white — large-text contrast at 28px). No
+   washes: nothing sits on a photo except the cover's wordmark and the agent card. */
+.white { --ink: #1a2942; --soft: #2f4960; --mute: #6b7280; --rule: rgba(26, 41, 66, 0.45); --hair: rgba(26, 41, 66, 0.22); --chip: rgba(26, 41, 66, 0.35); background: #fff; }
+.white .scrim { display: none; }
+.white .wm { color: var(--ink); }
+.white .blist::before { content: none; }
+.white .pic, .band, .inset { background: #eceae6; }
+.band, .inset { position: relative; overflow: hidden; }
+.inset { border-radius: var(--r); }
+.white .pbar i { background: rgba(26, 41, 66, 0.16); }
+.white .pbar i:first-child { background: var(--brass); }
+.white .dlogo img { filter: none; }
+.white .mapband { background: #eef1f4; }
+.white .qr { border: 1px solid rgba(26, 41, 66, 0.16); }
+.white .qr-empty { background: #f4f2ee; border: 1.5px dashed rgba(26, 41, 66, 0.35); }
+.white .qr-empty span { color: var(--mute); }
+
+/* Cover — the photo takes whatever the copy leaves (brochure B's cover); the copy on white,
+   ending where design A's does (219 above the floor), the QR and SWIPE under it */
+.wfront { display: flex; flex-direction: column; }
+.wfront .band { flex: 1 1 auto; min-height: 0; }
+.wfront .band::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 260px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(26, 41, 66, 0.5), rgba(26, 41, 66, 0)); }
+.wfront .wm { color: #fff; }
+.wpanel { flex: none; padding: 64px 94px 219px 105px; }
+.wfront .qr { left: 105px; top: 1182px; width: 96px; height: 96px; }
+
+/* Text page — the copy from the top anchor, then a rounded photo filling down to SWIPE's row */
+.wtext { display: flex; flex-direction: column; padding: 158px 94px 150px 105px; }
+.wtop { flex: none; }
+/* the photo gives way before the copy drops under the brand's ~24px floor (Fit stops at 0.75) */
+.wtext .tbox { max-height: 560px; }
+.wtext .inset { flex: 1 1 auto; min-height: 240px; margin-top: 60px; }
+
+/* Bullets — a portrait photo in the left column above the title, the list where design A has it */
+.wam .inset { position: absolute; left: 105px; top: 158px; width: 380px; bottom: 440px; }
+
+/* Property type — a photo band on top, the title under it, the figures on design A's floor */
+.wtype .band { position: absolute; left: 0; right: 0; top: 0; height: 560px; }
+.wtype .top { top: 620px; }
+
+/* Agent — the photo stays full bleed; the closing card turns white */
+.white.wagent { background: #0f1b2d; }
+.white .card { background: rgba(255, 255, 255, 0.96); border: 0; box-shadow: 0 24px 70px rgba(15, 27, 45, 0.28); }
+.white .cshot { background: #eef1f4; }
+.white .cshot::after { box-shadow: inset 0 0 0 1px rgba(26, 41, 66, 0.2); }
+.white .cqr { border: 1px solid rgba(26, 41, 66, 0.15); }
+.white .cqr.qr-empty { background: #f4f2ee; }
+.white .cwm { color: var(--ink); }

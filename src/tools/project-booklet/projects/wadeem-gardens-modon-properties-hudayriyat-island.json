@@ -1,0 +1,263 @@
+{
+  "id": "wadeem-gardens-modon-properties-hudayriyat-island",
+  "savedOn": "2026-09-29",
+  "sources": {
+    "gallery-01.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-2-16.jpg",
+    "gallery-02.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-1-16.jpg",
+    "gallery-03.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-26.jpg",
+    "gallery-04.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-5-16.jpg",
+    "gallery-05.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-4-16.jpg",
+    "gallery-06.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Gallery-3-16.jpg",
+    "hero.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Hero-image-offplan-29.jpg",
+    "map.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Map-11.jpg",
+    "developer-logo.svg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/08/modon.svg",
+    "developer.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/08/feature.jpg",
+    "thumbnail.jpg": "https://www.abudhabipropertyhub.com/wp-content/uploads/2026/09/Feature-image-29.jpg"
+  },
+  "data": {
+    "url": "https://www.abudhabipropertyhub.com/wadeem-gardens-modon-properties-hudayriyat-island/",
+    "name": "Wadeem Gardens",
+    "developer": "Modon Properties",
+    "location": "Hudayriyat Island",
+    "city": "Abu Dhabi",
+    "heroImage": "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/hero.jpg",
+    "heroStats": [
+      {
+        "label": "Starting Price",
+        "value": "AED 8.7M"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "25/75"
+      },
+      {
+        "label": "Handover",
+        "value": "2031"
+      }
+    ],
+    "overview": [
+      "Wadeem Gardens by Modon Properties is a villa community on Hudayriyat Island, Abu Dhabi, offering spacious **4, 5, and 6-bedroom homes** in three gated clusters. Designed around everyday convenience, the district brings education, wellness, retail, dining, entertainment, and waterfront experiences together, supported by clubhouses, international schools, cinemas, and a waterfront promenade.",
+      "Wadeem Gardens on Hudayriyat Island combines private villa living with a connected community setting shaped by Contemporary Arabic and Modernist architecture. Its integrated amenities, island location, and broader community planning create strong long-term appeal for buyers seeking lifestyle value alongside the potential for high capital appreciation in Abu Dhabi."
+    ],
+    "highlights": [
+      {
+        "title": "Hudayriyat Island Location",
+        "text": "Positioned within Hudayriyat Island, placing residents in one of Abu Dhabi’s expanding lifestyle destinations."
+      },
+      {
+        "title": "Spacious Villa Collection",
+        "text": "Choose from 4, 5, and 6-bedroom villas designed for generous family living and privacy."
+      },
+      {
+        "title": "Distinct Architectural Styles",
+        "text": "Contemporary Arabic and Modernist façades give homeowners a choice of distinctive residential designs and layouts."
+      },
+      {
+        "title": "Integrated Lifestyle District",
+        "text": "Homes connect with education, wellness, entertainment, retail, dining, healthcare, and workplaces within the wider community."
+      },
+      {
+        "title": "Extensive Community Amenities",
+        "text": "Six clubhouses, international schools, cinemas, healthcare facilities, an arena, and waterfront spaces support everyday convenience."
+      },
+      {
+        "title": "Modon Development",
+        "text": "Developed by Modon as part of a connected Hudayriyat district combining homes, work, learning, and leisure."
+      },
+      {
+        "title": "Flexible 25/75 Payment Structure",
+        "text": "Buyers secure their villa with a 5% down payment, with 75% of the purchase price due at handover."
+      },
+      {
+        "title": "Capital Appreciation Potential",
+        "text": "Island positioning, integrated amenities, and large-scale community planning strengthen the project’s long-term investment appeal."
+      }
+    ],
+    "details": [
+      {
+        "label": "Starting Price",
+        "value": "AED 8,700,000"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "25/75"
+      },
+      {
+        "label": "Property Types",
+        "value": "Villas"
+      },
+      {
+        "label": "Developer",
+        "value": "Modon Properties"
+      },
+      {
+        "label": "Handover",
+        "value": "2031"
+      },
+      {
+        "label": "Size Range",
+        "value": "850 – 3,200 sq.ft"
+      },
+      {
+        "label": "Bedrooms",
+        "value": "4, 5, 6"
+      },
+      {
+        "label": "Location",
+        "value": "Hudayriyat Island"
+      }
+    ],
+    "gallery": [
+      "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/gallery-01.jpg",
+      "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/gallery-02.jpg",
+      "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/gallery-03.jpg",
+      "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/gallery-04.jpg",
+      "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/gallery-05.jpg",
+      "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/gallery-06.jpg"
+    ],
+    "amenitiesIntro": "Wadeem Gardens offers an exceptional array of world-class amenities designed to enhance every aspect of modern living.",
+    "amenities": [
+      "2.3 km Spine",
+      "Arena",
+      "6 Clubhouses",
+      "Office Park",
+      "Healthcare Centres",
+      "Waterfront Promenade",
+      "Retail and Dining",
+      "2 International Schools",
+      "Cinemas"
+    ],
+    "payment": [
+      {
+        "label": "On Booking",
+        "share": "5%",
+        "amount": "AED 435,000"
+      },
+      {
+        "label": "During Construction",
+        "share": "20%",
+        "amount": "AED 1,740,000"
+      },
+      {
+        "label": "On Handover",
+        "share": "75%",
+        "amount": "AED 6,525,000"
+      }
+    ],
+    "paymentNote": "Starting Price AED 8.7M. Handover 2031. Payment plans: 25/75.",
+    "locationText": [
+      "Modon Wadeem Gardens Abu Dhabi is located on Hudayriyat Island, forming part of a connected district that brings residential, educational, wellness, retail, entertainment, and community spaces together. Its island setting provides residents with convenient access to Abu Dhabi’s key destinations while maintaining a lifestyle centred around community facilities and waterfront experiences."
+    ],
+    "mapImage": "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/map.jpg",
+    "distances": [
+      {
+        "time": "15",
+        "place": "Zayed International Airport"
+      },
+      {
+        "time": "20",
+        "place": "Abu Dhabi Global Market (ADGM)"
+      },
+      {
+        "time": "23",
+        "place": "Louvre Museum"
+      },
+      {
+        "time": "25",
+        "place": "Disneyland"
+      }
+    ],
+    "investmentIntro": "This off-plan project presents strong investment potential across the UAE, with projected rental yields of 6–8%, long-term capital appreciation, and growing demand from both residents and international investors.",
+    "investmentStats": [
+      {
+        "value": "6–8%",
+        "label": "Projected Rental Yield"
+      },
+      {
+        "value": "10–15%",
+        "label": "Potential Capital Appreciation"
+      },
+      {
+        "value": "AED 2M+",
+        "label": "Golden Visa Eligibility Potential"
+      }
+    ],
+    "marketTitle": "Market Context",
+    "marketContext": [
+      "UAE off-plan properties continue to attract strong local and international investor demand.",
+      "Selected communities may offer rental yields of around 6–8%, depending on location and unit type.",
+      "Buyers may benefit from 10–15% potential price growth by handover in high-demand areas.",
+      "Properties from AED 2 million may qualify for UAE Golden Visa eligibility, subject to regulations."
+    ],
+    "financing": [
+      "Low Down Payment",
+      "Developer Payment Plans",
+      "Post-Handover Plans",
+      "Mortgage Assistance",
+      "Interest-Free Installments",
+      "Resident & Non-Resident Financing"
+    ],
+    "developerLogo": "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/developer-logo.svg",
+    "developerText": "Modon Properties is an Abu Dhabi-based developer operating within Modon Holding, an ADX-listed group with interests spanning real estate, hospitality, asset management, tourism and related sectors. Modon Abu Dhabi develops large-scale destinations designed around residential, leisure and commercial experiences.",
+    "developerImage": "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/developer.jpg",
+    "unitTypes": [
+      {
+        "name": "4-Bedroom Villas",
+        "area": "5,726 Sq. Ft.",
+        "price": "AED 8.7M"
+      },
+      {
+        "name": "5-Bedroom Villas",
+        "area": "6,781 Sq. Ft.",
+        "price": "AED 10.2M"
+      },
+      {
+        "name": "6-Bedroom Villas",
+        "area": "7,750 Sq. Ft.",
+        "price": "AED 11.6M"
+      }
+    ],
+    "areaTitle": "",
+    "areaText": "",
+    "areaImage": "",
+    "faqs": [
+      {
+        "question": "What are the floor plans available at Wadeem Gardens?",
+        "answer": "Wadeem Gardens offers 4-bedroom villas of 5,726 sq. ft., 5-bedroom villas of 6,781 sq. ft., and 6-bedroom villas of 7,750 sq. ft."
+      },
+      {
+        "question": "What is the starting price of Wadeem Gardens villas?",
+        "answer": "The starting price for a Wadeem Gardens villa for sale is AED 8.7M."
+      },
+      {
+        "question": "What villa types are available in Wadeem Gardens?",
+        "answer": "Wadeem Gardens offers spacious 4, 5, and 6-bedroom villas, with varied layouts and Contemporary Arabic or Modernist façades."
+      },
+      {
+        "question": "How can I buy Wadeem Gardens villas for sale?",
+        "answer": "To buy a villa in Wadeem Gardens, review our current project listings to compare available properties, and contact our experts for guidance throughout the purchase process."
+      },
+      {
+        "question": "Is Wadeem Gardens a freehold development?",
+        "answer": "Yes. Wadeem Gardens freehold villas are available to buyers of all nationalities with full ownership rights."
+      },
+      {
+        "question": "Is Wadeem Gardens a gated community?",
+        "answer": "Yes. The Wadeem Gardens gated community comprises secure villa clusters and provides residents with 24-hour security."
+      },
+      {
+        "question": "What is the payment plan for Wadeem Gardens?",
+        "answer": "The Wadeem Gardens payment plan is structured as 25/75, beginning with a 5% down payment and concluding with 75% on handover."
+      },
+      {
+        "question": "What amenities are available at Wadeem Gardens?",
+        "answer": "Wadeem Gardens amenities include a 2.3 km spine, six clubhouses, an arena, healthcare centres, schools, cinemas, retail, dining, and a waterfront promenade."
+      },
+      {
+        "question": "Are the villas directly on the waterfront?",
+        "answer": "No. The villas are not directly on the waterfront, but waterfront promenades are within walking distance of every home."
+      }
+    ],
+    "thumbnail": "/tools/project-booklet/projects/wadeem-gardens-modon-properties-hudayriyat-island/thumbnail.jpg"
+  }
+}

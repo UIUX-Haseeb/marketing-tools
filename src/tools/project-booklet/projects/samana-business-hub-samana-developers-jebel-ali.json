@@ -1,0 +1,306 @@
+{
+  "id": "samana-business-hub-samana-developers-jebel-ali",
+  "savedOn": "2026-09-25",
+  "sources": {
+    "gallery-01.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-18.jpg",
+    "gallery-02.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-1-14.jpg",
+    "gallery-03.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-4-14.jpg",
+    "gallery-04.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-7-13.jpg",
+    "gallery-05.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-6-14.jpg",
+    "gallery-06.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-5-14.jpg",
+    "gallery-07.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Gallery-3-14.jpg",
+    "hero.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Hero-image-offplan-29.jpg",
+    "map.jpg": "https://www.offplan-dubai.com/wp-content/themes/offplan-dubai/assets/images/map.jpg",
+    "developer-logo.svg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Samana-logo-1.svg",
+    "developer.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Samana-feature.jpg",
+    "thumbnail.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/Feature-image-32.jpg"
+  },
+  "data": {
+    "url": "https://www.offplan-dubai.com/samana-business-hub-samana-developers-jebel-ali/",
+    "name": "Samana Business Hub",
+    "developer": "Samana Developers",
+    "location": "Jebel Ali",
+    "city": "Dubai",
+    "heroImage": "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/hero.jpg",
+    "heroStats": [
+      {
+        "label": "Starting Price",
+        "value": "AED 1.46M"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "60/40"
+      },
+      {
+        "label": "Handover",
+        "value": "2029"
+      }
+    ],
+    "overview": [
+      "Samana Business Hub by Samana Developers is a 20-floor commercial development located in Downtown Jebel Ali on Sheikh Zayed Road. The project comprises 307 units, including offices and retail spaces, within a business-focused environment supported by strong road connectivity, nearby commercial centres and facilities designed for productive working, professional collaboration and business growth.",
+      "Samana Business Hub in Downtown Jebel Ali combines flexible workspaces with an adult swimming pool, pool deck, indoor gym, executive business club, conference rooms, podcast room, co-working space, meeting areas and an outdoor amphitheatre. Its strategic address, extensive amenities and commercial positioning offer potential for high capital appreciation as Downtown Jebel Ali continues attracting businesses and investors."
+    ],
+    "highlights": [
+      {
+        "title": "Strategic Sheikh Zayed Road Address",
+        "text": "Positioned in Downtown Jebel Ali with direct access to Dubai’s principal commercial and transport corridor."
+      },
+      {
+        "title": "Flexible Commercial Properties",
+        "text": "Choose from Optima, Ultima and Supreme offices, along with Half-Floor, Full-Floor and retail options."
+      },
+      {
+        "title": "Business-Focused Amenities",
+        "text": "Conference rooms, co-working areas, meeting spaces and a podcast room support different professional requirements."
+      },
+      {
+        "title": "Leisure and Wellness Facilities",
+        "text": "The development includes a swimming pool, gym, pilates area, sauna, lounges and meditation spaces."
+      },
+      {
+        "title": "Developed by Samana Developers",
+        "text": "The project is delivered by a developer known for amenity-rich properties and flexible purchasing structures."
+      },
+      {
+        "title": "Extended Post-Handover Payments",
+        "text": "Buyers can pay 40% after handover through monthly instalments spread across 40 months."
+      },
+      {
+        "title": "Capital Appreciation Potential",
+        "text": "Its commercial location and proximity to major economic destinations support prospects for long-term value growth."
+      },
+      {
+        "title": "Connected Business Environment",
+        "text": "Nearby airports, business areas, residential communities and transport links make the address convenient for companies and employees."
+      }
+    ],
+    "details": [
+      {
+        "label": "Starting Price",
+        "value": "AED 1,460,000"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "60/40"
+      },
+      {
+        "label": "Property Types",
+        "value": "Office, Retail Units"
+      },
+      {
+        "label": "Developer",
+        "value": "Samana Developers"
+      },
+      {
+        "label": "Handover",
+        "value": "2029"
+      },
+      {
+        "label": "Size Range",
+        "value": "850 – 3,200 sq.ft"
+      },
+      {
+        "label": "Bedrooms",
+        "value": "Office"
+      },
+      {
+        "label": "Location",
+        "value": "Jebel Ali"
+      }
+    ],
+    "gallery": [
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-01.jpg",
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-02.jpg",
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-03.jpg",
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-04.jpg",
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-05.jpg",
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-06.jpg",
+      "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/gallery-07.jpg"
+    ],
+    "amenitiesIntro": "Samana Business Hub offers an exceptional array of world-class amenities designed to enhance every aspect of modern living.",
+    "amenities": [
+      "Adult Swimming Pool & Pool Deck",
+      "Indoor Gym, Pilates & Sauna",
+      "Executive Business Club & Lazy Lounge",
+      "Conference Rooms & Podcast Room",
+      "Co-Working Space",
+      "Outdoor Cigar Lounge & Meeting Space",
+      "Outdoor Amphitheatre",
+      "Outdoor Yoga & Meditation Area",
+      "Indoor & Outdoor Lounges",
+      "Indoor & Outdoor Cafés",
+      "Cabanas"
+    ],
+    "payment": [
+      {
+        "label": "During Construction",
+        "share": "60%",
+        "amount": "AED 876,000"
+      },
+      {
+        "label": "On Handover",
+        "share": "40%",
+        "amount": "AED 584,000"
+      }
+    ],
+    "paymentNote": "* Post-handover payment plans may be available. Contact our specialists for customized financing options.",
+    "locationText": [
+      "Samana Business Hub Dubai is located in Downtown Jebel Ali on Sheikh Zayed Road, providing convenient access to commercial centres, residential communities, airports and major destinations across the city. The address also places businesses near Dubai Investment Park, Expo City Dubai, Dubai Marina and Jumeirah Beach Residence."
+    ],
+    "mapImage": "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/map.jpg",
+    "distances": [
+      {
+        "time": "10",
+        "place": "Expo City Dubai"
+      },
+      {
+        "time": "10",
+        "place": "Dubai Investment Park (DIP)"
+      },
+      {
+        "time": "10",
+        "place": "Al Maktoum International Airport (DWC)"
+      },
+      {
+        "time": "15",
+        "place": "Jumeirah Beach Residence (JBR)"
+      },
+      {
+        "time": "15",
+        "place": "Dubai Marina"
+      },
+      {
+        "time": "15",
+        "place": "Mall of the Emirates"
+      },
+      {
+        "time": "25",
+        "place": "Business Bay"
+      },
+      {
+        "time": "25",
+        "place": "Downtown Dubai / Burj Khalifa"
+      },
+      {
+        "time": "25",
+        "place": "DIFC"
+      }
+    ],
+    "investmentIntro": "This off-plan project presents strong investment potential across the UAE, with projected rental yields of 6–8%, long-term capital appreciation, and growing demand from both residents and international investors.",
+    "investmentStats": [
+      {
+        "value": "6–8%",
+        "label": "Projected Rental Yield"
+      },
+      {
+        "value": "10–15%",
+        "label": "Potential Capital Appreciation"
+      },
+      {
+        "value": "AED 2M+",
+        "label": "Golden Visa Eligibility Potential"
+      }
+    ],
+    "marketTitle": "Market Context",
+    "marketContext": [
+      "UAE off-plan properties continue to attract strong local and international investor demand.",
+      "Selected communities may offer rental yields of around 6–8%, depending on location and unit type.",
+      "Buyers may benefit from 10–15% potential price growth by handover in high-demand areas.",
+      "Properties from AED 2 million may qualify for UAE Golden Visa eligibility, subject to regulations."
+    ],
+    "financing": [
+      "Low Down Payment",
+      "Developer Payment Plans",
+      "Post-Handover Plans",
+      "Mortgage Assistance",
+      "Interest-Free Installments",
+      "Resident & Non-Resident Financing"
+    ],
+    "developerLogo": "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/developer-logo.svg",
+    "developerText": "Samana Developers has carved out a niche in Dubai that no other builder owns quite so completely: resort-style apartments with private pools, at prices most people assume can’t include one.",
+    "developerImage": "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/developer.jpg",
+    "unitTypes": [
+      {
+        "name": "Optima Offices",
+        "area": "610 to 705 Sq. Ft.",
+        "price": ""
+      },
+      {
+        "name": "Ultima Offices",
+        "area": "804 to 921 Sq. Ft.",
+        "price": ""
+      },
+      {
+        "name": "Supreme Offices",
+        "area": "1,013 to 1,573 Sq. Ft.",
+        "price": ""
+      },
+      {
+        "name": "2 Bedroom Apartments + Maid's Room",
+        "area": "",
+        "price": ""
+      },
+      {
+        "name": "Half Floor Offices",
+        "area": "8,500+ Sq. Ft.",
+        "price": ""
+      },
+      {
+        "name": "Full Floor Offices",
+        "area": "17,100+ Sq. Ft.",
+        "price": ""
+      },
+      {
+        "name": "Retail Units",
+        "area": "",
+        "price": ""
+      }
+    ],
+    "areaTitle": "",
+    "areaText": "",
+    "areaImage": "",
+    "faqs": [
+      {
+        "question": "Is Samana Business Hub a good investment?",
+        "answer": "Samana Business Hub Dubai is ideal for investors seeking commercial property on Sheikh Zayed Road. Its business-focused amenities, range of office sizes, nearby economic destinations and potential for high capital appreciation support its investment proposition."
+      },
+      {
+        "question": "Who is the developer of Samana Business Hub?",
+        "answer": "Samana Business Hub Jebel Ali is developed by Samana Developers, a Dubai property developer offering commercial spaces supported by leisure, wellness and workplace amenities."
+      },
+      {
+        "question": "What is the expected handover date?",
+        "answer": "The anticipated handover date for Samana Business Hub in Downtown Jebel Ali is June 2029."
+      },
+      {
+        "question": "Can foreigners buy offices in Samana Business Hub?",
+        "answer": "Yes, foreign buyers can purchase offices in the development. Buyers should review the applicable ownership documentation, registration requirements and purchase terms before reserving a unit."
+      },
+      {
+        "question": "What types of offices are available?",
+        "answer": "Off Plan Properties in Samana Business Hub include Optima, Ultima and Supreme offices, as well as half-floor and full-floor commercial spaces. Retail units are also available."
+      },
+      {
+        "question": "How can I buy office in Samana Business Hub?",
+        "answer": "To view Samana Business Hub offices for sale, browse our current listings and speak with our property experts for assistance with unit selection, documentation and the purchase process."
+      },
+      {
+        "question": "What is the payment structure?",
+        "answer": "The Samana Business Hub payment plan begins with a 20% down payment, followed by 30% during construction, 10% at handover and 40% over 40 months after handover."
+      },
+      {
+        "question": "What is the starting cost of an office?",
+        "answer": "The Samana Business Hub prices start from AED 1.46 million for an Optima office."
+      },
+      {
+        "question": "Where is the project situated?",
+        "answer": "The Samana Business Hub location is in Downtown Jebel Ali on Sheikh Zayed Road, within convenient driving distance of Expo City Dubai, Dubai Marina, DIP and Al Maktoum International Airport."
+      },
+      {
+        "question": "What office sizes are offered?",
+        "answer": "The Samana Business Hub floor plan options range from approximately 610 sq. ft. for Optima offices to more than 17,100 sq. ft. for full-floor offices."
+      }
+    ],
+    "thumbnail": "/tools/project-booklet/projects/samana-business-hub-samana-developers-jebel-ali/thumbnail.jpg"
+  }
+}

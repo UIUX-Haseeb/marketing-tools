@@ -13,7 +13,7 @@
 import type { ComponentType } from "react";
 import type { Team } from "@/lib/teams";
 
-export type ToolCategory = "posts";
+export type ToolCategory = "posts" | "booklets";
 
 export interface ToolDef {
   slug: string;
@@ -67,6 +67,15 @@ export const TOOLS: ToolDef[] = [
     category: "posts",
     icon: "Star",
     component: () => import("@/tools/google-review"),
+  },
+  {
+    slug: "project-booklet",
+    name: "Project Booklet",
+    description: "Pick an off-plan project and get a 4:5 brochure or a social post, filled in for you.",
+    teams: ["AGENTS", "MARKETING"],
+    category: "booklets",
+    icon: "BookOpen",
+    component: () => import("@/tools/project-booklet"),
   },
 
   // ── HR ────────────────────────────────────────────────────────────────

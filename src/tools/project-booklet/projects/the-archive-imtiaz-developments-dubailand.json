@@ -1,0 +1,280 @@
+{
+  "id": "the-archive-imtiaz-developments-dubailand",
+  "savedOn": "2026-09-25",
+  "sources": {
+    "gallery-01.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-7-1.jpg",
+    "gallery-02.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-6-1.jpg",
+    "gallery-03.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-5-2.jpg",
+    "gallery-04.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-4-2.jpg",
+    "gallery-05.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-3-2.jpg",
+    "gallery-06.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-2-2.jpg",
+    "gallery-07.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-1-2.jpg",
+    "gallery-08.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Gallery-8.jpg",
+    "hero.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Hero-image-offplan-1-1.jpg",
+    "map.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/map-1-1.jpg",
+    "developer-logo.svg": "https://www.offplan-dubai.com/wp-content/uploads/2026/04/imtiaz.svg",
+    "developer.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/07/feature-6.jpg",
+    "thumbnail.jpg": "https://www.offplan-dubai.com/wp-content/uploads/2026/08/Feature-image-15.jpg"
+  },
+  "data": {
+    "url": "https://www.offplan-dubai.com/the-archive-imtiaz-developments-dubailand/",
+    "name": "The Archive",
+    "developer": "Imtiaz Developments",
+    "location": "Dubailand Residence Complex",
+    "city": "Dubai",
+    "heroImage": "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/hero.jpg",
+    "heroStats": [
+      {
+        "label": "Starting Price",
+        "value": "AED 666K"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "50/50"
+      },
+      {
+        "label": "Handover",
+        "value": "2028"
+      }
+    ],
+    "overview": [
+      "The Archive at Dubailand Residence Complex (DLRC) is a 17-floor residential development offering **studio, 1, 2 and 3-bedroom apartments**. Designed with comfort and functionality in mind, the project combines modern architecture with thoughtfully planned living spaces, making it well positioned for strong capital appreciation in one of Dubai’s rapidly growing communities.",
+      "The Archive by Imtiaz Developments brings together lifestyle-focused amenities that encourage relaxation, recreation, and everyday convenience. Residents can enjoy a shallow water feature lounge, floating cabanas, outdoor relaxation lounges, mini golf, a signature library, and a dedicated kids’ play area, creating a welcoming environment for individuals and families alike."
+    ],
+    "highlights": [
+      {
+        "title": "Prime DLRC Address",
+        "text": "Located within Dubailand Residence Complex with excellent connectivity to major roads, business hubs, and everyday conveniences."
+      },
+      {
+        "title": "Modern Apartment Collection",
+        "text": "Choose from thoughtfully designed studio, one, two, and three-bedroom apartments suited to different lifestyles."
+      },
+      {
+        "title": "Lifestyle-Centred Amenities",
+        "text": "Features leisure spaces including floating cabanas, mini golf, reading lounges, and dedicated family facilities."
+      },
+      {
+        "title": "Signature Library Concept",
+        "text": "A unique residential environment featuring a signature library, reading lounge, and dedicated writer’s room."
+      },
+      {
+        "title": "Strong Investment Potential",
+        "text": "Positioned in a rapidly developing community with high capital appreciation and sustained rental demand."
+      },
+      {
+        "title": "Flexible Ownership Options",
+        "text": "Buyers can select between 50/50 and 60/40 post-handover payment plans for added financial flexibility."
+      },
+      {
+        "title": "Developed by Imtiaz Developments",
+        "text": "Created by a developer focused on practical layouts, quality finishes, and lifestyle-oriented residential communities."
+      },
+      {
+        "title": "Well-Planned Residential Tower",
+        "text": "A 17-floor building with spacious communal areas, landscaped spaces, and amenities designed for everyday living."
+      }
+    ],
+    "details": [
+      {
+        "label": "Starting Price",
+        "value": "AED 666,000"
+      },
+      {
+        "label": "Payment Plan",
+        "value": "50/50"
+      },
+      {
+        "label": "Property Types",
+        "value": "Apartments"
+      },
+      {
+        "label": "Developer",
+        "value": "Imtiaz Developments"
+      },
+      {
+        "label": "Handover",
+        "value": "2028"
+      },
+      {
+        "label": "Size Range",
+        "value": "850 – 3,200 sq.ft"
+      },
+      {
+        "label": "Bedrooms",
+        "value": "1, 2, 3, Studio"
+      },
+      {
+        "label": "Location",
+        "value": "Dubailand Residence Complex"
+      }
+    ],
+    "gallery": [
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-01.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-02.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-03.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-04.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-05.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-06.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-07.jpg",
+      "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/gallery-08.jpg"
+    ],
+    "amenitiesIntro": "The Archive offers an exceptional array of world-class amenities designed to enhance every aspect of modern living.",
+    "amenities": [
+      "Shallow Water Feature Lounge & Sunken Seating",
+      "Floating Cabanas",
+      "Outdoor Relaxation Lounges",
+      "Mini Golf",
+      "Residential Entrance Gallery & Lobby",
+      "Signature Library Integrated with the Residential Gallery",
+      "Reading Lounge",
+      "Writer's Room",
+      "Kids' Play Area",
+      "Dedicated Pets' Area"
+    ],
+    "payment": [
+      {
+        "label": "During Construction",
+        "share": "50%",
+        "amount": "AED 333,000"
+      },
+      {
+        "label": "On Handover",
+        "share": "50%",
+        "amount": "AED 333,000"
+      }
+    ],
+    "paymentNote": "* Post-handover payment plans may be available. Contact our specialists for customized financing options.",
+    "locationText": [
+      "The Archive location places residents within Dubailand Residence Complex (DLRC), offering convenient access to Sheikh Mohammed Bin Zayed Road and Al Ain Road. The project provides quick connections to major business districts, educational institutions, airports, and popular lifestyle destinations while remaining surrounded by retail, dining, and everyday conveniences."
+    ],
+    "mapImage": "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/map.jpg",
+    "distances": [
+      {
+        "time": "10",
+        "place": "Dubai Silicon Oasis"
+      },
+      {
+        "time": "12",
+        "place": "Academic City"
+      },
+      {
+        "time": "15",
+        "place": "Global Village"
+      },
+      {
+        "time": "25",
+        "place": "Downtown Dubai / Burj Khalifa"
+      },
+      {
+        "time": "25",
+        "place": "Dubai International Airport (DXB)"
+      },
+      {
+        "time": "35",
+        "place": "Al Maktoum International Airport (DWC)"
+      }
+    ],
+    "investmentIntro": "This off-plan project presents strong investment potential across the UAE, with projected rental yields of 6–8%, long-term capital appreciation, and growing demand from both residents and international investors.",
+    "investmentStats": [
+      {
+        "value": "6–8%",
+        "label": "Projected Rental Yield"
+      },
+      {
+        "value": "10–15%",
+        "label": "Potential Capital Appreciation"
+      },
+      {
+        "value": "AED 2M+",
+        "label": "Golden Visa Eligibility Potential"
+      }
+    ],
+    "marketTitle": "Market Context",
+    "marketContext": [
+      "UAE off-plan properties continue to attract strong local and international investor demand.",
+      "Selected communities may offer rental yields of around 6–8%, depending on location and unit type.",
+      "Buyers may benefit from 10–15% potential price growth by handover in high-demand areas.",
+      "Properties from AED 2 million may qualify for UAE Golden Visa eligibility, subject to regulations."
+    ],
+    "financing": [
+      "Low Down Payment",
+      "Developer Payment Plans",
+      "Post-Handover Plans",
+      "Mortgage Assistance",
+      "Interest-Free Installments",
+      "Resident & Non-Resident Financing"
+    ],
+    "developerLogo": "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/developer-logo.svg",
+    "developerText": "Imtiaz Developments is one of Dubai’s fastest-growing private developers, with more than 40 active projects and a pipeline exceeding AED 10 billion across Dubai Islands, JVC, Meydan, Dubailand, and Al Furjan.",
+    "developerImage": "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/developer.jpg",
+    "unitTypes": [
+      {
+        "name": "Studio Apartments",
+        "area": "",
+        "price": ""
+      },
+      {
+        "name": "1 Bedroom Apartment",
+        "area": "",
+        "price": ""
+      },
+      {
+        "name": "2 Bedroom Apartments",
+        "area": "",
+        "price": ""
+      },
+      {
+        "name": "3 Bedroom Apartments",
+        "area": "",
+        "price": ""
+      }
+    ],
+    "areaTitle": "",
+    "areaText": "",
+    "areaImage": "",
+    "faqs": [
+      {
+        "question": "What types of homes are available at The Archive?",
+        "answer": "The project offers studio, 1, 2, and 3-bedroom apartments."
+      },
+      {
+        "question": "Where is The Archive located?",
+        "answer": "The Archive by Imtiaz Developments is situated in Dubailand Residence Complex (DLRC), with convenient access to major highways and key destinations across Dubai."
+      },
+      {
+        "question": "Who is the developer of the project?",
+        "answer": "The Archive at DLRC is developed by Imtiaz Developments."
+      },
+      {
+        "question": "What amenities are available?",
+        "answer": "The Archive amenities include a shallow water feature lounge, floating cabanas, outdoor relaxation lounges, mini golf, a signature library, a reading lounge, a writer’s room, a kids’ play area, and a dedicated pets’ area."
+      },
+      {
+        "question": "What payment plans are available?",
+        "answer": "The Archive payment plans include a 50/50 payment structure and a 60/40 post-handover option."
+      },
+      {
+        "question": "Is The Archive a good investment?",
+        "answer": "Its location in DLRC, modern facilities, and strong potential for capital appreciation make it an attractive option for both investors and end users."
+      },
+      {
+        "question": "What makes this project different from others?",
+        "answer": "Imtiaz The Archive at DLRC combines modern residential living with unique lifestyle spaces centred around reading, relaxation, and community experiences."
+      },
+      {
+        "question": "Are there family-friendly facilities?",
+        "answer": "Yes. Residents benefit from a dedicated kids’ play area, outdoor lounges, landscaped spaces, and a dedicated pets’ area."
+      },
+      {
+        "question": "How can I invest in The Archive Dubai?",
+        "answer": "Browse our available listings to explore suitable residences, then speak with our property specialists for personalised guidance throughout your purchase journey at The Archive by Imtiaz Dubai."
+      },
+      {
+        "question": "Where can I find the latest prices?",
+        "answer": "For the most up-to-date The Archive Dubai prices, explore our current listings or contact our property consultants for the latest availability."
+      }
+    ],
+    "thumbnail": "/tools/project-booklet/projects/the-archive-imtiaz-developments-dubailand/thumbnail.jpg"
+  }
+}
