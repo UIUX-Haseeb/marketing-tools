@@ -15,6 +15,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `baby/` | New Baby post (Boy / Girl) | `index.tsx` | `public/tools/baby/` |
 | `onboarding/` | Welcome Aboard post for new joiners | `index.tsx` | `public/tools/onboarding/` |
 | `promotion/` | Promotion congratulations post (Standard/Executive design, name, new designation, cutout photo) | `index.tsx` | `public/tools/promotion/` |
+| `anniversary/` | Work Anniversary post — years drive a glossy brass Google Sans Flex numeral, the header and the message; cutout photo | `index.tsx` | `public/tools/anniversary/` |
 | `marriage/` | Marriage / engagement congratulations (name, designation, he/she + occasion wording) | `index.tsx` | `public/tools/marriage/` |
 | `condolence/` | Condolence post with read-before-download gate | `index.tsx` | `public/tools/condolence/` |
 | `listing/` | Just Sold + Just Listed + Just Rented (Classic/Minimal design × Post/Story format, four layouts each) | `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx` | none (photo is uploaded) |
@@ -38,7 +39,7 @@ Styling: Tailwind v4 with the tokens in `src/app/globals.css` (see STYLEGUIDE.md
 
 ## Background removal (`_shared/remove-bg.ts`)
 
-Used by `onboarding/` and `promotion/`. Runs `@imgly/background-removal` in a Web Worker (`remove-bg.worker.ts`) against a **self-hosted** model bundle in `public/tools/_shared/bg-removal/` (ISNet fp16 ≈ 84 MB + ONNX runtime wasm ≈ 12 MB, split into 4 MB content-addressed chunks + `resources.json`). Nothing is sent to any server; the first run on a device downloads the bundle (cached with `immutable` headers after that, see `next.config.ts`), later runs take a few seconds.
+Used by `onboarding/`, `promotion/` and `anniversary/`. Runs `@imgly/background-removal` in a Web Worker (`remove-bg.worker.ts`) against a **self-hosted** model bundle in `public/tools/_shared/bg-removal/` (ISNet fp16 ≈ 84 MB + ONNX runtime wasm ≈ 12 MB, split into 4 MB content-addressed chunks + `resources.json`). Nothing is sent to any server; the first run on a device downloads the bundle (cached with `immutable` headers after that, see `next.config.ts`), later runs take a few seconds.
 
 - npm: `@imgly/background-removal` + peer `onnxruntime-web@1.21.0` (versions must match — the wasm in the bundle comes from that exact onnxruntime-web).
 - Rebuild the bundle: `node scripts/build-bg-removal-assets.mjs <model file(s)>` (models from the imgly repo `bundle/models/` or the `@imgly/background-removal-data` package). `BG_REMOVAL_MODEL` in `remove-bg.ts` picks which one runs; the quint8 model (42 MB) is much worse on busy backgrounds and the full `isnet` (176 MB) is too big for a worker, so fp16 is the one shipped.

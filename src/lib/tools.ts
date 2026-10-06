@@ -89,6 +89,15 @@ export const TOOLS: ToolDef[] = [
     component: () => import("@/tools/onboarding"),
   },
   {
+    slug: "work-anniversary",
+    name: "Work Anniversary",
+    description: "Anniversary post for a colleague — years, name, designation and photo.",
+    teams: ["HR"],
+    category: "posts",
+    icon: "Award",
+    component: () => import("@/tools/anniversary"),
+  },
+  {
     slug: "birthday",
     name: "Birthday",
     description: "Birthday posts for the month from the employee list — or create one by hand.",
