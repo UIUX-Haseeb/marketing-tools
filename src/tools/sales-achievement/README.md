@@ -1,6 +1,6 @@
-# top-performer — Top Performer post
+# sales-achievement — Sales Achievement post
 
-Entry: `index.tsx` → `performer-tool.tsx`. Geometry: `template.ts`. Renderer: `render.ts`. 1080 × 1440.
+Entry: `index.tsx` → `sales-achievement-tool.tsx`. Geometry: `template.ts`. Renderer: `render.ts`. 1080 × 1440.
 
 Measured off the approved artwork (two 1500 × 2000 images, no Figma frame), scaled to 1080; text sizes solved against the locked font (name 85.5 px tracked −5.6, designation 25 px caps, headline 37.6 px, stat labels 19 px caps, values 34 px).
 

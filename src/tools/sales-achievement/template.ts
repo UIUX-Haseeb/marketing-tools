@@ -1,5 +1,5 @@
 /**
- * Top Performer post — an agent's sales achievement: "Secured #{rank} for {period}, closing on a
+ * Sales Achievement post — an agent's sales achievement: "Secured #{rank} for {period}, closing on a
  * high note / with {amount} in sales" on a glass card, with a stats row underneath. Geometry
  * measured off the approved artwork (two 1500 × 2000 images, no Figma frame), scaled to 1080.
  *
@@ -18,11 +18,11 @@ export const STATS_LAYOUTS: { id: StatsLayout; label: string }[] = [
   { id: "split", label: "Primary & Secondary" },
 ];
 
-export const PERFORMER = {
-  id: "provident-top-performer",
-  label: "Top Performer",
-  fileStem: "Top-Performer",
-  ctaLabel: "Generate Top Performer Post",
+export const ACHIEVEMENT = {
+  id: "provident-sales-achievement",
+  label: "Sales Achievement",
+  fileStem: "Sales-Achievement",
+  ctaLabel: "Generate Sales Achievement Post",
   width: 1080,
   height: 1440,
   navy: "16,30,52",

@@ -1,8 +1,8 @@
 import { POST_FONT_STACK } from "@/tools/_shared/font";
 import { drawableSize, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
-import { PERFORMER, type StatsLayout } from "./template";
+import { ACHIEVEMENT, type StatsLayout } from "./template";
 
-export type PerformerInput = {
+export type SalesAchievementInput = {
   layout: StatsLayout;
   wordmark: Drawable | null;
   background: Drawable | null;
@@ -26,8 +26,8 @@ type Box = { x: number; y: number; w: number; h: number };
 const font = (weight: number, size: number) => `${weight} ${size}px ${POST_FONT_STACK}`;
 const clamp = (v: number, lo: number, hi: number) => (hi < lo ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v)));
 
-export const BACKGROUND_BOX: Box = { x: 0, y: 0, w: PERFORMER.width, h: PERFORMER.height };
-export const PERSON_BOX: Box = PERFORMER.person;
+export const BACKGROUND_BOX: Box = { x: 0, y: 0, w: ACHIEVEMENT.width, h: ACHIEVEMENT.height };
+export const PERSON_BOX: Box = ACHIEVEMENT.person;
 
 /** Cover-fit into `b`, then zoom/offset (offset clamped so the box stays covered). */
 export function coverRect(img: Drawable, b: Box, t: PhotoTransform) {
@@ -96,8 +96,8 @@ export function headlineLine1(rank: string, period: string) {
   return ["Secured", r && `#${r}`, p && `for ${p},`, "closing on a high note"].filter(Boolean).join(" ").replace(/ ,/g, ",");
 }
 
-export function renderPerformer(ctx: CanvasRenderingContext2D, input: PerformerInput, scale = 1) {
-  const T = PERFORMER;
+export function renderSalesAchievement(ctx: CanvasRenderingContext2D, input: SalesAchievementInput, scale = 1) {
+  const T = ACHIEVEMENT;
   const card = { ...T.card[input.layout], y: T.card.y, h: T.card.h };
   ctx.save();
   ctx.setTransform(scale, 0, 0, scale, 0, 0);

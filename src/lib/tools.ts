@@ -69,13 +69,13 @@ export const TOOLS: ToolDef[] = [
     component: () => import("@/tools/google-review"),
   },
   {
-    slug: "top-performer",
-    name: "Top Performer",
+    slug: "sales-achievement",
+    name: "Sales Achievement",
     description: "Celebrate an agent's sales milestone — total sale value and transactions, or primary & secondary.",
     teams: ["AGENTS", "MARKETING"],
     category: "posts",
     icon: "Trophy",
-    component: () => import("@/tools/top-performer"),
+    component: () => import("@/tools/sales-achievement"),
   },
   {
     slug: "project-booklet",

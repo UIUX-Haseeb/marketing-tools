@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Top Performer post. Pick the agent (name, designation, photo prefilled — all editable), upload
+ * Sales Achievement post. Pick the agent (name, designation, photo prefilled — all editable), upload
  * the background photo (a project, a skyline), set the achievement (rank, period, total sale
  * value) and choose which stats to show: total transactions, or primary & secondary separately.
  * The agent's photo has its background removed automatically, as on the Promotion post.
@@ -22,12 +22,12 @@ import { toDrawable } from "@/tools/_shared/use-post";
 import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
 import { preloadBackgroundRemoval, removeBackground, type RemoveBgProgress } from "@/tools/_shared/remove-bg";
 import { BgRemovalOverlay } from "@/tools/_shared/bg-removal-overlay";
-import { BACKGROUND_BOX, coverRect, PERSON_BOX, renderPerformer } from "./render";
-import { PERFORMER, STATS_LAYOUTS, type StatsLayout } from "./template";
+import { BACKGROUND_BOX, coverRect, PERSON_BOX, renderSalesAchievement } from "./render";
+import { ACHIEVEMENT, STATS_LAYOUTS, type StatsLayout } from "./template";
 
-const TOOL = "top-performer";
+const TOOL = "sales-achievement";
 const MANUAL = "__manual__";
-const L = PERFORMER.limits;
+const L = ACHIEVEMENT.limits;
 
 function Pills<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { id: T; label: string }[]; onChange: (v: T) => void }) {
   return (
@@ -75,13 +75,13 @@ function Field({ id, label, value, max, onChange, placeholder, numeric, hint }: 
   );
 }
 
-export function PerformerTool() {
+export function SalesAchievementTool() {
   const [wordmark, setWordmark] = useState<HTMLImageElement | null>(null);
   const [fontReady, setFontReady] = useState(false);
   const [fontError, setFontError] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
-    loadImage(PERFORMER.assets.wordmark).then((img) => alive && setWordmark(img)).catch(() => {});
+    loadImage(ACHIEVEMENT.assets.wordmark).then((img) => alive && setWordmark(img)).catch(() => {});
     ensurePostFont().then((r) => {
       if (!alive) return;
       setFontReady(r.ok);
@@ -197,16 +197,16 @@ export function PerformerTool() {
     const canvas = canvasRef.current;
     if (!canvas || !fontReady) return;
     const frame = requestAnimationFrame(() => {
-      const scale = Math.min(1, 1080 / PERFORMER.height);
+      const scale = Math.min(1, 1080 / ACHIEVEMENT.height);
       const dpr = Math.min(2, window.devicePixelRatio || 1);
-      const w = Math.round(PERFORMER.width * scale * dpr);
-      const h = Math.round(PERFORMER.height * scale * dpr);
+      const w = Math.round(ACHIEVEMENT.width * scale * dpr);
+      const h = Math.round(ACHIEVEMENT.height * scale * dpr);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
       }
       const ctx = canvas.getContext("2d");
-      if (ctx) renderPerformer(ctx, input, scale * dpr);
+      if (ctx) renderSalesAchievement(ctx, input, scale * dpr);
     });
     return () => cancelAnimationFrame(frame);
   }, [input, fontReady]);
@@ -224,15 +224,15 @@ export function PerformerTool() {
     setError(null);
     try {
       const canvas = document.createElement("canvas");
-      canvas.width = PERFORMER.width;
-      canvas.height = PERFORMER.height;
+      canvas.width = ACHIEVEMENT.width;
+      canvas.height = ACHIEVEMENT.height;
       const ctx = canvas.getContext("2d");
       if (!ctx) throw new Error("Canvas is not available in this browser.");
-      renderPerformer(ctx, { ...input, showPlaceholders: false }, 1);
+      renderSalesAchievement(ctx, { ...input, showPlaceholders: false }, 1);
       const out = await encodeCanvas(canvas);
       setExported({ key: stateKey, result: out });
-      downloadBlob(out.blob, safeFileName(PERFORMER, `${name} ${period}`, out.extension));
-      logGeneratedPost({ tool: TOOL, templateId: `${PERFORMER.id}-${layout}`, subject: name.trim(), source: employeeId === MANUAL ? "manual" : "demo", employeeId: employeeId === MANUAL ? undefined : employeeId, format: out.extension, bytes: out.bytes });
+      downloadBlob(out.blob, safeFileName(ACHIEVEMENT, `${name} ${period}`, out.extension));
+      logGeneratedPost({ tool: TOOL, templateId: `${ACHIEVEMENT.id}-${layout}`, subject: name.trim(), source: employeeId === MANUAL ? "manual" : "demo", employeeId: employeeId === MANUAL ? undefined : employeeId, format: out.extension, bytes: out.bytes });
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -255,8 +255,8 @@ export function PerformerTool() {
             </Select>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field id="tp-name" label="Name" value={name} max={PERFORMER.name.maxChars} onChange={setName} placeholder="e.g. Jad Demian Youssef" />
-            <Field id="tp-designation" label="Designation" value={designation} max={PERFORMER.designation.maxChars} onChange={setDesignation} placeholder="e.g. Senior Associate - Secondary Sales" />
+            <Field id="tp-name" label="Name" value={name} max={ACHIEVEMENT.name.maxChars} onChange={setName} placeholder="e.g. Jad Demian Youssef" />
+            <Field id="tp-designation" label="Designation" value={designation} max={ACHIEVEMENT.designation.maxChars} onChange={setDesignation} placeholder="e.g. Senior Associate - Secondary Sales" />
           </div>
           <div className="space-y-2">
             <Label>Agent photo</Label>
@@ -313,14 +313,14 @@ export function PerformerTool() {
           {error && <p className="text-sm text-destructive">{error}</p>}
           {!fontError && problems.length > 0 && <p className="text-xs text-muted-foreground">{problems[0]}</p>}
           <Button type="button" onClick={generate} disabled={!ready || busy}>
-            <Download /> {busy ? "Generating…" : result ? "Download again" : PERFORMER.ctaLabel}
+            <Download /> {busy ? "Generating…" : result ? "Download again" : ACHIEVEMENT.ctaLabel}
           </Button>
-          {result && <p className="text-xs text-muted-foreground">Saved as {result.format.toUpperCase()} · {formatBytes(result.bytes)} · {PERFORMER.width}×{PERFORMER.height}</p>}
+          {result && <p className="text-xs text-muted-foreground">Saved as {result.format.toUpperCase()} · {formatBytes(result.bytes)} · {ACHIEVEMENT.width}×{ACHIEVEMENT.height}</p>}
         </div>
       </div>
 
       <div className="space-y-2">
-        <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${PERFORMER.width} / ${PERFORMER.height}` }}>
+        <div className="relative mx-auto max-h-[78vh] overflow-hidden rounded-xl border bg-navy" style={{ aspectRatio: `${ACHIEVEMENT.width} / ${ACHIEVEMENT.height}` }}>
           <canvas
             ref={canvasRef}
             className={cn("block h-full w-full touch-none", canDrag && "cursor-grab active:cursor-grabbing")}
@@ -331,7 +331,7 @@ export function PerformerTool() {
             }}
             onPointerMove={(e) => {
               if (!drag.current) return;
-              const k = PERFORMER.width / e.currentTarget.getBoundingClientRect().width;
+              const k = ACHIEVEMENT.width / e.currentTarget.getBoundingClientRect().width;
               moveBy((e.clientX - drag.current.x) * k, (e.clientY - drag.current.y) * k);
               drag.current = { x: e.clientX, y: e.clientY };
             }}
