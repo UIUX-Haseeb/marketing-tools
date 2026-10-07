@@ -18,6 +18,8 @@ import { ensurePostFont, isPostFontReady } from "@/tools/_shared/font";
 import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
 import { canvasSize, coverRect, headshotBoxFor, HEADLINES, LISTING_DESIGNS, LISTING_FORMATS, LISTING_LIMITS, photoBoxFor, renderListing, type ListingDesign, type ListingFormat, type ListingVariant } from "./listing";
 import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_shared/export";
+import { locationOf, picturesOf, PRIMARY_PROJECTS, unitsOf } from "./primary";
+import { ProjectPicker } from "./project-picker";
 import { toDrawable } from "@/tools/_shared/use-post";
 import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
 
@@ -112,6 +114,66 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   const [headshot, setHeadshot] = useState<Drawable | null>(null);
   const [headshotT, setHeadshotT] = useState<PhotoTransform>(IDENTITY_TRANSFORM);
   const [qr, setQr] = useState<Drawable | null>(null);
+  // Just Sold only: SECONDARY = a resale, typed in (the original form); PRIMARY = an off-plan unit
+  // sold by the developer, filled from the saved project database the brochure uses.
+  const hasSourcePicker = variant === "just-sold";
+  const [saleSource, setSaleSource] = useState<"primary" | "secondary">("secondary");
+  const isPrimary = hasSourcePicker && saleSource === "primary";
+  const [projectId, setProjectId] = useState(PRIMARY_PROJECTS[0]?.id ?? "");
+  const [unitIndex, setUnitIndex] = useState(0);
+  const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+  const project = PRIMARY_PROJECTS.find((p) => p.id === projectId) ?? PRIMARY_PROJECTS[0];
+  const units = project ? unitsOf(project.data) : [];
+  const photoReq = useRef(0);
+  function pickPicture(url: string) {
+    setPictureUrl(url);
+    setPhotoT(IDENTITY_TRANSFORM);
+    const req = ++photoReq.current;
+    toDrawable(url).then((img) => req === photoReq.current && setPhoto(img)).catch((e) => setError((e as Error).message));
+  }
+  /** Fill every property field from a project + unit type (all stay editable). */
+  function fillPrimary(id: string, unit: number) {
+    const p = PRIMARY_PROJECTS.find((x) => x.id === id);
+    if (!p) return;
+    const u = unitsOf(p.data)[unit] ?? unitsOf(p.data)[0];
+    setProjectId(id);
+    setUnitIndex(unit);
+    setBedrooms(u.bedrooms);
+    setPropertyType(u.propertyType);
+    setLocation(locationOf(p.data));
+    setPrice(u.price);
+    const first = picturesOf(p.data)[0];
+    if (first) pickPicture(first);
+  }
+  /** Your own photo replaces a project picture (and cancels one still loading). */
+  async function uploadPhoto(f: File) {
+    const req = ++photoReq.current;
+    try {
+      const d = await toDrawable(f);
+      if (req !== photoReq.current) return;
+      setPictureUrl(null);
+      setPhoto(d);
+      setPhotoT(IDENTITY_TRANSFORM);
+      setError(null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+  function pickSaleSource(s: "primary" | "secondary") {
+    setSaleSource(s);
+    if (s === "primary") fillPrimary(projectId, unitIndex);
+    else {
+      // Back to the resale form as it always was: empty property fields, the user's own photo.
+      photoReq.current++;
+      setPictureUrl(null);
+      setPhoto(null);
+      setPhotoT(IDENTITY_TRANSFORM);
+      setBedrooms("");
+      setPropertyType("");
+      setLocation("");
+      setPrice("");
+    }
+  }
   const [busy, setBusy] = useState(false);
   const [exported, setExported] = useState<{ key: string; result: ExportResult } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -185,7 +247,8 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
 
   const problems: string[] = [];
   if (!photo) problems.push("Upload the property photo.");
-  if (!bedrooms.trim()) problems.push("Add the number of bedrooms.");
+  // Primary units can be studios or offices, which have no bedroom count.
+  if (!bedrooms.trim() && !isPrimary) problems.push("Add the number of bedrooms.");
   if (showBedBathSqft && !bathrooms.trim()) problems.push("Add the number of bathrooms.");
   if (showBedBathSqft && !sqft.trim()) problems.push("Add the area (sq ft).");
   if (!propertyType.trim()) problems.push("Add the property type.");
@@ -214,7 +277,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
       setExported({ key: stateKey, result: out });
       const slug = [propertyType, location].filter(Boolean).join(" ").trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "").slice(0, 60);
       downloadBlob(out.blob, `${HEADLINES[variant].replace(" ", "-")}${slug ? `-${slug}` : ""}.${out.extension}`);
-      logGeneratedPost({ tool, templateId: `provident-${variant}`, subject: [propertyType, location].filter(Boolean).join(" in ") || agentName.trim(), source: agentId === MANUAL ? "manual" : "demo", employeeId: agentId === MANUAL ? undefined : agentId, format: out.extension, bytes: out.bytes });
+      logGeneratedPost({ tool, templateId: isPrimary ? `provident-${variant}-primary` : `provident-${variant}`, subject: [propertyType, location].filter(Boolean).join(" in ") || agentName.trim(), source: agentId === MANUAL ? "manual" : "demo", employeeId: agentId === MANUAL ? undefined : agentId, format: out.extension, bytes: out.bytes });
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -238,10 +301,58 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
         <DesignPicker value={design} onChange={(d) => { setDesign(d); setHeadshotT(IDENTITY_TRANSFORM); }} />
         <FormatPicker value={format} onChange={(f) => { setFormat(f); setPhotoT(IDENTITY_TRANSFORM); setHeadshotT(IDENTITY_TRANSFORM); }} />
 
+        {hasSourcePicker && (
+          <div className="space-y-2">
+            <Label>Source</Label>
+            <div role="radiogroup" aria-label="Source" className="flex flex-wrap gap-1.5">
+              {(["primary", "secondary"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  role="radio"
+                  aria-checked={s === saleSource}
+                  onClick={() => pickSaleSource(s)}
+                  className={cn("h-8 rounded-full border px-3 text-sm transition-colors", s === saleSource ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-navy-2/60 hover:text-foreground")}
+                >
+                  {s === "primary" ? "Primary" : "Secondary"}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">{isPrimary ? "An off-plan unit sold by the developer — pick the project and unit, everything fills in (and stays editable)." : "A resale — type the property details in."}</p>
+          </div>
+        )}
+
+        {isPrimary && project && (
+          <div className="space-y-3 rounded-xl border bg-card p-4">
+            <div className="space-y-2">
+              <Label>Project</Label>
+              <ProjectPicker value={projectId} onChange={(id) => fillPrimary(id, 0)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="primary-unit">Unit type</Label>
+              <Select id="primary-unit" value={String(unitIndex)} onChange={(e) => fillPrimary(projectId, Number(e.target.value))}>
+                {units.map((u, i) => <option key={i} value={i}>{u.label}</option>)}
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Project photo</Label>
+              <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {picturesOf(project.data).map((url) => (
+                  <button key={url} type="button" onClick={() => pickPicture(url)} aria-pressed={url === pictureUrl} className={cn("h-12 w-[4.5rem] shrink-0 overflow-hidden rounded-md border-2 transition-colors", url === pictureUrl ? "border-primary" : "border-transparent hover:border-navy-2/60")}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt="" className="size-full object-cover" />
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">From the project&apos;s saved pictures, the same set the brochure uses — or upload your own below.</p>
+            </div>
+          </div>
+        )}
+
         {/* Property */}
         <div className="space-y-2">
           <Label>Property photo</Label>
-          <PhotoDropzone compact={!!photo} label={photo ? "Replace photo" : undefined} onFile={load(setPhoto, () => setPhotoT(IDENTITY_TRANSFORM))} />
+          <PhotoDropzone compact={!!photo} label={photo ? "Replace photo" : undefined} onFile={uploadPhoto} />
           {photo && <SizeRow id="photo-size" transform={photoT} onZoom={(z) => setPhotoT((t) => coverRect(photo, photoBox, { ...t, zoom: z }).clamped)} onReset={() => setPhotoT(IDENTITY_TRANSFORM)} />}
         </div>
 
