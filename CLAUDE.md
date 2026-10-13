@@ -7,6 +7,7 @@ Front-end-only Next.js 16 / TypeScript app for Provident Estate. Demo data, no a
 - UI: Tailwind v4 + primitives in `src/components/ui`. Brand tokens in `src/app/globals.css`; rules in STYLEGUIDE.md. Google Sans Flex only; weights 300 body / 400 headers / 500 tracked caps. Orange is an accent only. Keep screens simple.
 - Post engine in `src/tools/_shared/` is a faithful port — do not change template geometry or the font lock.
 - Project Booklet (`src/tools/project-booklet/`, README there) is HTML/CSS artwork, not the post engine: pages are fixed 1080-wide layouts in `booklet.module.css` / `social.module.css`, matched to the approved Figma frames — change geometry deliberately. Its saved projects (`projects/*.json` + `public/tools/project-booklet/projects/`) come from `npm run snapshot` — re-run it, don't hand-edit the JSON — and `scrape.ts` must keep its local imports type-only (`import type`) and its TypeScript erasable (no enums) so plain Node can run it.
+- Events (`src/tools/events/`, README there) is HTML/CSS artwork like the booklet: banner 1143 × 420, thumbnail 443 × 243, flyer 1080 × 1920 in `artwork.module.css`, matched to the Figma templates (ProvToys-Templates › Event Tools) — change geometry deliberately. Its artwork accent is gold #b0905b, not orange.
 - Next 16: route params/searchParams are Promises.
 
 <!-- BEGIN:nextjs-agent-rules -->

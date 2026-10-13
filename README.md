@@ -57,6 +57,10 @@ Shared engine in `src/tools/_shared/`, ported 1:1 from the original General Post
 - **New Baby** — It's a Boy / It's a Girl, name only.
 - **Just Sold / Just Listed / Just Rented** — property photo, bedrooms/bathrooms/sqft (Just Listed only), property type, location, price, agent (prefilled, editable), mandatory DLD QR image. Classic/Minimal design and Post/Story format pickers on each. All three in `src/tools/listing/`.
 
+## Events
+
+`src/tools/events/` — the CRM's Events screens (stage page, Event details pop-out, Add / Edit event) with the event's artwork made from its own fields: a 1143 × 420 inside-page **banner**, a 443 × 243 grid **thumbnail** and a 9:16 **flyer**, three designs each, with the developer's logo on launches, webinars, briefings, exhibitions and open houses. Demo events cover all seven event types; Add event opens pre-filled for testing. Its README has the layout rules; `/sheet/events` lays the templates out for Figma.
+
 ## Booklets (Project Booklet)
 
 `src/tools/project-booklet/` — pick a source (Dubai Offplan or Abu Dhabi Offplan) and one of its saved off-plan projects, and every field fills in; then download a 4:5 **PDF brochure** (designs A · Paper & navy / B · White) or a **social post** — a single feed (4:5) / story (9:16) post or a carousel ZIP, two designs each — with the agent and the DLD / permit QR. It doesn't use the post engine: pages are HTML/CSS artwork drawn to canvas with `html-to-image`. Its README has the site → field mapping, the layout rules and how to refresh the saved projects.

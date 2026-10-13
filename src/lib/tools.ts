@@ -13,7 +13,7 @@
 import type { ComponentType } from "react";
 import type { Team } from "@/lib/teams";
 
-export type ToolCategory = "posts" | "booklets";
+export type ToolCategory = "posts" | "booklets" | "events";
 
 export interface ToolDef {
   slug: string;
@@ -85,6 +85,16 @@ export const TOOLS: ToolDef[] = [
     category: "booklets",
     icon: "BookOpen",
     component: () => import("@/tools/project-booklet"),
+  },
+
+  {
+    slug: "events",
+    name: "Events",
+    description: "Events list, Add event and the artwork made from it — banner, grid thumbnail and a 9:16 flyer.",
+    teams: ["MARKETING", "AGENTS"],
+    category: "events",
+    icon: "CalendarDays",
+    component: () => import("@/tools/events"),
   },
 
   // ── HR ────────────────────────────────────────────────────────────────
