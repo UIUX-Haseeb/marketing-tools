@@ -3,7 +3,10 @@
 Entries: `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx`, `for-sale.tsx` (same `ListingEditor`,
 different `variant`). **For Sale** replicates Just Listed exactly — same chips, tagline and
 geometry on every design × format — with "For Sale" as the headline; `usesChips(variant)` is
-true for both, so everything below that says "Just Listed only" applies to For Sale too. Renderer + locked geometry: `listing.ts` — originally measured from Figma
+true for both, so everything below that says "Just Listed only" applies to For Sale too.
+All four variants are also in Figma as editable layers —
+[ProvToys-Templates](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates), Page 1,
+sections *Just Sold*, *Just Listed*, *Just Rented* and *For Sale* (Classic / Minimal × Post / Story each). Renderer + locked geometry: `listing.ts` — originally measured from Figma
 "Images-Vol.02" node 685:60, refined since against "Birthday-template" nodes 228:113
 (Just Sold classic post), 228:129 (Just Listed classic post), 222:113 (Just Rented classic
 post), 229:128 (Just Sold minimal post), 229:159 (Just Listed minimal post), 229:200 (Just

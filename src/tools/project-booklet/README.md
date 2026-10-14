@@ -24,7 +24,7 @@ Project fields are locked by default; **Adjust fields** unlocks all of them, and
 | `fit.tsx` | Shrinks long copy to fit its box and flags it for the notes list. |
 | `icons.ts` | Amenity / detail label → line icon, by keyword. |
 | `booklet-tool.tsx` | Editor: pickers, project dropdown, photo panel + preview drag, locked fields (filtered per output), agent, DLD QR, download, preview, notes. Each download is recorded with `logGeneratedPost` (`@/lib/store`) like the post tools — `templateId` `project-booklet-brochure-a/b`, `-feed-a/b`, `-story-a/b` or `-carousel-a/b`. |
-| `sheet.tsx` (route `/sheet`) | Template sheet: every social design at full size for one saved project — single post A / B (feed + story), carousel A and B slide by slide — for review and for capturing into Figma. `?project=<id>`, `?row=single\|carousel-a\|carousel-b`. |
+| `sheet.tsx` (route `/sheet`) | Template sheet: every design at full size for one saved project — single post A / B (feed + story), carousel A and B slide by slide, brochure A and B page by page — for review and for capturing into Figma. `?project=<id>`, `?row=single\|carousel-a\|carousel-b\|brochure-a\|brochure-b`. |
 | `agent.ts` | The agent from the demo employee list (shared by the editor and the sheet). |
 
 ## Field mapping (site → booklet)
@@ -94,7 +94,7 @@ On all six pages "Size Range" reads 850 – 3,200 sq.ft, which looks like the si
 
 ## Figma
 
-The social designs live as editable layers in Figma — [ProvToys-Templates](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates), Page 1: sections *Single post*, *Carousel A · Navy* and *Carousel B · White* (Binghatti Spectre, with a sample QR), one 1080-wide frame per design, named as on the sheet. Refinements made there are the reference for the next code change — the single posts already follow the refined frames.
+The social designs live as editable layers in Figma — [ProvToys-Templates](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates), Page 1: sections *Single post*, *Carousel A · Navy*, *Carousel B · White*, *Brochure A · Paper & navy* and *Brochure B · White* (Binghatti Spectre, with a sample QR), one 1080-wide frame per design, named as on the sheet. Refinements made there are the reference for the next code change — the single posts already follow the refined frames.
 
 They were captured from `/sheet?row=…` with Figma's html-to-design capture (the Figma MCP's `generate_figma_design`). Two things make a capture faithful: register the page's font files under the name **"Google Sans Flex"** first (next/font serves them as `googleSansFlex`, which Figma can't map), and capture `main` so each row lands as one frame. The captures were then moved into the sections and their layers renamed (Photo, Shade, Group · …, Box · …, Fit · … = copy that shrinks to fit).
 
