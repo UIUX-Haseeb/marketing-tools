@@ -1,7 +1,9 @@
-# listing — Just Sold / Just Listed / Just Rented
+# listing — Just Sold / Just Listed / Just Rented / For Sale
 
-Entries: `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx` (same `ListingEditor`, different
-`variant`). Renderer + locked geometry: `listing.ts` — originally measured from Figma
+Entries: `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx`, `for-sale.tsx` (same `ListingEditor`,
+different `variant`). **For Sale** replicates Just Listed exactly — same chips, tagline and
+geometry on every design × format — with "For Sale" as the headline; `usesChips(variant)` is
+true for both, so everything below that says "Just Listed only" applies to For Sale too. Renderer + locked geometry: `listing.ts` — originally measured from Figma
 "Images-Vol.02" node 685:60, refined since against "Birthday-template" nodes 228:113
 (Just Sold classic post), 228:129 (Just Listed classic post), 222:113 (Just Rented classic
 post), 229:128 (Just Sold minimal post), 229:159 (Just Listed minimal post), 229:200 (Just

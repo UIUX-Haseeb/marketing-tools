@@ -35,7 +35,7 @@ import { POST_FONT_STACK } from "@/tools/_shared/font";
 import type { Drawable, PhotoTransform } from "@/tools/_shared/render";
 import { drawableSize } from "@/tools/_shared/render";
 
-export type ListingVariant = "just-sold" | "just-listed" | "just-rented";
+export type ListingVariant = "just-sold" | "just-listed" | "just-rented" | "for-sale";
 export type ListingDesign = "classic" | "minimal";
 export type ListingFormat = "post" | "story";
 
@@ -57,14 +57,15 @@ export const HEADLINES: Record<ListingVariant, string> = {
   "just-sold": "Just Sold",
   "just-listed": "Just Listed",
   "just-rented": "Just Rented",
+  "for-sale": "For Sale",
 };
 
 /** Just Rented is the only variant with a period on the price ("AED 120,000 /year"). */
-const PRICE_SUFFIX: Record<ListingVariant, string> = { "just-sold": "", "just-listed": "", "just-rented": " /year" };
+const PRICE_SUFFIX: Record<ListingVariant, string> = { "just-sold": "", "just-listed": "", "just-rented": " /year", "for-sale": "" };
 
-/** Just Listed pulls bedrooms out into its own chip; the other two fold it into the primary line. */
-function usesChips(variant: ListingVariant) {
-  return variant === "just-listed";
+/** Just Listed (and For Sale, which replicates its layout) pulls bedrooms out into its own chip; the others fold it into the primary line. */
+export function usesChips(variant: ListingVariant) {
+  return variant === "just-listed" || variant === "for-sale";
 }
 
 const WORDMARK = { text: "provident.", weight: 300, size: 41 } as const;

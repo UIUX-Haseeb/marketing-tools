@@ -19,7 +19,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | `sales-achievement/` | Agent sales-achievement post — own background photo, cutout agent, glass stats card (total, or primary & secondary) | `index.tsx` | none (both photos are uploaded) |
 | `marriage/` | Marriage / engagement congratulations (name, designation, he/she + occasion wording) | `index.tsx` | `public/tools/marriage/` |
 | `condolence/` | Condolence post with read-before-download gate | `index.tsx` | `public/tools/condolence/` |
-| `listing/` | Just Sold + Just Listed + Just Rented (Classic/Minimal design × Post/Story format, four layouts each) | `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx` | none (photo is uploaded) |
+| `listing/` | Just Sold + Just Listed + Just Rented + For Sale (Classic/Minimal design × Post/Story format, four layouts each; For Sale reuses Just Listed's layout) | `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx`, `for-sale.tsx` | none (photo is uploaded) |
 | `project-booklet/` | Off-plan project → 4:5 PDF brochure, feed/story post or carousel (two designs each). Does **not** need `_shared/` — its upload helpers and ZIP writer are its own copies. Also copy the `/sheet` route (`src/app/sheet/`) and `scripts/snapshot-projects.mjs` if you want the template sheet and the project refresh | `index.tsx` | `public/tools/project-booklet/` (closing photo + each saved project's pictures) |
 | `events/` | Events stage page + Add / Edit event; banner, grid thumbnail and 9:16 flyer drawn from the event's fields (three designs). Does **not** need `_shared/`. Also copy the `/sheet/events` route (`src/app/sheet/events/`) for the template sheet | `index.tsx` | `public/tools/events/` (demo photos, developer logos, wordmarks, sheet fonts) |
 

@@ -42,6 +42,15 @@ export const TOOLS: ToolDef[] = [
     component: () => import("@/tools/listing/just-listed"),
   },
   {
+    slug: "for-sale",
+    name: "For Sale",
+    description: "Create a For Sale post for a property on the market.",
+    teams: ["AGENTS"],
+    category: "posts",
+    icon: "Tag",
+    component: () => import("@/tools/listing/for-sale"),
+  },
+  {
     slug: "just-sold",
     name: "Just Sold",
     description: "Create a Just Sold post for a closed deal.",

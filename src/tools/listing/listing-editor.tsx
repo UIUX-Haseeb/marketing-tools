@@ -16,7 +16,7 @@ import { logGeneratedPost } from "@/lib/store";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import { ensurePostFont, isPostFontReady } from "@/tools/_shared/font";
 import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
-import { canvasSize, coverRect, headshotBoxFor, HEADLINES, LISTING_DESIGNS, LISTING_FORMATS, LISTING_LIMITS, photoBoxFor, renderListing, type ListingDesign, type ListingFormat, type ListingVariant } from "./listing";
+import { canvasSize, coverRect, headshotBoxFor, HEADLINES, LISTING_DESIGNS, LISTING_FORMATS, LISTING_LIMITS, photoBoxFor, renderListing, usesChips, type ListingDesign, type ListingFormat, type ListingVariant } from "./listing";
 import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_shared/export";
 import { locationOf, picturesOf, PRIMARY_PROJECTS, unitsOf } from "./primary";
 import { ProjectPicker } from "./project-picker";
@@ -95,7 +95,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   }, []);
 
   const isRented = variant === "just-rented";
-  const showBedBathSqft = variant === "just-listed";
+  const showBedBathSqft = usesChips(variant);
 
   const [design, setDesign] = useState<ListingDesign>("classic");
   const [format, setFormat] = useState<ListingFormat>("post");
