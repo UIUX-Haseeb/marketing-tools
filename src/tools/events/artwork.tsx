@@ -175,9 +175,10 @@ function Banner({ e, design }: { e: EventRecord; design: ArtDesign }) {
     <div className={c("art", "banner", "cBanner")}>
       <Photo e={e} kind="banner" />
       <div className={s.panel}>
+        {/* logos first, type chip at the right (Figma, Event Tools · C Paper) */}
         <div className={s.top}>
-          <Chips e={e} max={2} />
           <Lockup e={e} tone="navy" area={1860} provident="/tools/events/provident-logo-navy.svg" />
+          <Chips e={e} max={2} />
         </div>
         {head}
         <div className={s.when}>
@@ -280,8 +281,8 @@ function Flyer({ e, design }: { e: EventRecord; design: ArtDesign }) {
         {/* C: the photo is the column's first item and grows into whatever the copy leaves */}
         {design === "c" && <Photo e={e} kind="flyer" />}
         <div className={s.row1}>
-          <Chips e={e} max={2} />
           {design === "c" && lockup}
+          <Chips e={e} max={2} />
         </div>
         <Title e={e} min={0.62} />
         {sub && <div className={s.sub}>{sub}</div>}

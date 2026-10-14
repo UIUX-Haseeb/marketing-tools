@@ -189,15 +189,17 @@
 /* A · Navy panel: photo on top fading into navy */
 .aFlyer { background: var(--navy); color: #fff; }
 .aFlyer .frame { top: 0; left: 0; right: 0; height: 1180px; }
-.aFlyer .shade { position: absolute; inset: 0 0 auto 0; height: 1180px; background: linear-gradient(180deg, rgba(26, 41, 66, 0.55) 0%, rgba(26, 41, 66, 0) 16%, rgba(26, 41, 66, 0) 45%, rgba(26, 41, 66, 0.85) 75%, var(--navy) 100%); }
+/* full-height shade (Figma): dark behind the logos, clear over the photo, solid navy by 1094 */
+.aFlyer .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26, 41, 66, 0.75) 109px, rgba(26, 41, 66, 0.05) 328px, rgba(26, 41, 66, 0.5) 875px, var(--navy) 1094px); }
 .aFlyer .chip { border: 1px solid rgba(255, 255, 255, 0.38); color: #fff; }
 .aFlyer .sub, .aFlyer .desc, .aFlyer .month i, .aFlyer .drow small { color: var(--soft); }
 .aFlyer .cta { border-top-color: rgba(255, 255, 255, 0.22); }
 
 /* B · Full photo: photo edge to edge under a navy shade */
 .bFlyer { background: var(--navy); color: #fff; }
-.bFlyer .frame { inset: 0; }
-.bFlyer .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26, 41, 66, 0.55) 0%, rgba(26, 41, 66, 0.05) 16%, rgba(26, 41, 66, 0.2) 34%, rgba(26, 41, 66, 0.86) 52%, rgba(26, 41, 66, 0.95) 100%); }
+/* B's flyer photo is a 1080 square at the top (Figma); the shade fades it into navy */
+.bFlyer .frame { top: 0; left: 0; right: 0; height: 1080px; }
+.bFlyer .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26, 41, 66, 0.75) 109px, rgba(26, 41, 66, 0.05) 328px, rgba(26, 41, 66, 0.5) 875px, var(--navy) 1094px); }
 .bFlyer .chip { background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.28); color: #fff; }
 .bFlyer .sub, .bFlyer .desc, .bFlyer .month i, .bFlyer .drow small { color: var(--soft); }
 .bFlyer .cta { border-top-color: rgba(255, 255, 255, 0.22); }
