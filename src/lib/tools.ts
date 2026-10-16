@@ -95,6 +95,15 @@ export const TOOLS: ToolDef[] = [
     icon: "BookOpen",
     component: () => import("@/tools/project-booklet"),
   },
+  {
+    slug: "secondary-brochure",
+    name: "Secondary Brochure",
+    description: "Pick one or more company listings and get a 4:5 brochure — a page per property plus Ask Us About.",
+    teams: ["AGENTS", "MARKETING"],
+    category: "booklets",
+    icon: "FileText",
+    component: () => import("@/tools/secondary-brochure"),
+  },
 
   {
     slug: "events",
