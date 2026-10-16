@@ -10,8 +10,8 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { Clock, Link2, MapPin, Phone } from "lucide-react";
 import { Fit } from "./fit";
-import { artDate, placeLine, shortDate } from "./format";
-import { DEVELOPER_LOGOS, developerLogoSrc } from "./photos";
+import { artDate, artTitle, placeLine, shortDate, shortLink } from "./format";
+import { DEVELOPER_LOGOS, developerInText, developerLogoSrc } from "./photos";
 import { ART_SIZES, LOGO_TYPES, NO_ADJUST, type Adjust, type ArtDesign, type ArtKind, type EventRecord } from "./types";
 import s from "./artwork.module.css";
 
@@ -22,12 +22,43 @@ function framing(a: Adjust): CSSProperties {
   return a.zoom > 1.001 ? { objectPosition: at, transform: `scale(${a.zoom})`, transformOrigin: at } : { objectPosition: at };
 }
 
-function Photo({ e, kind }: { e: EventRecord; kind: ArtKind }) {
+/**
+ * Share of the picture that filling the frame would cut away (0 = same shape as the frame).
+ * Real portal pictures are mostly finished posters — 9:16 stories, square tiles — with their own
+ * text, which a wide frame would crop to pieces.
+ */
+export const cropShare = (imgW: number, imgH: number, frameW: number, frameH: number) =>
+  1 - Math.min(imgW / imgH, frameW / frameH) / Math.max(imgW / imgH, frameW / frameH);
+
+function Photo({ e, kind, align = "center" }: { e: EventRecord; kind: ArtKind; align?: "center" | "right" }) {
   const src = e.artwork.photo;
+  const box = useRef<HTMLDivElement>(null);
+  const [whole, setWhole] = useState(e.artwork.fit === "whole");
+  const decide = (img: HTMLImageElement) => {
+    const fit = e.artwork.fit ?? "auto";
+    const el = box.current;
+    if (fit !== "auto" || !el || !img.naturalWidth) return setWhole(fit === "whole");
+    setWhole(cropShare(img.naturalWidth, img.naturalHeight, el.offsetWidth, el.offsetHeight) > 1 / 3);
+  };
+  // re-decide when the fit setting or the frame changes (design switch) without a new load
+  useLayoutEffect(() => {
+    const img = box.current?.querySelector<HTMLImageElement>("img[data-photo]");
+    if (img?.complete) decide(img);
+  });
+  const adj = e.artwork.adjust[kind] ?? NO_ADJUST;
   return (
-    <div className={s.frame} data-frame={kind}>
+    <div ref={box} className={c("frame", whole && "whole")} data-frame={kind} data-fit={whole ? "whole" : "fill"}>
+      {src && whole && <img className={s.backdrop} src={src} alt="" aria-hidden decoding="async" draggable={false} />}
       {src ? (
-        <img src={src} alt="" decoding="async" draggable={false} style={framing(e.artwork.adjust[kind] ?? NO_ADJUST)} />
+        <img
+          data-photo
+          src={src}
+          alt=""
+          decoding="async"
+          draggable={false}
+          onLoad={(ev) => decide(ev.currentTarget)}
+          style={whole ? { objectPosition: align === "right" ? "right center" : "center", ...(adj.zoom > 1.001 ? { transform: `scale(${adj.zoom})` } : {}) } : framing(adj)}
+        />
       ) : (
         <div className={s.nophoto}>
           <img src="/tools/events/provident-wordmark-white.svg" alt="" draggable={false} />
@@ -46,7 +77,8 @@ export function devLogo(e: EventRecord, tone: "white" | "navy", area: number) {
   const v = e.artwork.logo ?? "";
   if (v === "none") return null;
   if (v) return { src: v, style: undefined, upload: true };
-  const key = DEVELOPER_LOGOS[e.developer];
+  // the portal links no developer; fall back to one named in the title ("THE OASIS BY EMAAR")
+  const key = DEVELOPER_LOGOS[e.developer] ?? DEVELOPER_LOGOS[developerInText(e.title)];
   if (!key) return null;
   const h = Math.sqrt(area / LOGO_RATIO[key]);
   return { src: developerLogoSrc(key, tone), style: { width: Math.round(h * LOGO_RATIO[key]), height: Math.round(h) } as CSSProperties, upload: false };
@@ -84,8 +116,10 @@ function Chips({ e, max }: { e: EventRecord; max: number }) {
 }
 
 function Title({ e, className, min = 0.7 }: { e: EventRecord; className?: string; min?: number }) {
-  const t = e.title.trim();
-  const dot = t && !/[.!?]$/.test(t);
+  const t = artTitle(e);
+  // Emoji by code point too: Node's ICU can be older than the browser's (🪻 → hydration mismatch).
+  const last = [...t].pop() ?? "";
+  const dot = t && !/[.!?\p{Extended_Pictographic}]/u.test(last) && (last.codePointAt(0) ?? 0) < 0x1f000;
   return (
     <Fit className={c("title", className, !t && "placeholder")} watch={t} min={min} label="Title">
       {t || "Event title"}
@@ -154,7 +188,7 @@ function Banner({ e, design }: { e: EventRecord; design: ArtDesign }) {
   if (design === "b")
     return (
       <div className={c("art", "banner", "bBanner")}>
-        <Photo e={e} kind="banner" />
+        <Photo e={e} kind="banner" align="right" />
         <div className={s.shade} />
         <div className={s.shade2} />
         <div className={s.panel}>
@@ -252,9 +286,6 @@ function Thumb({ e, design }: { e: EventRecord; design: ArtDesign }) {
   );
 }
 
-/** "https://events.prov.ae/register/x" → "events.prov.ae/register/x" */
-const bareUrl = (u: string) => u.replace(/^https?:\/\//, "").replace(/\/$/, "");
-
 /**
  * 9:16 story flyer (1080 × 1920) — the banner's content plus what a flyer is for: a short
  * description, the full address, the registration / livestream link and the contact. Still
@@ -326,7 +357,7 @@ function Flyer({ e, design }: { e: EventRecord; design: ArtDesign }) {
           {link && (
             <span className={s.ctaLink}>
               <Link2 size={26} strokeWidth={1.6} />
-              {bareUrl(link)}
+              {shortLink(link)}
             </span>
           )}
         </div>

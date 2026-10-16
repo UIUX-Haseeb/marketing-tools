@@ -1,14 +1,15 @@
 "use client";
 
 /**
- * Event list for the demo: the seed events plus whatever is added or edited here, kept in
+ * Event list: the real portal events (real/) plus whatever is added or edited here, kept in
  * localStorage (this browser only). In the CRM this is the events API.
  */
 import { useSyncExternalStore } from "react";
-import { SEED_EVENTS } from "./data";
+import { REAL_EVENTS as SEED_EVENTS } from "./real";
 import type { EventRecord } from "./types";
 
-const KEY = "provtoys-events:v1";
+// v2: the seed became the real portal events (v1 lists held the demo ones)
+const KEY = "provtoys-events:v2";
 let cache: EventRecord[] | null = null;
 const listeners = new Set<() => void>();
 

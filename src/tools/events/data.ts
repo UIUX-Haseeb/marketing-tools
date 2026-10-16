@@ -1,5 +1,6 @@
 /**
- * DEMO EVENTS — stands in for the CRM's events table. Covers all seven event types; the first
+ * DEMO EVENTS — made-up but tidy events for the Figma template sheet (the stage page now shows the
+ * real portal events, real/index.ts). Covers all seven event types; the first
  * five are the pages in the Figma sandbox (Project Launch, Open House, Briefing, Webinar, Sales
  * Event), the rest add Roadshow, Exhibition, a two-type event, a weekend-only run, a draft and a
  * cancelled one so the stage page's filters and the artwork have varied content to work on;
@@ -88,7 +89,8 @@ function ev(id: string, e: Partial<EventRecord> & Pick<EventRecord, "title" | "t
 const ANDGLE = "Andgle Rose Balmelero";
 const NEEMAT = "Neemat Assaad";
 
-export const SEED_EVENTS: EventRecord[] = [
+/** The hand-made demo events — the Figma template sheet (/sheet/events) uses them; the stage page shows the real ones (real/). */
+export const DEMO_EVENTS: EventRecord[] = [
   ev(
     "20380657-52e3-4014-a561-f2099670ce2b",
     {

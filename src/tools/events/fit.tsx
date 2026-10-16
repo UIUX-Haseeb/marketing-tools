@@ -19,10 +19,13 @@ export function Fit({ className, style, min = 0.62, lines, watch, label, childre
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Glyphs like "|", "J" or an emoji hang a few px past the line box; that isn't overflow (real
+    // portal titles are full of them), so allow ~15% of a line before calling it too long.
+    const slack = () => Math.max(2, (parseFloat(getComputedStyle(el).lineHeight) || 0) * 0.15);
     const over = () => {
       if (el.scrollWidth > el.clientWidth + 1) return true;
       if (lines) return el.offsetHeight > lines * parseFloat(getComputedStyle(el).lineHeight) + 1;
-      return el.scrollHeight > el.clientHeight + 1;
+      return el.scrollHeight > el.clientHeight + slack();
     };
     const run = () => {
       let k = 1;

@@ -5,16 +5,17 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Check, Copy, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/** Status pills as the portal draws them: 11 px medium, fully rounded; Scheduled in the portal's teal. */
 const PILL = {
-  grey: "bg-muted text-foreground",
-  info: "bg-info/12 text-info",
+  grey: "bg-[#f4f1ec] text-[rgba(20,28,48,0.9)]",
+  info: "bg-[rgba(0,186,209,0.12)] text-[#00bad1]",
   warn: "bg-warning/15 text-warning",
   danger: "bg-destructive/12 text-destructive",
   outline: "border text-muted-foreground",
 } as const;
 
 export function Pill({ tone = "grey", children, className }: { tone?: keyof typeof PILL; children: ReactNode; className?: string }) {
-  return <span className={cn("inline-flex h-5 items-center rounded-md px-1.5 text-[11px] leading-none", PILL[tone], className)}>{children}</span>;
+  return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[11px] leading-[1.2] font-medium", PILL[tone], className)}>{children}</span>;
 }
 
 export function Switch({ checked, onChange, label, id }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; id: string }) {

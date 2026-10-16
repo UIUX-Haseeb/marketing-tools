@@ -10,9 +10,11 @@
  *   /sheet/events              design A (the default)
  *   /sheet/events?design=b     another design: a | b | c
  *   /sheet/events?kind=flyer   the 9:16 flyers only (to add them to the Figma frames)
+ *   /sheet/events?set=real     every real portal event (banner, thumbnail, flyer) — the stress test
  */
 import { Artwork } from "./artwork";
-import { SEED_EVENTS } from "./data";
+import { DEMO_EVENTS } from "./data";
+import { REAL_EVENTS } from "./real";
 import { ART_DESIGNS, ART_SIZES, EVENT_TYPES, type ArtDesign, type ArtKind, type EventType } from "./types";
 
 /** The demo event that stands for each type — the logo types use events whose developer has a demo logo. */
@@ -30,16 +32,41 @@ const FONTS = [300, 400, 500]
   .map((w) => `@font-face{font-family:"Google Sans Flex";font-style:normal;font-weight:${w};font-display:block;src:url(/tools/events/fonts/GoogleSansFlex-${w}.woff2) format("woff2");}`)
   .join("");
 
-export function TemplateSheet({ design: want, kind: only }: { design?: string; kind?: string }) {
+/** Every real portal event in one design: banner, thumbnail and flyer side by side. */
+function RealSheet({ design, label }: { design: ArtDesign; label: string }) {
+  return (
+    <main data-sheet="events-real" style={{ ["--font-google-sans" as string]: '"Google Sans Flex"', fontFamily: '"Google Sans Flex", sans-serif', display: "flex", flexDirection: "column", gap: 90, padding: 120, background: "#e9e6e1", width: "max-content", minHeight: "100vh" }}>
+      <style>{FONTS}</style>
+      <h1 style={{ margin: 0, fontSize: 48, fontWeight: 400, color: "#1a2942" }}>Real portal events — {label}</h1>
+      {REAL_EVENTS.map((e, i) => (
+        <section key={e.id} data-event={e.id} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <h2 style={{ margin: 0, fontSize: 26, fontWeight: 400, color: "#1a2942" }}>
+            {i + 1}. {e.title} <span style={{ color: "#5b6472", fontSize: 18 }}>· {e.types.join(", ")}</span>
+          </h2>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 48 }}>
+            {(["banner", "thumb", "flyer"] as ArtKind[]).map((kind) => (
+              <div key={kind} data-kind={kind} style={{ width: ART_SIZES[kind].w, height: ART_SIZES[kind].h, position: "relative", flex: "none", zoom: kind === "flyer" ? 0.45 : 1 }}>
+                <Artwork e={{ ...e, artwork: { ...e.artwork, design } }} kind={kind} design={design} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </main>
+  );
+}
+
+export function TemplateSheet({ design: want, kind: only, set }: { design?: string; kind?: string; set?: string }) {
   const kinds: ArtKind[] = only === "flyer" ? ["flyer"] : ["banner", "thumb"];
   const design = (ART_DESIGNS.find((d) => d.value === want) ?? ART_DESIGNS[0]).value as ArtDesign;
   const label = ART_DESIGNS.find((d) => d.value === design)!.label;
+  if (set === "real") return <RealSheet design={design} label={label} />;
   return (
     <main data-sheet="events" style={{ ["--font-google-sans" as string]: '"Google Sans Flex"', fontFamily: '"Google Sans Flex", sans-serif', display: "flex", flexDirection: "column", gap: 120, padding: 120, background: "#e9e6e1", width: "max-content", minHeight: "100vh" }}>
       <style>{FONTS}</style>
       <h1 style={{ margin: 0, fontSize: 48, fontWeight: 400, color: "#1a2942" }}>Event templates — {label}</h1>
       {EVENT_TYPES.map((type) => {
-        const e = SEED_EVENTS.find((x) => x.id === BY_TYPE[type])!;
+        const e = DEMO_EVENTS.find((x) => x.id === BY_TYPE[type])!;
         return (
           <section key={type} data-type={type} style={{ display: "flex", flexDirection: "column", gap: 28 }}>
             <h2 style={{ margin: 0, fontSize: 36, fontWeight: 400, color: "#1a2942" }}>{type}</h2>

@@ -30,6 +30,15 @@ export const DEVELOPERS = ["Emaar", "Beyond", "Meeras", "Imtiaz", "Azizi", "Alda
  */
 export const DEVELOPER_LOGOS: Record<string, string> = { Emaar: "emaar", Beyond: "beyond", Imtiaz: "imtiaz", Meeras: "meeras" };
 export const developerLogoSrc = (key: string, tone: "white" | "navy") => `/tools/events/developers/${key}-${tone}.svg`;
+
+/**
+ * The portal links no developer to its events, but the developer is usually in the title
+ * ("THE OASIS BY EMAAR", "KORE BY IMTIAZ", "BEYOND BRIEFING"). Returns the library developer
+ * named in the text as a whole word, if any.
+ */
+export function developerInText(text: string) {
+  return Object.keys(DEVELOPER_LOGOS).find((d) => new RegExp(`(^|[^a-z])${d}([^a-z]|$)`, "i").test(text)) ?? "";
+}
 export const COMMUNITIES = ["Dubai Hills Estate", "Jumeirah Village Triangle", "The Greens", "Al Jaddaf", "Dubailand", "Hudayriyat Island", "Yas Island", "Saadiyat Island", "Jebel Ali", "Muwaileh"];
 export const COUNTRIES = ["United Arab Emirates", "Saudi Arabia", "United Kingdom", "Singapore"];
 

@@ -13,7 +13,7 @@ export type EventStatus = (typeof STATUSES)[number];
 export const AUDIENCES = ["Public", "Internal (staff only)"] as const;
 export type Audience = (typeof AUDIENCES)[number];
 
-export const TIMEZONES = ["Asia/Dubai", "Asia/Riyadh", "Europe/London", "Asia/Singapore"] as const;
+export const TIMEZONES = ["Asia/Dubai", "Asia/Riyadh", "Europe/London", "Asia/Singapore", "UTC"] as const;
 
 /** 0 = Mon … 6 = Sun, as the Schedule tab's "Repeats on" row. */
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
@@ -44,6 +44,14 @@ export interface EventArtwork {
   adjust: Partial<Record<ArtKind, Adjust>>;
   /** Optional lines on the banner. Title, type, date are always shown. */
   show: { subtitle: boolean; time: boolean; location: boolean };
+  /**
+   * How the photo meets its frame: "fill" crops it to the frame, "whole" shows all of it over a
+   * blurred copy of itself (for posters with their own text), "auto" (default) picks "whole" when
+   * filling would cut away more than a third of the picture.
+   */
+  fit?: "auto" | "fill" | "whole";
+  /** Titles typed mostly in capitals are set in Title Case on the artwork (default on). */
+  tidyCaps?: boolean;
   /**
    * Developer logo, on the types in LOGO_TYPES: "" = the linked developer's logo from the
    * library (if it has one), "none" = no logo, otherwise an uploaded logo (data URL).

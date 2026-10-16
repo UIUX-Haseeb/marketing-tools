@@ -8,7 +8,7 @@
  * (library strip or upload, Size, drag in the preview) and which optional lines to show.
  * The link fields and staff media links follow, as in the CRM.
  */
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { Check, CircleAlert, Download, Loader2, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -145,7 +145,9 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
   const drag = useRef<{ kind: ArtKind; x0: number; y0: number; base: Adjust; ox: number; oy: number; k: number } | null>(null);
   const startDrag = (kind: ArtKind, ev: ReactPointerEvent<HTMLDivElement>) => {
     const el = ev.currentTarget.querySelector<HTMLElement>("[data-frame]");
-    const img = el?.querySelector("img");
+    // a "whole picture" photo isn't cropped, so there is nothing to drag (Size still zooms it)
+    if (el?.dataset.fit === "whole") return;
+    const img = el?.querySelector<HTMLImageElement>("img[data-photo]");
     if (!el || !img || !art.photo) return;
     const w = el.offsetWidth;
     const h = el.offsetHeight;
@@ -185,6 +187,15 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
   };
 
   const ready = !!e.title.trim() && e.types.length > 0 && !!artDate(e);
+  // the chosen picture's real size — portal uploads run from 335 px tiles to 1440 × 2560 stories
+  const [dims, setDims] = useState<{ src: string; w: number; h: number } | null>(null);
+  useEffect(() => {
+    if (!art.photo) return;
+    const im = new Image();
+    im.onload = () => setDims({ src: art.photo, w: im.naturalWidth, h: im.naturalHeight });
+    im.src = art.photo;
+  }, [art.photo]);
+  const size = dims && dims.src === art.photo ? dims : null;
 
   return (
     <div className="space-y-8">
@@ -244,6 +255,30 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">{e.project ? `${e.project} photos first.` : "Link a project in Location to put its photos first."} Drag in either preview to move it.</p>
+              {size && size.w < 1143 && (
+                <p className="text-xs text-warning">
+                  This picture is {size.w} × {size.h} px — it will look soft on the banner (saved at 2286 px wide). A picture at least 1600 px wide is best.
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>Photo fit</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {(
+                  [
+                    ["auto", "Auto"],
+                    ["fill", "Fill the frame"],
+                    ["whole", "Whole picture"],
+                  ] as const
+                ).map(([v, label]) => (
+                  <button key={v} type="button" onClick={() => setArt({ fit: v })} className={cn("h-8 rounded-lg border px-3 text-xs", (art.fit ?? "auto") === v ? "border-primary bg-primary text-primary-foreground" : "hover:bg-secondary")}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Most uploaded pictures are finished posters with their own text. Auto shows those whole, over a blurred copy, instead of cropping them; Fill crops to the frame.
+              </p>
             </div>
             <PhotoDropzone
               compact
@@ -265,6 +300,10 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
                   </label>
                 ))}
               </div>
+              <label className="inline-flex items-center gap-2 text-sm">
+                <input type="checkbox" className="size-4 accent-navy" checked={art.tidyCaps ?? true} onChange={(ev) => setArt({ tidyCaps: ev.target.checked })} />
+                Tidy ALL CAPS title
+              </label>
               <p className="text-xs text-muted-foreground">Type, title and date are always on. Description, registration and contact never are.</p>
             </div>
           </div>

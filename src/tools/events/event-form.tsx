@@ -144,10 +144,10 @@ export function EventForm({ initial, onClose, onSaved }: { initial?: EventRecord
   };
 
   return (
-    <Modal label={initial ? "Edit event" : "Add event"} onClose={onClose} className="max-w-[820px]">
+    <Modal label={initial ? "Edit event" : "Add event"} onClose={onClose} className="max-w-[900px] rounded-xl">
       <div className="px-6 pt-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-h2">{initial ? "Edit event" : "Add event"}</h2>
+          <h2 className="text-lg font-semibold text-[rgba(20,28,48,0.9)]">{initial ? "Edit event" : "Add event"}</h2>
           {!initial && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <span className="mr-1">{sample === null ? "Blank form" : `Test sample ${sample + 1} of ${SAMPLE_COUNT}`}</span>
@@ -172,7 +172,7 @@ export function EventForm({ initial, onClose, onSaved }: { initial?: EventRecord
                 onClick={() => goTo(t.id)}
                 className={cn(
                   "flex shrink-0 items-center gap-2 border-b-2 px-3 py-2.5 text-sm transition-colors [&_svg]:size-4",
-                  tab === t.id ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
+                  tab === t.id ? "border-[#2f4960] font-medium text-[#2f4960]" : "border-transparent font-medium text-[rgba(20,28,48,0.9)] hover:text-[#2f4960]",
                 )}
               >
                 {t.icon}
@@ -371,8 +371,8 @@ export function EventForm({ initial, onClose, onSaved }: { initial?: EventRecord
         )}
       </div>
       <div className="flex items-center justify-end gap-2 border-t px-6 py-3.5">
-        <Button variant="ghost" onClick={onClose}>Cancel</Button>
-        <Button onClick={submit}>Save</Button>
+        <Button variant="ghost" onClick={onClose} className="h-9 rounded-xl font-medium text-[#2f4960]">Cancel</Button>
+        <Button onClick={submit} className="h-9 rounded-xl bg-[#2f4960] px-5 font-medium text-white hover:bg-[#2f4960]/90">Save</Button>
       </div>
     </Modal>
   );

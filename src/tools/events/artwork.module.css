@@ -29,6 +29,9 @@
 /* Photo frame: the picker / Size / drag work on [data-frame] */
 .frame { position: absolute; overflow: hidden; background: var(--navy2); }
 .frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* "Whole picture": the poster shown complete over a blurred, darkened copy of itself */
+.frame.whole img[data-photo] { position: relative; object-fit: contain; }
+.backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(28px) brightness(0.55) saturate(1.1); transform: scale(1.15); }
 .nophoto { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: repeating-linear-gradient(135deg, #2f4960 0 18px, #2a4258 18px 36px); }
 .nophoto img { width: 28%; height: auto; opacity: 0.18; object-fit: contain; }
 
@@ -206,7 +209,9 @@
 
 /* C · Paper: rounded photo inset at the top, navy on paper */
 .cFlyer { background: var(--paper); color: var(--navy); }
-.cFlyer .frame { position: relative; flex: 1 1 auto; min-height: 560px; margin: 0 -24px 64px; border-radius: 32px; }
+/* the photo takes what the copy leaves (down to 380px) — the copy never gets squeezed */
+.cFlyer .frame { position: relative; flex: 1 1 0; min-height: 380px; margin: 0 -24px 64px; border-radius: 32px; }
+.cFlyer .body > :not([data-frame]) { flex-shrink: 0; }
 .cFlyer .shade { display: none; }
 .cFlyer .chip { border: 1px solid var(--stone); color: var(--navy); }
 .cFlyer .lockup { color: var(--navy); }
