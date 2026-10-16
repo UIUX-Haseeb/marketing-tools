@@ -9,12 +9,14 @@ The portal's **Company Listings** (portal.prov.ae › Listings › Company Listi
 
 ## The pages
 
-Kept to the old flyer's structure on purpose — short, and what agents know:
+In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates?node-id=51-113)) — 80 px margins, gold kicker + rule, light Google Sans Flex, 16 px radius, tracked-caps footer — but kept short like the old flyer:
 
 | Page | What's on it |
 | --- | --- |
-| **Property** (one per listing) | header: wordmark + "The place to begin your search for property in Dubai." and the agent (name, title, mobile, email, headshot) · five photos (two large, three small; property type + For Rent / For Sale on the first) · place line + the title (its `\|` / ` I ` separators turned into ` · `) · spec table: Reference, Bedrooms (beds · baths), Offering, Location, Property Type, Size (+ plot) · the first sentences of the description (≈330 characters, whole sentences) · the permit QR when uploaded · **Offered at** price (+ per year · cheques on rentals) · footer: trademark / copyright / ORN 1933 + page number |
-| **Ask Us About** (once, last) | the upsell from the old flyer — Second Citizenship, Conveyancing, Currency, with its three photos (`public/tools/secondary-brochure/services/`, cropped from the old flyer) — then a *Contact our agent* card |
+| **Property** (one per listing) | the booklet cover: the cover photo with wordmark and *For Rent · reference*, the place line (gold), the headline ("1-Bedroom Apartment"), the title's tags ("Fully Furnished · Ready To Move · Mid Floor"), price (+ / year) · bedrooms · bathrooms · built-up (· plot), a row of four more photos — three and the permit QR when one is uploaded — and the footer |
+| **Ask Us About** (once, last) | the booklet's closing page (bridge photo): the upsell — Second Citizenship, Conveyancing, Currency, with the old flyer's three photos (`public/tools/secondary-brochure/services/`) — then the agent (name, title, mobile, email, BRN, headshot) and the company line |
+
+**A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).
 
 One listing → 2 pages, like the old flyer. N listings → N + 1 pages.
 
@@ -32,7 +34,7 @@ The description is free text the agents type; `real/index.ts` splits it into int
 | `types.ts` | `Listing`, `Agent`, `Item` (listing + its five picture picks + QR), designs |
 | `real/` | The portal listings and their mapping (`index.ts`: description split, title tags) |
 | `format.ts` | Price, sizes, headline, place lines, spec rows |
-| `pages.tsx` + `brochure.module.css` | The two pages, both designs, + `buildBrochure()` |
+| `pages.tsx` + `brochure.module.css` | The property page and the closing page, both designs, + `buildBrochure()` |
 | `brochure-studio.tsx` | The Brochure dialog and `<Scaled>` (a page fitted to a box) |
 | `stage-page.tsx`, `listing-detail.tsx`, `ui.tsx` | Stage page with selection, the pop-out, small UI pieces (copied from Events) |
 | `exporter.ts`, `fit.tsx`, `wordmark.tsx`, `agent.ts` | Copied from the Project Booklet |
@@ -40,4 +42,4 @@ The description is free text the agents type; `real/index.ts` splits it into int
 
 ## Figma
 
-[ProvToys-Templates › Secondary Brochures](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates?node-id=95-2) — both designs (property page + Ask Us About) for PR-09102610, captured from `/sheet/secondary` with Figma's html-to-design capture (the route loads the capture script; it only acts on a URL with `#figmacapture=…`). Edits made there are the reference for the next code change.
+[ProvToys-Templates › Secondary Brochures](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates?node-id=95-2) — both designs (property page + Ask Us About) for PR-09102610 in the booklet style, captured from `/sheet/secondary` with Figma's html-to-design capture (the route loads the capture script; it only acts on a URL with `#figmacapture=…`). Edits made there are the reference for the next code change.

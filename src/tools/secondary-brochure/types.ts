@@ -74,7 +74,7 @@ export const DESIGNS: { id: Design; name: string }[] = [
   { id: "b", name: "B · White" },
 ];
 
-/** The five pictures on a property page (two large, three small): indexes into `photos`. */
+/** The five pictures on a property page (the cover photo, then the row of four): indexes into `photos`. */
 export type Slots = number[];
 
 /** The listing's first five pictures, repeating when it has fewer. */

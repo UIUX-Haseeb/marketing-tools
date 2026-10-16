@@ -41,7 +41,7 @@ export function Scaled({ children, w = PAGE.w, h = PAGE.h, className }: { childr
   );
 }
 
-const SLOT_NAMES = ["Large left", "Large right", "Small 1", "Small 2", "Small 3"];
+const SLOT_NAMES = ["Cover", "Row 1", "Row 2", "Row 3", "Row 4"];
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (

@@ -3,25 +3,27 @@
 
 /**
  * The brochure pages. Each page is a fixed 1080 × 1350 canvas drawn with HTML/CSS
- * (brochure.module.css), in the structure of the portal's old flyer:
+ * (brochure.module.css) in the Project Booklet's look (Figma › Brochure A · Paper & navy),
+ * kept short like the portal's old flyer:
  *
- *   one page per property — brand + agent header, five photos, title, spec table,
- *   a short description and "Offered at" (and the permit QR when there is one)
- *   one closing page — "Ask Us About…" (the upsell: second citizenship, conveyancing,
- *   currency) and the agent's contact
+ *   one page per property — the booklet cover: the photo, wordmark, place, headline, the
+ *   title's tags, price · beds · baths · size, a row of four more photos (three and the
+ *   permit QR when there is one)
+ *   one closing page — the booklet's closing: "Ask Us About…" (the upsell: second
+ *   citizenship, conveyancing, currency), the agent, the company line
  *
- * One listing gives two pages, like the old flyer; selecting several listings gives one page
- * each plus the closing page. `buildBrochure()` also returns layout notes for the studio.
+ * One listing gives two pages; selecting several gives one page each plus the closing page.
+ * Design A is navy, B white (the booklet's B). `buildBrochure()` also returns layout notes.
  */
 import type { ReactNode } from "react";
-import { BedDouble, Building2, FileText, Hash, Mail, MapPin, Ruler, Smartphone } from "lucide-react";
+import { IdCard, Mail, Smartphone } from "lucide-react";
 import s from "./brochure.module.css";
 import { Fit } from "./fit";
-import { bedsLabel, communityLine, forLabel, money, placeLine, priceTerm, sqft } from "./format";
+import { buildingLine, forLabel, headline, money, placeLine, priceTerm, sqft } from "./format";
 import { Wordmark } from "./wordmark";
 import { PAGE, type Agent, type Design, type Item, type Listing } from "./types";
 
-/** Module class names by their CSS name: c("page", "a"). */
+/** Module class names by their CSS name: c("page", "w", "p"). */
 const c = (...names: (string | false | null | undefined)[]) =>
   names
     .filter(Boolean)
@@ -29,7 +31,7 @@ const c = (...names: (string | false | null | undefined)[]) =>
     .join(" ");
 
 const pad = (i: number) => String(i).padStart(2, "0");
-const SERVICES = "/tools/secondary-brochure/services";
+const ASSETS = "/tools/secondary-brochure";
 
 export type BrochureInput = {
   items: Item[];
@@ -39,192 +41,160 @@ export type BrochureInput = {
 };
 export type BrochurePage = { key: string; name: string; node: ReactNode; w: number; h: number };
 
-/* ── shared parts ────────────────────────────────────────────────────────── */
-
 function Img({ src }: { src?: string }) {
   if (!src) return <span className={s.empty}>No picture</span>;
   return <img src={src} alt="" decoding="async" draggable={false} />;
 }
 
-/** The old flyer's header: wordmark + line on the left, the agent on the right. */
-function Header({ agent }: { agent: Agent }) {
-  return (
-    <div className={s.head}>
-      <div className={s.brand}>
-        <Wordmark className={s.wm} />
-        <p>
-          The place to begin your search
-          <br />
-          for <b>property in Dubai.</b>
-        </p>
-      </div>
-      <div className={s.who}>
-        <div>
-          <div className={s.nm}>{agent.name}</div>
-          {agent.position && <div className={s.pos}>{agent.position}</div>}
-          <div className={s.cl}>
-            {agent.mobile && (
-              <span>
-                <Smartphone strokeWidth={1.25} /> {agent.mobile}
-              </span>
-            )}
-            {agent.email && (
-              <span>
-                <Mail strokeWidth={1.25} /> {agent.email}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className={s.shot}>{agent.photo && <img src={agent.photo} alt="" draggable={false} style={{ transform: `scale(${agent.zoom})` }} />}</div>
-      </div>
-    </div>
-  );
-}
-
-function Foot({ n }: { n: string }) {
+function Foot({ text, n }: { text: string; n: string }) {
   return (
     <div className={s.foot}>
-      <span>
-        <b>PROVIDENT®</b> is a registered trademark since 2008
-        <br />
-        Copyright © {new Date().getFullYear()} Provident Real Estate · ORN 1933
-      </span>
-      <span className={s.n}>{n}</span>
+      <span>{text}</span>
+      <span>{n}</span>
     </div>
   );
 }
 
-/** The listing title with its separators tidied: "Fully Furnished · Ready To Move · Mid Floor". */
-const titleLine = (l: Listing) => (l.tags.length ? l.tags.join(" · ") : l.title);
+/** Building, sub-community, community and city, most specific first. */
+const kickerOf = (l: Listing) => [buildingLine(l).split(", ").pop(), l.community, l.city].filter(Boolean).join(" · ");
 
-/** The first sentences of the description that fit the box (the full text stays in the portal). */
-function excerpt(l: Listing) {
-  const text = l.intro.join(" ");
-  if (!text) return `${bedsLabel(l)} ${l.propertyType.toLowerCase()} ${l.offering === "Rent" ? "for rent" : "for sale"} in ${communityLine(l).replace(" · ", ", ")}.`;
-  const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) ?? [text];
-  let out = "";
-  for (const t of sentences) {
-    if (out && (out + t).length > 330) break;
-    out += t;
-  }
-  return out.trim();
-}
+/** The title's tags ("Fully Furnished · Ready To Move · Mid Floor"), or the title itself. */
+const tagLine = (l: Listing) => (l.tags.length ? l.tags.join(" · ") : l.title);
 
 /* ── property page ───────────────────────────────────────────────────────── */
 
-function PropertyPage({ item, agent, draft, n, design }: { item: Item; agent: Agent; draft?: boolean; n: string; design: Design }) {
+function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean; n: string; design: Design }) {
   const { l, slots, qr } = item;
-  const term = priceTerm(l);
   const showQr = !!qr || !!draft;
-  const rows: [ReactNode, string, string][] = [
-    [<Hash key="i" className={s.ico} strokeWidth={1.25} />, "Reference", l.ref],
-    [<BedDouble key="i" className={s.ico} strokeWidth={1.25} />, "Bedrooms", `${/studio/i.test(l.beds) ? "Studio" : `${l.beds} bed`} · ${l.baths} bath`],
-    [<FileText key="i" className={s.ico} strokeWidth={1.25} />, "Offering", `Residential ${l.offering}`],
-    [<MapPin key="i" className={s.ico} strokeWidth={1.25} />, "Location", placeLine(l).replace(` · ${l.city}`, "")],
-    [<Building2 key="i" className={s.ico} strokeWidth={1.25} />, "Property Type", l.propertyType],
-    [<Ruler key="i" className={s.ico} strokeWidth={1.25} />, "Size", [sqft(l.size), l.plot ? `plot ${sqft(l.plot)}` : ""].filter(Boolean).join(" · ") || "—"],
+  const term = priceTerm(l);
+  const area = l.size ? (l.plot ? `${Math.round(l.size).toLocaleString("en-US")} · ${Math.round(l.plot).toLocaleString("en-US")}` : sqft(l.size)) : "—";
+  const cells: [string, ReactNode][] = [
+    [l.offering === "Rent" ? "Annual Rent" : "Price", <>{money(l)}{term && <small>{term.replace("per ", "/ ")}</small>}</>],
+    ["Bedrooms", /studio/i.test(l.beds) ? "Studio" : l.beds],
+    ["Bathrooms", l.baths],
+    [l.plot ? "Built-up · Plot sq.ft" : "Built-up", area],
   ];
+  const row = slots.slice(1, showQr ? 4 : 5);
   return (
-    <section className={c("page", design)}>
-      <Header agent={agent} />
-      <div className={c("m", "grid")}>
-        {slots.slice(0, 5).map((i, k) => (
-          <div key={k} className={s.pic}>
-            <Img src={l.photos[i] ?? l.photos[0]} />
-            {k === 0 && (
-              <div className={s.badge}>
-                <span>{l.propertyType}</span>
-                <span>{forLabel(l)}</span>
-              </div>
-            )}
-          </div>
-        ))}
+    <section className={c("page", design === "b" && "w", "p")}>
+      <div className={s.ph}>
+        <Img src={l.photos[slots[0]] ?? l.photos[0]} />
       </div>
-      <div className={c("m", "ttl")}>
-        <div className={s.kicker}>{placeLine(l)}</div>
-        <Fit className={c("title", "fit")} watch={titleLine(l)} min={0.7} label="Title">
-          {titleLine(l)}
+      <div className={s.shade} />
+      <div className={c("m", "top")}>
+        <Wordmark className={s.wm} />
+        <span className={s.meta}>
+          {forLabel(l)} · {l.ref}
+        </span>
+      </div>
+      <div className={c("m", "blk")}>
+        <div className={s.kicker}>{kickerOf(l)}</div>
+        <div className={s.rule} />
+        <Fit className={c("title", "fit")} watch={headline(l)} min={0.6} lines={1} label="Headline">
+          {headline(l)}
         </Fit>
-      </div>
-      <div className={c("m", "spec")}>
-        {rows.map(([icon, k, v]) => (
-          <div key={k} className={s.c}>
-            {icon}
-            <span className={s.k}>{k}</span>
-            <Fit className={c("v", "fit")} watch={v} min={0.75} label={k}>
-              {v}
-            </Fit>
-          </div>
-        ))}
-      </div>
-      <div className={c("m", "low", showQr && "withqr")}>
-        <Fit className={c("desc", "fit")} watch={excerpt(l)} min={0.8} label="Description">
-          {excerpt(l)}
+        <Fit className={c("sub", "fit")} watch={tagLine(l)} min={0.7} lines={1} label="Tags">
+          {tagLine(l)}
         </Fit>
-        {showQr && <div className={c("qrb", !qr && "none")}>{qr ? <img src={qr} alt="Permit QR" draggable={false} /> : <span>Permit<br />QR</span>}</div>}
-        <div className={s.price}>
-          <div className={s.label}>Offered at</div>
-          <Fit className={s.v} watch={money(l)} min={0.7} lines={1} label="Price">
-            {money(l)}
-          </Fit>
-          {term && <div className={s.t}>{term}{l.cheques ? ` · ${l.cheques} ${l.cheques === 1 ? "cheque" : "cheques"}` : ""}</div>}
+        <div className={s.figs} style={{ gridTemplateColumns: "1.7fr 0.7fr 0.75fr 1.25fr" }}>
+          {cells.map(([k, v]) => (
+            <div key={k}>
+              <div className={s.label}>{k}</div>
+              <div className={s.v}>{v}</div>
+            </div>
+          ))}
         </div>
       </div>
-      <Foot n={n} />
+      <div className={c("m", "row")} style={{ gridTemplateColumns: showQr ? "1fr 1fr 1fr 168px" : "repeat(4, 1fr)" }}>
+        {row.map((i, k) => (
+          <div key={k} className={s.pic}>
+            <Img src={l.photos[i] ?? l.photos[0]} />
+          </div>
+        ))}
+        {showQr && (
+          <div className={c("qr", !qr && "qr-empty")}>
+            {qr ? <img src={qr} alt="Permit QR" draggable={false} /> : <span>Permit<br />QR</span>}
+          </div>
+        )}
+      </div>
+      <Foot text={`Provident Estate · ${placeLine(l).split(" · ").slice(-2).join(" · ")}`} n={n} />
     </section>
   );
 }
 
-/* ── closing page: the upsell + contact ─────────────────────────────────── */
+/* ── closing page: Ask Us About + the agent ─────────────────────────────── */
 
-const SERVICE_CARDS = [
+const SERVICES = [
   { img: "citizenship.jpg", name: "Second Citizenship", text: "Residency and citizenship options." },
   { img: "conveyancing.jpg", name: "Conveyancing", text: "The transfer and its paperwork." },
   { img: "currency.jpg", name: "Currency", text: "Exchange for your purchase or rent." },
 ];
 
-function ClosingPage({ agent, n, design }: { agent: Agent; n: string; design: Design }) {
+function Shot({ agent }: { agent: Agent }) {
+  return <div className={s.shot}>{agent.photo && <img src={agent.photo} alt="" draggable={false} style={{ transform: `scale(${agent.zoom})` }} />}</div>;
+}
+
+function ClosingPage({ agent, design }: { agent: Agent; design: Design }) {
   return (
-    <section className={c("page", design)}>
-      <Header agent={agent} />
-      <div className={c("m", "ask")}>
-        <div className={s.kicker}>Ask us about…</div>
-        <h2>More than the keys.</h2>
-        <p>A move in Dubai often comes with more to arrange. We can help with that too — just ask your agent.</p>
+    <section className={c("page", design === "b" && "w", "c")}>
+      <div className={s.ph} style={{ backgroundImage: `url(${ASSETS}/closing-bridge.jpg)` }} />
+      <div className={s.shade} />
+      <div className={c("m", "top")}>
+        <Wordmark className={s.wm} />
+        <span className={s.meta}>Let’s Connect</span>
+      </div>
+      <div className={c("m", "msg")}>
+        <div className={s.kicker}>Ask Us About</div>
+        <div className={s.rule} />
+        <h2 className={s.h}>More than the keys.</h2>
+        <p className={s.body}>A move in Dubai often comes with more to arrange. We can help with that too — just ask your agent.</p>
       </div>
       <div className={c("m", "svc")}>
-        {SERVICE_CARDS.map((x) => (
+        {SERVICES.map((x) => (
           <div key={x.name}>
             <div className={s.pic}>
-              <Img src={`${SERVICES}/${x.img}`} />
+              <Img src={`${ASSETS}/services/${x.img}`} />
             </div>
             <h3>{x.name}</h3>
             <div className={s.s}>{x.text}</div>
           </div>
         ))}
       </div>
-      <div className={c("m", "contact")}>
+      <div className={c("m", "agent")}>
+        {design === "b" && <Shot agent={agent} />}
         <div>
-          <div className={s.label}>Contact our agent</div>
-          <h3>{agent.name}</h3>
+          <div className={s.nm}>{agent.name}</div>
+          {agent.position && <div className={s.pos}>{agent.position}</div>}
+          <div className={s.cl}>
+            {agent.mobile && (
+              <div>
+                <Smartphone strokeWidth={1} /> {agent.mobile}
+              </div>
+            )}
+            {agent.email && (
+              <div>
+                <Mail strokeWidth={1} /> {agent.email}
+              </div>
+            )}
+            {agent.brn && (
+              <div>
+                <IdCard strokeWidth={1} />
+                <span>
+                  <b>BRN</b> {agent.brn}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
-        <div className={s.lines}>
-          {agent.mobile && (
-            <span>
-              <Smartphone strokeWidth={1.25} /> {agent.mobile}
-            </span>
-          )}
-          {agent.email && (
-            <span>
-              <Mail strokeWidth={1.25} /> {agent.email}
-            </span>
-          )}
-          <span>
-            <Hash strokeWidth={1.25} /> BRN {agent.brn} · 800ESTATE
-          </span>
-        </div>
+        {design === "a" && <Shot agent={agent} />}
       </div>
-      <Foot n={n} />
+      <div className={c("m", "legal")}>
+        <div className={s.r}>
+          <span>Provident Real Estate Broker L.L.C · ORN 1933</span>
+          <span>800ESTATE · providentestate.com</span>
+        </div>
+        <p>PROVIDENT® is a registered trademark since 2008 · Copyright © {new Date().getFullYear()} Provident Real Estate</p>
+      </div>
     </section>
   );
 }
@@ -235,18 +205,17 @@ export function buildBrochure(design: Design, input: BrochureInput): { pages: Br
   const { items, agent, draft } = input;
   const pages: BrochurePage[] = items.map((item, i) => ({
     key: item.l.id,
-    name: `${item.l.ref}`,
-    node: <PropertyPage item={item} agent={agent} draft={draft} n={pad(i + 1)} design={design} />,
+    name: item.l.ref,
+    node: <PropertyPage item={item} draft={draft} n={pad(i + 1)} design={design} />,
     w: PAGE.w,
     h: PAGE.h,
   }));
-  pages.push({ key: "closing", name: "Ask Us About", node: <ClosingPage agent={agent} n={pad(items.length + 1)} design={design} />, w: PAGE.w, h: PAGE.h });
+  pages.push({ key: "closing", name: "Ask Us About", node: <ClosingPage agent={agent} design={design} />, w: PAGE.w, h: PAGE.h });
 
   const notes: string[] = [];
   for (const { l, qr } of items) {
     if (l.photos.length < 5) notes.push(`${l.ref}: only ${l.photos.length} pictures, so some repeat.`);
-    if (!l.intro.length) notes.push(`${l.ref}: the description has no paragraph, so a line is made from the listing’s fields.`);
-    if (!qr) notes.push(`${l.ref}: no permit QR uploaded, so the page leaves it off.`);
+    if (!qr) notes.push(`${l.ref}: no permit QR uploaded, so the page shows four photos instead.`);
   }
   return { pages, notes };
 }
