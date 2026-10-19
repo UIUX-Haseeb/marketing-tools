@@ -20,7 +20,7 @@ import { agentFrom } from "./agent";
 import { downloadBlob, drawFrames, formatBytes, pdfOf, picturesReady, slug } from "./exporter";
 import { headline } from "./format";
 import { buildBrochure } from "./pages";
-import { DESIGNS, PAGE, defaultSlots, type Agent, type Design, type Item, type Listing } from "./types";
+import { DESIGNS, FULL_PHOTO, HIDE_LOGO, PAGE, defaultSlots, newItem, type Agent, type Design, type Frame, type Item, type Listing } from "./types";
 import { Modal } from "./ui";
 
 /** A page drawn at its real size and scaled to the box's width. */
@@ -49,6 +49,39 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <p className="kicker">{title}</p>
       {children}
     </section>
+  );
+}
+
+function Slider({ id, label, value, min, max, step, onChange }: { id: string; label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void }) {
+  return (
+    <div className="grid grid-cols-[72px_1fr] items-center gap-2">
+      <Label htmlFor={id} className="text-xs font-normal text-muted-foreground">{label}</Label>
+      <input id={id} type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} className="w-full accent-[#2f4960]" />
+    </div>
+  );
+}
+
+const sameFrame = (a: Frame, b: Frame) => a.zoom === b.zoom && a.x === b.x && a.y === b.y;
+
+/**
+ * Cover framing. The portal stamps "provident." into the lower left of its pictures; "Hide portal
+ * logo" (the default) anchors the photo to its top so the stamp is cropped off, "Whole photo" shows it
+ * all, and Zoom / Across / Down fine-tune for pictures where the stamp sits elsewhere.
+ */
+function FrameControls({ frame, onChange }: { frame: Frame; onChange: (f: Frame) => void }) {
+  return (
+    <div className="space-y-2 rounded-md bg-secondary/50 p-2.5">
+      <div className="flex gap-1.5">
+        {([["Hide portal logo", HIDE_LOGO], ["Whole photo", FULL_PHOTO]] as const).map(([label, f]) => (
+          <button key={label} type="button" onClick={() => onChange(f)} aria-pressed={sameFrame(frame, f)} className={cn("h-7 rounded-full border bg-card px-2.5 text-xs", sameFrame(frame, f) ? "border-[#2f4960] bg-[#2f4960] text-white" : "hover:bg-secondary")}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <Slider id="fr-zoom" label="Zoom" value={frame.zoom} min={1} max={2.5} step={0.05} onChange={(zoom) => onChange({ ...frame, zoom })} />
+      <Slider id="fr-x" label="Across" value={frame.x} min={0} max={1} step={0.02} onChange={(x) => onChange({ ...frame, x })} />
+      <Slider id="fr-y" label="Down" value={frame.y} min={0} max={1} step={0.02} onChange={(y) => onChange({ ...frame, y })} />
+    </div>
   );
 }
 
@@ -104,6 +137,7 @@ function PropertyRow({ item, index, count, open, onToggle, onChange, onMove, onR
               </button>
             ))}
           </div>
+          {slot === 0 && <FrameControls frame={item.frame} onChange={(frame) => onChange({ ...item, frame })} />}
           <div className="flex flex-wrap items-center gap-2">
             <input
               ref={qrInput}
@@ -137,7 +171,7 @@ function PropertyRow({ item, index, count, open, onToggle, onChange, onMove, onR
 export function BrochureStudio({ listings, onClose, initialAgent = 0 }: { listings: Listing[]; onClose: () => void; initialAgent?: number }) {
   const [design, setDesign] = useState<Design>("a");
   const [agent, setAgent] = useState<Agent>(() => agentFrom(EMPLOYEES[initialAgent % EMPLOYEES.length]));
-  const [items, setItems] = useState<Item[]>(() => listings.map((l) => ({ l, slots: defaultSlots(l), qr: null })));
+  const [items, setItems] = useState<Item[]>(() => listings.map(newItem));
   const [openId, setOpenId] = useState<string | null>(listings.length === 1 ? listings[0].id : null);
   const [busy, setBusy] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);

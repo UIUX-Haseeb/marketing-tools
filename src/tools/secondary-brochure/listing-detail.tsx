@@ -14,7 +14,7 @@ import { agentFrom } from "./agent";
 import { Scaled } from "./brochure-studio";
 import { money, placeLine, priceTerm, specRows, sqft } from "./format";
 import { buildBrochure } from "./pages";
-import { defaultSlots, type Listing } from "./types";
+import { newItem, type Listing } from "./types";
 import { CopyButton, Panel, Pill, Rows } from "./ui";
 
 function Box({ icon, value, label }: { icon: ReactNode; value: string; label: string }) {
@@ -29,7 +29,7 @@ function Box({ icon, value, label }: { icon: ReactNode; value: string; label: st
 
 export function ListingDetail({ l, agentIndex, onBrochure }: { l: Listing; agentIndex: number; onBrochure: () => void }) {
   const agent = agentFrom(EMPLOYEES[agentIndex % EMPLOYEES.length]);
-  const cover = buildBrochure("a", { items: [{ l, slots: defaultSlots(l), qr: null }], agent }).pages[0];
+  const cover = buildBrochure("a", { items: [newItem(l)], agent }).pages[0];
   const more = l.photos.length - 3;
   return (
     <div className="space-y-4 p-5">

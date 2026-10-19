@@ -67,7 +67,7 @@ export type Agent = {
   brn: string;
 };
 
-/** A · Navy header (the old flyer's), B · White header. */
+/** A · Navy (the booklet's A cover), B · White (its B). */
 export type Design = "a" | "b";
 export const DESIGNS: { id: Design; name: string }[] = [
   { id: "a", name: "A · Navy" },
@@ -83,7 +83,19 @@ export function defaultSlots(l: Listing): Slots {
   return [0, 1, 2, 3, 4].map((i) => i % n);
 }
 
-/** One property in a brochure: the listing, its picture picks and its permit QR. */
-export type Item = { l: Listing; slots: Slots; qr: string | null };
+/**
+ * How the cover photo sits in its box: `zoom` 1–2.5, and the point that stays put, `x` / `y`
+ * 0–1 (0, 0 = top-left). The portal bakes a "provident." watermark into the lower left of every
+ * listing picture, under our own wordmark — the default anchors the photo to its top so the stamp
+ * is cropped off the bottom (checked on all 13 listings; no zoom needed).
+ */
+export type Frame = { zoom: number; x: number; y: number };
+export const HIDE_LOGO: Frame = { zoom: 1, x: 0.5, y: 0 };
+export const FULL_PHOTO: Frame = { zoom: 1, x: 0.5, y: 0.5 };
+
+/** One property in a brochure: the listing, its picture picks, the cover framing and its permit QR. */
+export type Item = { l: Listing; slots: Slots; frame: Frame; qr: string | null };
+
+export const newItem = (l: Listing): Item => ({ l, slots: defaultSlots(l), frame: HIDE_LOGO, qr: null });
 
 export const PAGE = { w: 1080, h: 1350 } as const;

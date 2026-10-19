@@ -21,7 +21,7 @@ import s from "./brochure.module.css";
 import { Fit } from "./fit";
 import { buildingLine, forLabel, headline, money, placeLine, priceTerm, sqft } from "./format";
 import { Wordmark } from "./wordmark";
-import { PAGE, type Agent, type Design, type Item, type Listing } from "./types";
+import { PAGE, type Agent, type Design, type Frame, type Item, type Listing } from "./types";
 
 /** Module class names by their CSS name: c("page", "w", "p"). */
 const c = (...names: (string | false | null | undefined)[]) =>
@@ -41,9 +41,10 @@ export type BrochureInput = {
 };
 export type BrochurePage = { key: string; name: string; node: ReactNode; w: number; h: number };
 
-function Img({ src }: { src?: string }) {
+function Img({ src, frame }: { src?: string; frame?: Frame }) {
   if (!src) return <span className={s.empty}>No picture</span>;
-  return <img src={src} alt="" decoding="async" draggable={false} />;
+  const style = frame && { objectPosition: `${frame.x * 100}% ${frame.y * 100}%`, transform: `scale(${frame.zoom})`, transformOrigin: `${frame.x * 100}% ${frame.y * 100}%` };
+  return <img src={src} alt="" decoding="async" draggable={false} style={style || undefined} />;
 }
 
 function Foot({ text, n }: { text: string; n: string }) {
@@ -64,7 +65,7 @@ const tagLine = (l: Listing) => (l.tags.length ? l.tags.join(" · ") : l.title);
 /* ── property page ───────────────────────────────────────────────────────── */
 
 function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean; n: string; design: Design }) {
-  const { l, slots, qr } = item;
+  const { l, slots, qr, frame } = item;
   const showQr = !!qr || !!draft;
   const term = priceTerm(l);
   const area = l.size ? (l.plot ? `${Math.round(l.size).toLocaleString("en-US")} · ${Math.round(l.plot).toLocaleString("en-US")}` : sqft(l.size)) : "—";
@@ -78,7 +79,7 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
   return (
     <section className={c("page", design === "b" && "w", "p")}>
       <div className={s.ph}>
-        <Img src={l.photos[slots[0]] ?? l.photos[0]} />
+        <Img src={l.photos[slots[0]] ?? l.photos[0]} frame={frame} />
       </div>
       <div className={s.shade} />
       <div className={c("m", "top")}>

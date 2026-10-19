@@ -18,6 +18,8 @@ In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://ww
 
 **A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).
 
+**The portal's watermark.** Every listing picture has "provident." stamped into its lower left (the originals too), which doubled up with the brochure's own wordmark. The cover photo is now anchored to its top so the stamp is cropped off the bottom (`HIDE_LOGO` in `types.ts`; checked on all 13 listings), and the row thumbnails zoom toward the top right. For a picture where the stamp sits elsewhere, the Brochure dialog's **Cover** picture has *Hide portal logo* / *Whole photo* and **Zoom / Across / Down** sliders.
+
 One listing → 2 pages, like the old flyer. N listings → N + 1 pages.
 
 The description is free text the agents type; `real/index.ts` splits it into intro paragraphs, short feature lines and a location section, and drops "Company Name", "RERA ORN" and price lines (the brochure prints those itself). The property page uses the intro only; with no paragraph it writes one line from the fields.
