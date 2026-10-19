@@ -7,7 +7,7 @@ export const money = (l: Listing) => `${l.currency} ${int(l.price)}`;
 
 /** "per year" on a yearly rental, nothing on a sale. */
 export const priceTerm = (l: Listing) =>
-  l.offering === "Rent" ? (l.rentFrequency ? `per ${l.rentFrequency.replace(/ly$/i, "").toLowerCase().replace("dai", "day")}` : "rent") : "";
+  l.offering === "Rent" && l.rentFrequency ? `per ${l.rentFrequency.replace(/ly$/i, "").toLowerCase().replace("dai", "day")}` : "";
 
 /** Short price for tight spots: AED 70K, AED 1.65M, AED 25M. */
 export function moneyShort(l: Listing) {
@@ -21,8 +21,37 @@ export const sqft = (n: number | null) => (n ? `${int(n)} sq.ft` : "");
 export const bedsLabel = (l: Listing) => (/studio/i.test(l.beds) ? "Studio" : `${l.beds} ${l.beds === "1" ? "Bedroom" : "Bedrooms"}`);
 export const bathsLabel = (l: Listing) => `${l.baths} ${l.baths === "1" ? "Bathroom" : "Bathrooms"}`;
 
-/** "1-Bedroom Apartment", "Studio Apartment", "5-Bedroom Villa". */
-export const headline = (l: Listing) => (/studio/i.test(l.beds) ? `Studio ${l.propertyType}` : `${l.beds}-Bedroom ${l.propertyType}`);
+/** "1-Bedroom Apartment", "Studio Apartment", "5-Bedroom Villa"; commercial: the space type ("Co-working Space", "Business Centre"). */
+export const headline = (l: Listing) =>
+  l.segment === "Commercial" || !l.beds ? l.propertyType : /studio/i.test(l.beds) ? `Studio ${l.propertyType}` : `${l.beds}-Bedroom ${l.propertyType}`;
+
+const cheques = (l: Listing) => (l.cheques ? `${l.cheques} ${l.cheques === 1 ? "cheque" : "cheques"}` : "");
+
+/**
+ * The four key figures under the headline. Residential: price · bedrooms · bathrooms · built-up
+ * (· plot). Commercial has no bedrooms, so: price, then up to three of size · fit-out · plot ·
+ * payment — whichever the listing has (the business centre only has a size). `w` is each
+ * column's share of the row.
+ */
+export function keyFigures(l: Listing): { label: string; value: string; w: number }[] {
+  const price = { label: l.offering === "Rent" ? "Annual Rent" : "Price", value: money(l), w: 1.7 };
+  if (l.segment === "Residential") {
+    const area = l.size ? (l.plot ? `${int(l.size)} · ${int(l.plot)}` : sqft(l.size)) : "—";
+    return [
+      price,
+      { label: "Bedrooms", value: /studio/i.test(l.beds) ? "Studio" : l.beds || "—", w: 0.7 },
+      { label: "Bathrooms", value: l.baths || "—", w: 0.75 },
+      { label: l.plot ? "Built-up · Plot sq.ft" : "Built-up", value: area, w: 1.25 },
+    ];
+  }
+  const rest = [
+    { label: "Size", value: sqft(l.size) },
+    { label: "Fit-out", value: l.furnishing ?? "" },
+    { label: "Plot", value: sqft(l.plot) },
+    { label: "Payment", value: l.offering === "Rent" ? cheques(l) : "" },
+  ].filter((f) => f.value);
+  return [price, ...rest.slice(0, 3).map((f) => ({ ...f, w: 1 }))];
+}
 
 export const forLabel = (l: Listing) => (l.offering === "Rent" ? "For Rent" : "For Sale");
 
@@ -58,12 +87,13 @@ export function specRows(l: Listing): { label: string; value: string }[] {
   const rows: [string, string | null | undefined][] = [
     [l.offering === "Rent" ? "Annual Rent" : "Price", `${money(l)}`],
     ["Property Type", l.propertyType],
-    ["Bedrooms", /studio/i.test(l.beds) ? "Studio" : l.beds],
+    ["Offering", l.offeringName],
+    ["Bedrooms", l.beds && (/studio/i.test(l.beds) ? "Studio" : l.beds)],
     ["Bathrooms", l.baths],
-    ["Built-up Area", sqft(l.size)],
+    [l.segment === "Commercial" ? "Size" : "Built-up Area", sqft(l.size)],
     ["Plot Size", sqft(l.plot)],
-    ["Furnishing", l.furnishing],
-    ["Payment", l.offering === "Rent" && l.cheques ? `${l.cheques} ${l.cheques === 1 ? "cheque" : "cheques"}` : null],
+    [l.segment === "Commercial" ? "Fit-out" : "Furnishing", l.furnishing],
+    ["Payment", l.offering === "Rent" ? cheques(l) : null],
     ["Parking", l.parking ? `${l.parking} ${l.parking === 1 ? "space" : "spaces"}` : null],
     ["Availability", availableLine(l)],
     ["Developer", l.developer],

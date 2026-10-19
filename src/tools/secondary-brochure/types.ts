@@ -5,6 +5,8 @@
  */
 
 export type Offering = "Sale" | "Rent";
+/** The portal's offering types come in two families: Residential Sale / Rent and Commercial Sale / Rent. */
+export type Segment = "Residential" | "Commercial";
 
 /** A titled part of the description ("Location Highlights:", "Community Overview:" …). */
 export type Section = { title: string; paras: string[]; items: string[] };
@@ -17,9 +19,13 @@ export type Listing = {
   /** The title split on its separators — the brochure prints these as tags. */
   tags: string[];
   offering: Offering;
+  segment: Segment;
+  /** The portal's own wording: "Residential Rent", "Commercial Rent" … */
+  offeringName: string;
   category: string;
   propertyType: string;
-  /** "Studio" or a number as text, as the portal stores it. */
+  /** "Studio" or a number as text, as the portal stores it. Empty on commercial listings
+   *  (the portal's co-working entries carry junk like "10+" / "20" there, so it is not read). */
   beds: string;
   baths: string;
   /** Built-up area, sq.ft. */

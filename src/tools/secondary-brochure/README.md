@@ -24,9 +24,21 @@ One listing → 2 pages, like the old flyer. N listings → N + 1 pages.
 
 The description is free text the agents type; `real/index.ts` splits it into intro paragraphs, short feature lines and a location section, and drops "Company Name", "RERA ORN" and price lines (the brochure prints those itself). The property page uses the intro only; with no paragraph it writes one line from the fields.
 
+## Residential and commercial
+
+Each listing carries `segment` (Residential / Commercial, from the portal's offering type) and the brochure page reads its own listing, so **one brochure can mix property types** — a 1-bed apartment, a co-working space and a business centre each get the same page layout with their own figures:
+
+| | Residential | Commercial |
+| --- | --- | --- |
+| Headline | "1-Bedroom Apartment", "Studio Apartment" | the space type: "Co-working Space", "Business Centre" |
+| Key figures (`keyFigures` in `format.ts`) | price · bedrooms · bathrooms · built-up (· plot) | price, then up to three of size · fit-out · plot · payment — whichever the listing has |
+| Bedrooms / bathrooms | as the portal has them | ignored — the portal's co-working entries carry junk there ("10+", "20") |
+
+The pop-out and the list follow the same rule (no bed / bath boxes on commercial, the portal's offering wording, Draft / Rejected status pills). The Brochure dialog notes when a brochure mixes types.
+
 ## Data
 
-`real/portal-listings.json` — **13 company listings** copied from the portal on 16 Oct 2026, picked for spread: rent and sale; studio to 5-bed; apartment, villa, townhouse; AED 70K to AED 25M; one with a floor plan (PS-1610268). Their pictures (the watermarked copies, up to 14 each, ≤1600 px) are in `public/tools/secondary-brochure/real/<reference>/`. Left out on purpose: the assigned agent, owners, unit numbers and permit records.
+`real/portal-listings.json` — **13 company listings** copied from the portal: ten residential (16 Oct 2026 — rent and sale; studio to 5-bed; apartment, villa, townhouse; AED 70K to AED 25M; one with a floor plan, PS-1610268) and three commercial (19 Oct 2026, the portal filtered to commercial property types — two co-working spaces and a business centre, Draft / Rejected, one with no description). Their pictures (the watermarked copies, up to 14 each, ≤1600 px) are in `public/tools/secondary-brochure/real/<reference>/`. Left out on purpose: the assigned agent, owners, unit numbers and permit records.
 
 ## Files
 

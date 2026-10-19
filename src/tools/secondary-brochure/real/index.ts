@@ -1,6 +1,7 @@
 /**
  * Thirteen company listings from the portal (portal.prov.ae › Listings › Company Listings), copied
- * field for field on 16 Oct 2026 — portal-listings.json — with up to 14 of their uploaded pictures
+ * field for field — ten residential on 16 Oct 2026, three commercial (co-working space, business
+ * centre; filtered by property type) on 19 Oct 2026 — portal-listings.json — with up to 14 of their uploaded pictures
  * (the watermarked copies, ≤1600 px) in public/tools/secondary-brochure/real/<reference>/. Picked
  * for spread: rent and sale, studio to five-bed villa, AED 70k to AED 25M, one with a floor plan.
  * Left out on purpose: the agent, owner, unit number and permit records — the brochure's agent
@@ -74,7 +75,8 @@ export function titleTags(title: string) {
 }
 
 function toListing(r: Raw): Listing {
-  const { intro, features, sections } = splitDescription(r.description || "");
+  const commercial = /commercial/i.test(r.offeringTypeName);
+  const { intro, features, sections } = splitDescription(r.description ?? "");
   const area: Section | null = sections.length
     ? { title: sections[0].title, paras: sections.flatMap((s) => s.paras).filter((p) => !CTA.test(p)), items: sections.flatMap((s) => s.items) }
     : null;
@@ -85,10 +87,12 @@ function toListing(r: Raw): Listing {
     title: r.title,
     tags: titleTags(r.title),
     offering: (/rent/i.test(r.offeringTypeName) ? "Rent" : "Sale") as Offering,
+    segment: /commercial/i.test(r.offeringTypeName) ? "Commercial" : "Residential",
+    offeringName: r.offeringTypeName,
     category: r.categoryName,
     propertyType: r.propertyTypeName.replace(/^Residential\s+/i, ""),
-    beds: r.bedroomName,
-    baths: r.bathroomName,
+    beds: commercial ? "" : r.bedroomName ?? "",
+    baths: commercial ? "" : r.bathroomName ?? "",
     size: num(r.size),
     plot: num(r.plotSize),
     price: parseFloat(r.price) || 0,
@@ -108,7 +112,7 @@ function toListing(r: Raw): Listing {
     status: r.propertyStatusName ?? "Approved",
     photos: r.photos.map((p) => `${folder}/${p}`),
     floorplan: r.floorplan ? `${folder}/${r.floorplan}` : null,
-    description: r.description,
+    description: r.description ?? "",
     intro,
     features,
     area: area && (area.paras.length || area.items.length) ? area : null,

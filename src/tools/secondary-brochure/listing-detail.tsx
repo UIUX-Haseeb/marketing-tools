@@ -6,7 +6,7 @@
  * mosaic, title and price, place + developer, beds / baths / size boxes, description, amenities
  * and details on the left; the agent and the brochure's cover on the right.
  */
-import { Bath, BedDouble, FileText, Hash, LandPlot, MapPin, Ruler } from "lucide-react";
+import { Bath, BedDouble, Building2, FileText, Hash, LandPlot, MapPin, Ruler } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { EMPLOYEES } from "@/lib/demo/employees";
@@ -16,6 +16,9 @@ import { money, placeLine, priceTerm, specRows, sqft } from "./format";
 import { buildBrochure } from "./pages";
 import { newItem, type Listing } from "./types";
 import { CopyButton, Panel, Pill, Rows } from "./ui";
+
+/** The portal's status colours: Approved green, Draft amber, Rejected red. */
+const STATUS_BG: Record<string, string> = { Approved: "bg-[#28c76f]", Draft: "bg-[#ff9f43]", Rejected: "bg-[#ea5455]" };
 
 function Box({ icon, value, label }: { icon: ReactNode; value: string; label: string }) {
   return (
@@ -56,7 +59,7 @@ export function ListingDetail({ l, agentIndex, onBrochure }: { l: Listing; agent
       <div className="grid h-72 grid-cols-[2fr_1fr] gap-2 overflow-hidden rounded-xl">
         <div className="relative">
           <img src={l.photos[0]} alt="" className="size-full object-cover" />
-          <span className="absolute top-2 left-2 rounded-full bg-[#28c76f] px-2 py-0.5 text-[11px] font-medium text-white">{l.status}</span>
+          <span className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[11px] font-medium text-white ${STATUS_BG[l.status] ?? "bg-[#28c76f]"}`}>{l.status}</span>
         </div>
         <div className="grid grid-rows-2 gap-2">
           <img src={l.photos[1] ?? l.photos[0]} alt="" className="size-full object-cover" />
@@ -78,16 +81,17 @@ export function ListingDetail({ l, agentIndex, onBrochure }: { l: Listing; agent
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold tracking-[-0.02em] text-[#2f4960]">{money(l)}</p>
-          <p className="text-xs text-muted-foreground">{l.offering === "Rent" ? `Residential rent${priceTerm(l) ? ` · ${priceTerm(l)}` : ""}` : "Residential sale"}</p>
+          <p className="text-xs text-muted-foreground">{l.offeringName}{priceTerm(l) ? ` · ${priceTerm(l)}` : ""}</p>
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            <Box icon={<BedDouble />} value={/studio/i.test(l.beds) ? "Studio" : l.beds} label="Bedrooms" />
-            <Box icon={<Bath />} value={l.baths} label="Bathrooms" />
+            {l.beds && <Box icon={<BedDouble />} value={/studio/i.test(l.beds) ? "Studio" : l.beds} label="Bedrooms" />}
+            {l.baths && <Box icon={<Bath />} value={l.baths} label="Bathrooms" />}
             <Box icon={<Ruler />} value={sqft(l.size) || "—"} label="Size" />
+            {l.segment === "Commercial" && <Box icon={<Building2 />} value={l.propertyType} label="Type" />}
             {l.plot && <Box icon={<LandPlot />} value={sqft(l.plot)} label="Plot" />}
           </div>
           <Panel title="Description">

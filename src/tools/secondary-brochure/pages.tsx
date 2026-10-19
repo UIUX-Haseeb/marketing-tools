@@ -7,8 +7,10 @@
  * kept short like the portal's old flyer:
  *
  *   one page per property — the booklet cover: the photo, wordmark, place, headline, the
- *   title's tags, price · beds · baths · size, a row of four more photos (three and the
- *   permit QR when there is one)
+ *   title's tags, four key figures (`keyFigures`: residential price · beds · baths · size,
+ *   commercial price · size · fit-out · plot / payment / type), a row of four more photos
+ *   (three and the permit QR when there is one). Pages of different property types sit in one
+ *   brochure side by side: each page reads its own listing, the layout is the same.
  *   one closing page — the booklet's closing: "Ask Us About…" (the upsell: second
  *   citizenship, conveyancing, currency), the agent, the company line
  *
@@ -19,7 +21,7 @@ import type { ReactNode } from "react";
 import { IdCard, Mail, Smartphone } from "lucide-react";
 import s from "./brochure.module.css";
 import { Fit } from "./fit";
-import { buildingLine, forLabel, headline, money, placeLine, priceTerm, sqft } from "./format";
+import { buildingLine, forLabel, headline, keyFigures, placeLine, priceTerm } from "./format";
 import { Wordmark } from "./wordmark";
 import { PAGE, type Agent, type Design, type Frame, type Item, type Listing } from "./types";
 
@@ -68,13 +70,7 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
   const { l, slots, qr, frame } = item;
   const showQr = !!qr || !!draft;
   const term = priceTerm(l);
-  const area = l.size ? (l.plot ? `${Math.round(l.size).toLocaleString("en-US")} · ${Math.round(l.plot).toLocaleString("en-US")}` : sqft(l.size)) : "—";
-  const cells: [string, ReactNode][] = [
-    [l.offering === "Rent" ? "Annual Rent" : "Price", <>{money(l)}{term && <small>{term.replace("per ", "/ ")}</small>}</>],
-    ["Bedrooms", /studio/i.test(l.beds) ? "Studio" : l.beds],
-    ["Bathrooms", l.baths],
-    [l.plot ? "Built-up · Plot sq.ft" : "Built-up", area],
-  ];
+  const figs = keyFigures(l);
   const row = slots.slice(1, showQr ? 4 : 5);
   return (
     <section className={c("page", design === "b" && "w", "p")}>
@@ -97,11 +93,14 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
         <Fit className={c("sub", "fit")} watch={tagLine(l)} min={0.7} lines={1} label="Tags">
           {tagLine(l)}
         </Fit>
-        <div className={s.figs} style={{ gridTemplateColumns: "1.7fr 0.7fr 0.75fr 1.25fr" }}>
-          {cells.map(([k, v]) => (
-            <div key={k}>
-              <div className={s.label}>{k}</div>
-              <div className={s.v}>{v}</div>
+        <div className={s.figs} style={{ gridTemplateColumns: figs.map((f) => `${f.w}fr`).join(" ") }}>
+          {figs.map((f, i) => (
+            <div key={f.label}>
+              <div className={s.label}>{f.label}</div>
+              <Fit className={c("v", "fit")} watch={f.value} min={0.6} lines={1} label={f.label}>
+                {f.value}
+                {i === 0 && term && <small>{term.replace("per ", "/ ")}</small>}
+              </Fit>
             </div>
           ))}
         </div>
@@ -214,7 +213,10 @@ export function buildBrochure(design: Design, input: BrochureInput): { pages: Br
   pages.push({ key: "closing", name: "Ask Us About", node: <ClosingPage agent={agent} design={design} />, w: PAGE.w, h: PAGE.h });
 
   const notes: string[] = [];
+  const types = [...new Set(items.map((x) => x.l.propertyType))];
+  if (types.length > 1) notes.push(`Mixed property types (${types.join(", ")}): each page shows its own figures — commercial pages swap bedrooms and bathrooms for size and fit-out.`);
   for (const { l, qr } of items) {
+    if (l.segment === "Commercial" && !l.intro.length) notes.push(`${l.ref}: no description on the listing.`);
     if (l.photos.length < 5) notes.push(`${l.ref}: only ${l.photos.length} pictures, so some repeat.`);
     if (!qr) notes.push(`${l.ref}: no permit QR uploaded, so the page shows four photos instead.`);
   }

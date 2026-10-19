@@ -8,7 +8,7 @@
  * brochure from all of them; a listing's own Brochure button makes one for that listing.
  *
  * Portal styles as in the Events tool: navy #2f4960 buttons with 12 px corners, white cards with a
- * 1 px rgba(20,28,48,.12) border, 11 px uppercase labels, green "Approved" pill.
+ * 1 px rgba(20,28,48,.12) border, 11 px uppercase labels, status pills (Approved / Draft / Rejected).
  */
 import { useMemo, useState, type ReactNode } from "react";
 import { Bath, BedDouble, CheckSquare, FileText, Heart, LayoutGrid, List, MapPin, Ruler, Search, XCircle } from "lucide-react";
@@ -20,7 +20,7 @@ import { LISTINGS } from "./real";
 import type { Listing } from "./types";
 import { Drawer } from "./ui";
 
-type Stat = "all" | "Sale" | "Rent" | "exclusive";
+type Stat = "all" | "Sale" | "Rent" | "Commercial";
 
 const ink = "text-[rgba(20,28,48,0.9)]";
 const navy = "text-[#2f4960]";
@@ -49,8 +49,14 @@ function StatCard({ label, value, help, active, onClick }: { label: string; valu
   );
 }
 
-function Approved() {
-  return <span className="inline-flex items-center rounded-full bg-[rgba(40,199,111,0.14)] px-2 py-0.5 text-[11px] font-medium text-[#28c76f]">Approved</span>;
+/** Status pill in the portal's colours: Approved green, Draft amber, Rejected red. */
+const STATUS: Record<string, string> = {
+  Approved: "bg-[rgba(40,199,111,0.14)] text-[#28c76f]",
+  Draft: "bg-[rgba(255,159,67,0.16)] text-[#ff9f43]",
+  Rejected: "bg-[rgba(234,84,85,0.14)] text-[#ea5455]",
+};
+function Status({ s }: { s: string }) {
+  return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS[s] ?? STATUS.Approved)}>{s}</span>;
 }
 
 function Check({ on, onChange, label }: { on: boolean; onChange: () => void; label: string }) {
@@ -73,8 +79,8 @@ function ListingCard({ l, on, onToggle, onOpen }: { l: Listing; on: boolean; onT
             <MapPin className="size-3.5 shrink-0" /> <span className="truncate">{placeLine(l)}</span>
           </p>
           <p className="flex gap-3 border-t border-[rgba(20,28,48,0.08)] pt-2 text-xs text-[rgba(20,28,48,0.7)] [&_svg]:size-3.5">
-            <span className="inline-flex items-center gap-1"><BedDouble /> {l.beds}</span>
-            <span className="inline-flex items-center gap-1"><Bath /> {l.baths}</span>
+            {l.beds && <span className="inline-flex items-center gap-1"><BedDouble /> {l.beds}</span>}
+            {l.baths && <span className="inline-flex items-center gap-1"><Bath /> {l.baths}</span>}
             <span className="inline-flex items-center gap-1"><Ruler /> {sqft(l.size)}</span>
           </p>
         </div>
@@ -118,12 +124,12 @@ function ListingTable({ rows, picked, onToggle, onToggleAll, onOpen }: { rows: L
                   </span>
                 </span>
               </td>
-              <td><Approved /></td>
+              <td><Status s={l.status} /></td>
               <td className="whitespace-nowrap">{money(l)}</td>
               <td>{l.propertyType}</td>
-              <td className="whitespace-nowrap">Residential {l.offering.toLowerCase()}</td>
-              <td>{l.beds}</td>
-              <td>{l.baths}</td>
+              <td className="whitespace-nowrap">{l.offeringName}</td>
+              <td>{l.beds || "—"}</td>
+              <td>{l.baths || "—"}</td>
               <td>{l.size ? Math.round(l.size).toLocaleString("en-US") : "—"}</td>
               <td>{l.plot ? Math.round(l.plot).toLocaleString("en-US") : "—"}</td>
             </tr>
@@ -144,7 +150,7 @@ export function StagePage() {
 
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return LISTINGS.filter((l) => (stat === "all" ? true : stat === "exclusive" ? l.exclusive : l.offering === stat)).filter(
+    return LISTINGS.filter((l) => (stat === "all" ? true : stat === "Commercial" ? l.segment === "Commercial" : l.offering === stat)).filter(
       (l) => !needle || [l.title, l.ref, l.community, l.subCommunity, l.tower, l.propertyType].join(" ").toLowerCase().includes(needle),
     );
   }, [stat, q]);
@@ -173,7 +179,7 @@ export function StagePage() {
             <Heart className="size-5 text-[rgba(20,28,48,0.5)]" /> Company Listings
           </h2>
           <p className="text-xs text-[rgba(20,28,48,0.6)]">
-            {shown.length} listings · portal snapshot, 16 Oct 2026{(stat !== "all" || q) && " · filtered"}
+            {shown.length} listings · portal snapshot, 16 & 19 Oct 2026{(stat !== "all" || q) && " · filtered"}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -194,10 +200,10 @@ export function StagePage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Approved" value={LISTINGS.length} help="All listings" active={stat === "all"} onClick={() => setStat("all")} />
+        <StatCard label="Listings" value={LISTINGS.length} help="All statuses" active={stat === "all"} onClick={() => setStat("all")} />
         <StatCard label="Sales / Rental" value={`${sale} / ${LISTINGS.length - sale}`} help="Click for sales" active={stat === "Sale"} onClick={() => setStat(stat === "Sale" ? "all" : "Sale")} />
-        <StatCard label="Rental" value={LISTINGS.length - sale} help="Residential rent" active={stat === "Rent"} onClick={() => setStat(stat === "Rent" ? "all" : "Rent")} />
-        <StatCard label="Exclusive" value={LISTINGS.filter((l) => l.exclusive).length} help="Exclusive listings" active={stat === "exclusive"} onClick={() => setStat(stat === "exclusive" ? "all" : "exclusive")} />
+        <StatCard label="Rental" value={LISTINGS.length - sale} help="Residential and commercial" active={stat === "Rent"} onClick={() => setStat(stat === "Rent" ? "all" : "Rent")} />
+        <StatCard label="Commercial" value={LISTINGS.filter((l) => l.segment === "Commercial").length} help="Offices, co-working, business centres" active={stat === "Commercial"} onClick={() => setStat(stat === "Commercial" ? "all" : "Commercial")} />
       </div>
 
       <div className="rounded-xl border border-[rgba(20,28,48,0.12)] bg-white p-3">
@@ -208,7 +214,7 @@ export function StagePage() {
           </label>
           {stat !== "all" && (
             <span className="inline-flex h-7 items-center gap-1 rounded-full bg-[#f4f1ec] px-2.5 text-xs">
-              {stat === "exclusive" ? "Exclusive" : `Offering: ${stat}`}
+              {stat === "Commercial" ? "Segment: Commercial" : `Offering: ${stat}`}
               <button type="button" onClick={() => setStat("all")} aria-label="Remove filter" className="text-muted-foreground hover:text-foreground">
                 <XCircle className="size-3.5" />
               </button>
