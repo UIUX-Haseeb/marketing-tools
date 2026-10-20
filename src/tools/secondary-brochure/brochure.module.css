@@ -108,7 +108,7 @@
 .w .qr-empty span { color: var(--grey); }
 
 /* ── closing page: the booklet's closing, with the Ask Us About upsell ─── */
-.c .ph { height: 692px; background-color: #233452; background-repeat: no-repeat; background-size: cover; background-position: center; }
+.c .ph { height: 664px; background-color: #233452; background-repeat: no-repeat; background-size: cover; background-position: center; }
 .c .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26, 41, 66, 0.88) 0, rgba(26, 41, 66, 0.42) 230px,
   rgba(26, 41, 66, 0.55) 420px, rgba(26, 41, 66, 0.92) 600px, #1a2942 720px); }
 .w.c .ph { height: 600px; background-size: cover; background-position: 62% 55%; }
@@ -116,7 +116,8 @@
 .w.c .msg { color: #fff; }
 .w.c .msg .body { color: var(--mist); }
 .w.c .top .meta { color: var(--gold); }
-.msg { top: 268px; }
+.msg { top: 433px; }
+.w .msg { top: 268px; }
 .svc { top: 720px; display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 24px; }
 .svc .ico { color: #fff; }
 .w .svc .ico { color: var(--navy); }
