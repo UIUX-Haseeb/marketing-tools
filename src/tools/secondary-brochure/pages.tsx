@@ -9,9 +9,11 @@
  *   one page per property — a filled For Sale / For Rent chip and the location in an outlined
  *   pill (Material "location_on" icon), the property ID in the footer, the title's tags as the headline ("Fully Furnished · Ready
  *   To Move · Mid Floor"), the property ("1-Bedroom Apartment"), four key figures (`keyFigures`: residential price · beds · baths · size,
- *   commercial price · size · fit-out · plot / payment), under a full-width photo mosaic of five
- *   (two across, three below) whose cells take the listing's photo shape, so every picture is
- *   shown whole — the portal's watermark included; the permit QR beside the headline. Pages of different property types sit in one
+ *   commercial price · size · fit-out · plot / payment), under the wordmark and an inset mosaic
+ *   of five photos (two across, three below; rounded, inside the margins) in one fixed size on
+ *   every page — the cells are about 1.42 : 1, between the portal's 3:2 and 4:3 pictures, so at
+ *   most ~6% is trimmed off two edges and the portal's watermark stays; the permit QR beside
+ *   the headline. Pages of different property types sit in one
  *   brochure side by side: each page reads its own listing, the layout is the same.
  *   one closing page — the booklet's closing: "Ask Us About…" (the upsell: second
  *   citizenship, conveyancing, currency), the agent, the company line
@@ -35,8 +37,6 @@ const c = (...names: (string | false | null | undefined)[]) =>
     .join(" ");
 
 const pad = (i: number) => String(i).padStart(2, "0");
-/** Gap between the mosaic's photos. */
-const GAP = 8;
 const ASSETS = "/tools/secondary-brochure";
 
 export type BrochureInput = {
@@ -89,27 +89,19 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
   const term = priceTerm(l);
   const figs = keyFigures(l);
   const pic = (i: number) => l.photos[slots[i]] ?? l.photos[0];
-  // Every cell takes the listing's photo shape, so each picture is shown whole.
-  const top = (PAGE.w - GAP) / 2 / l.photoRatio;
-  const bottom = (PAGE.w - 2 * GAP) / 3 / l.photoRatio;
-  const mosaicH = Math.round(top + GAP + bottom);
-  // The copy sits at the same height on every page (just under the tallest, 4:3 mosaic); a
-  // flatter mosaic leaves the room above it rather than between the copy and the figures.
-  const copyTop = Math.max(mosaicH + 48, 738);
   return (
     <section className={c("page", design === "b" && "w", "p")}>
-      <div className={s.mosaic} style={{ height: mosaicH, gridTemplateRows: `${top}px ${bottom}px` }}>
+      <div className={c("m", "mosaic")}>
         {[0, 1, 2, 3, 4].map((i) => (
           <div key={i} className={c("cell", i < 2 ? "half" : "third")}>
             <Img src={pic(i)} />
           </div>
         ))}
       </div>
-      <div className={s.shade} />
       <div className={c("m", "top")}>
         <Wordmark className={s.wm} />
       </div>
-      <div className={c("m", "blk", showQr && "withqr")} style={{ top: copyTop }}>
+      <div className={c("m", "blk", showQr && "withqr")}>
         <div className={s.chips}>
           <span className={s.deal}>{forLabel(l)}</span>
           <div className={s.loc}>
@@ -125,7 +117,7 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
         </Fit>
       </div>
       {showQr && (
-        <div className={c("qr", "pq", !qr && "qr-empty")} style={{ top: copyTop }}>
+        <div className={c("qr", "pq", !qr && "qr-empty")}>
           {qr ? <img src={qr} alt="Permit QR" draggable={false} /> : <span>Permit<br />QR</span>}
         </div>
       )}
