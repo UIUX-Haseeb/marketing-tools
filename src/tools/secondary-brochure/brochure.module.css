@@ -63,18 +63,20 @@
       inside the margins — one fixed size on every page. Cells are ~1.42 : 1 (top 454 × 320,
       bottom 299 × 210), between the portal's 3:2 and 4:3 pictures, so little is trimmed.
       Then the booklet cover's copy and figures. ───────────────────────────────────────────── */
-.p .top { top: 80px; }
+.p .top { top: 86px; height: 54px; }
+.idbar { display: flex; align-items: center; gap: 20px; }
+.w.p .top .meta { color: var(--grey); }
 .w.p .wm { color: var(--navy); }
-.mosaic { top: 156px; height: 542px; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 320px 210px; gap: 12px; }
+.mosaic { top: 204px; height: 542px; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 320px 210px; gap: 12px; }
 .cell { overflow: hidden; background: #233452; min-height: 0; border-radius: var(--r); }
 .half { grid-column: span 3; }
 .third { grid-column: span 2; }
 .cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .w .cell { background: var(--paper); }
 .w.p .meta { color: #fff; }
-.blk { top: 750px; }
+.blk { top: 826px; }
 .blk.withqr { right: 272px; }
-.pq { position: absolute; right: 80px; top: 750px; }
+.pq { position: absolute; right: 80px; top: 826px; }
 /* Chip row: the deal (a quiet filled chip) then the location (outlined) */
 .chips { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .deal { flex: none; display: inline-flex; align-items: center; height: 54px; padding: 0 24px; border-radius: 999px; background: rgba(236, 231, 223, 0.12); color: var(--mist);
@@ -90,7 +92,7 @@
 .title { font-weight: 400; font-size: calc(68px * var(--k, 1)); line-height: 1.08; letter-spacing: -0.03em; margin: 26px 0 0 -3px; }
 .sub { font-size: calc(28px * var(--k, 1)); line-height: 1.25; color: var(--gold); margin-top: 16px; white-space: nowrap; }
 .w .sub { color: var(--gold); }
-.figs { top: 1066px; display: grid; padding-top: 28px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+.figs { top: 1090px; display: grid; padding-top: 28px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
 .w .figs { border-color: var(--line); }
 .figs > div { min-width: 0; }
 .figs .v { font-weight: 400; font-size: 40px; line-height: 1; letter-spacing: -0.015em; margin-top: 16px; white-space: nowrap; }
