@@ -4,11 +4,11 @@
  * The Brochure dialog — opened from one listing's "Brochure" button, or from the stage page with
  * several listings selected. Every field comes from the listings; the dialog only adds what they
  * don't hold: the design, the agent (demo employee list + contact placeholders), the five
- * pictures per property, each property's permit QR, and the order. Preview on the right;
+ * pictures per property, and the order. Preview on the right;
  * Download PDF draws the pages at 2× into one PDF.
  */
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ChevronDown, Download, ImagePlus, Loader2, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown, Download, Loader2, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,14 +52,13 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-/** One property's settings: its five pictures, its permit QR, its place in the brochure. */
+/** One property's settings: its five pictures and its place in the brochure. */
 function PropertyRow({ item, index, count, open, onToggle, onChange, onMove, onRemove }: {
   item: Item; index: number; count: number; open: boolean; onToggle: () => void;
   onChange: (i: Item) => void; onMove: (d: -1 | 1) => void; onRemove: () => void;
 }) {
-  const { l, slots, qr } = item;
+  const { l, slots } = item;
   const [slot, setSlot] = useState(0);
-  const qrInput = useRef<HTMLInputElement>(null);
   return (
     <div className="rounded-lg border bg-card">
       <div className="flex items-center gap-2 px-3 py-2">
@@ -105,25 +104,6 @@ function PropertyRow({ item, index, count, open, onToggle, onChange, onMove, onR
             ))}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <input
-              ref={qrInput}
-              type="file"
-              accept="image/png,image/jpeg,image/svg+xml"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) onChange({ ...item, qr: URL.createObjectURL(f) });
-                e.target.value = "";
-              }}
-            />
-            <Button variant="outline" size="sm" onClick={() => qrInput.current?.click()}>
-              <ImagePlus /> {qr ? "Replace permit QR" : "Permit QR"}
-            </Button>
-            {qr && (
-              <Button variant="ghost" size="sm" onClick={() => onChange({ ...item, qr: null })}>
-                Remove QR
-              </Button>
-            )}
             <Button variant="ghost" size="sm" onClick={() => onChange({ ...item, slots: defaultSlots(l) })}>
               Reset pictures
             </Button>
@@ -144,7 +124,7 @@ export function BrochureStudio({ listings, onClose, initialAgent = 0 }: { listin
   const [error, setError] = useState<string | null>(null);
   const out = useRef<HTMLDivElement>(null);
 
-  const preview = useMemo(() => buildBrochure(design, { items, agent, draft: true }), [design, items, agent]);
+  const preview = useMemo(() => buildBrochure(design, { items, agent }), [design, items, agent]);
   const final = useMemo(() => buildBrochure(design, { items, agent }), [design, items, agent]);
 
   const update = (i: number, next: Item) => setItems(items.map((x, k) => (k === i ? next : x)));

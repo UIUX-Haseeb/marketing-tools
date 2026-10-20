@@ -5,7 +5,7 @@ The portal's **Company Listings** (portal.prov.ae › Listings › Company Listi
 - **Stage page** — laid out like the portal's: stat cards that filter (Approved, Sales / Rental, Rental, Exclusive), search by title or reference, List / Cards, and the **Listing details** pop-out (photos, title, price, place, beds / baths / size, description, amenities, agent, details, and the brochure's first page).
 - **Brochure for one listing** — the pop-out's *Brochure* button.
 - **Brochure for several listings** — tick them in the list (or *Select* for all shown) and press **Brochure (n)**: one PDF, one page per property, in the order you set.
-- **The Brochure dialog** — design (A · Navy / B · White), the properties (reorder, remove; per property: the five pictures and its permit QR), the agent (demo employee list; mobile, email and BRN are placeholders until the CRM provides them), live preview, **Download PDF** (pages drawn at 2×). Downloads are logged with `logGeneratedPost` — `tool` `secondary-brochure`, `templateId` `secondary-brochure-a|b`.
+- **The Brochure dialog** — design (A · Navy / B · White), the properties (reorder, remove; per property: the five pictures), the agent (demo employee list; mobile, email and BRN are placeholders until the CRM provides them), live preview, **Download PDF** (pages drawn at 2×). Downloads are logged with `logGeneratedPost` — `tool` `secondary-brochure`, `templateId` `secondary-brochure-a|b`.
 
 ## The pages
 
@@ -13,7 +13,7 @@ In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://ww
 
 | Page | What's on it |
 | --- | --- |
-| **Property** (one per listing) | the wordmark with a quiet *For Sale* / *For Rent* chip on the right, then an inset mosaic of **five photos** — two across, three below, rounded, inside the margins — at one fixed size on every page (cells ≈ 1.42 : 1, between the portal's 3:2 and 4:3 pictures, so at most ~6% is trimmed off two edges; the portal's watermark stays); then the location (Material *location_on* icon in gold), the headline with the permit QR beside it, then two label / value pills — *Offering · Residential Rent*, *Type · Apartment* (an outlined pill holding a filled label) — the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the key figures (see below), the permit QR beside the headline when one is uploaded, and the footer with the **property ID** (*Property ID · PR-09102610*) |
+| **Property** (one per listing) | the wordmark with a quiet *For Sale* / *For Rent* chip on the right, then an inset mosaic of **five photos** — two across, three below, rounded, inside the margins — at one fixed size on every page (cells ≈ 1.42 : 1, between the portal's 3:2 and 4:3 pictures, so at most ~6% is trimmed off two edges; the portal's watermark stays); then the location (Material *location_on* icon in gold), the headline, then two label / value pills — *Offering · Residential Rent*, *Type · Apartment* (an outlined pill holding a filled label) — the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the key figures (see below), and the footer with the **property ID** (*Property ID · PR-09102610*) |
 | **Ask Us About** (once, last) | the booklet's closing page (bridge photo): the upsell — Second Citizenship, Conveyancing, Currency, each with its Material Symbols icon (inline in `pages.tsx`) — then the agent (name, title, mobile, email, BRN, headshot) and the company line |
 
 **A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).
@@ -45,7 +45,7 @@ The pop-out and the list follow the same rule (no bed / bath boxes on commercial
 | File | What it does |
 | --- | --- |
 | `index.tsx` | Tool entry (the stage page) |
-| `types.ts` | `Listing`, `Agent`, `Item` (listing + its five picture picks + QR), designs |
+| `types.ts` | `Listing`, `Agent`, `Item` (listing + its five picture picks), designs |
 | `real/` | The portal listings and their mapping (`index.ts`: description split, title tags) |
 | `format.ts` | Price, sizes, headline, place lines, spec rows |
 | `pages.tsx` + `brochure.module.css` | The property page and the closing page, both designs, + `buildBrochure()` |

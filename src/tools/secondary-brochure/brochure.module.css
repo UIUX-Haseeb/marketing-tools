@@ -73,7 +73,6 @@
 .w .cell { background: var(--paper); }
 .w.p .meta { color: #fff; }
 .blk { top: 812px; }
-.pq { position: absolute; right: 80px; top: 816px; }
 /* Chip row: the deal (a quiet filled chip) then the location (outlined) */
 .chips { display: flex; align-items: center; gap: 12px; min-width: 0; margin-top: 38px; }
 .deal { flex: none; display: inline-flex; align-items: center; height: 54px; padding: 0 24px; border-radius: 999px; background: rgba(236, 231, 223, 0.12); color: var(--mist);
@@ -99,13 +98,6 @@
 .figs .v { font-weight: 400; font-size: 40px; line-height: 1; letter-spacing: -0.015em; margin-top: 16px; white-space: nowrap; }
 .figs .v small { font-size: 19px; letter-spacing: 0; margin-left: 8px; color: var(--stone); }
 .w .figs .v small { color: var(--grey); }
-.qr { height: 152px; width: 152px; padding: 10px; border-radius: 12px; background: #fff; }
-.w .qr { box-shadow: inset 0 0 0 1px var(--line); }
-.qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.qr-empty { display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); border: 1.5px dashed rgba(236, 231, 223, 0.5); }
-.w .qr-empty { background: var(--paper); border-color: rgba(26, 41, 66, 0.25); }
-.qr-empty span { font-weight: 500; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--stone); text-align: center; line-height: 1.6; }
-.w .qr-empty span { color: var(--grey); }
 
 /* ── closing page: the booklet's closing, with the Ask Us About upsell ─── */
 .c .ph { height: 664px; background-color: #233452; background-repeat: no-repeat; background-size: cover; background-position: center; }

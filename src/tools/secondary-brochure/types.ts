@@ -95,9 +95,9 @@ export function defaultSlots(l: Listing): Slots {
   return [0, 1, 2, 3, 4].map((k) => order[k % Math.max(order.length, 1)] ?? 0);
 }
 
-/** One property in a brochure: the listing, its picture picks and its permit QR. */
-export type Item = { l: Listing; slots: Slots; qr: string | null };
+/** One property in a brochure: the listing and its picture picks. */
+export type Item = { l: Listing; slots: Slots };
 
-export const newItem = (l: Listing): Item => ({ l, slots: defaultSlots(l), qr: null });
+export const newItem = (l: Listing): Item => ({ l, slots: defaultSlots(l) });
 
 export const PAGE = { w: 1080, h: 1350 } as const;

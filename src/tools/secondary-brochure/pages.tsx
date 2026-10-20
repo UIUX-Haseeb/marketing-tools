@@ -7,15 +7,13 @@
  * kept short like the portal's old flyer:
  *
  *   one page per property — the wordmark with a For Sale / For Rent chip on the right; under
- *   the photos the location (Material "location_on" icon), the headline with the permit QR
- *   beside it, then two label / value pills — Offering · Residential Rent, Type · Apartment —
+ *   the photos the location (Material "location_on" icon), the headline, then two label / value pills — Offering · Residential Rent, Type · Apartment —
  *   the property ID in the footer, the title's tags as the headline ("Fully Furnished · Ready
  *   To Move · Mid Floor"), four key figures (`keyFigures`: residential price · beds · baths · size,
  *   commercial price · size · fit-out · plot / payment), under the wordmark and an inset mosaic
  *   of five photos (two across, three below; rounded, inside the margins) in one fixed size on
  *   every page — the cells are about 1.42 : 1, between the portal's 3:2 and 4:3 pictures, so at
- *   most ~6% is trimmed off two edges and the portal's watermark stays; the permit QR beside
- *   the headline. Pages of different property types sit in one
+ *   most ~6% is trimmed off two edges and the portal's watermark stays. Pages of different property types sit in one
  *   brochure side by side: each page reads its own listing, the layout is the same.
  *   one closing page — the booklet's closing: "Ask Us About…" (the upsell: second
  *   citizenship, conveyancing, currency), the agent, the company line
@@ -44,8 +42,6 @@ const ASSETS = "/tools/secondary-brochure";
 export type BrochureInput = {
   items: Item[];
   agent: Agent;
-  /** Studio preview: show an empty QR plate as a reminder. Downloads pass false. */
-  draft?: boolean;
 };
 export type BrochurePage = { key: string; name: string; node: ReactNode; w: number; h: number };
 
@@ -85,9 +81,8 @@ const tagLine = (l: Listing) => (l.tags.length ? l.tags.join(" · ") : l.title);
 
 /* ── property page ───────────────────────────────────────────────────────── */
 
-function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean; n: string; design: Design }) {
-  const { l, slots, qr } = item;
-  const showQr = !!qr || !!draft;
+function PropertyPage({ item, n, design }: { item: Item; n: string; design: Design }) {
+  const { l, slots } = item;
   const term = priceTerm(l);
   const figs = keyFigures(l);
   const pic = (i: number) => l.photos[slots[i]] ?? l.photos[0];
@@ -109,12 +104,9 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
         <span>{kickerOf(l)}</span>
       </div>
       <div className={c("m", "blk")}>
-        {/* beside the QR: kept clear of it, and at least as tall so the pills always start below it */}
-        <div style={showQr ? { marginRight: 192, minHeight: 152 } : undefined}>
-          <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
-            {tagLine(l)}
-          </Fit>
-        </div>
+        <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
+          {tagLine(l)}
+        </Fit>
         <div className={s.chips}>
           <span className={s.kv}>
             <b>Offering</b>
@@ -126,11 +118,6 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
           </span>
         </div>
       </div>
-      {showQr && (
-        <div className={c("qr", "pq", !qr && "qr-empty")}>
-          {qr ? <img src={qr} alt="Permit QR" draggable={false} /> : <span>Permit<br />QR</span>}
-        </div>
-      )}
       <div className={c("m", "figs")} style={{ gridTemplateColumns: figs.map((f) => `${f.w}fr`).join(" ") }}>
         {figs.map((f, i) => (
           <div key={f.label}>
@@ -245,11 +232,11 @@ function ClosingPage({ agent, design }: { agent: Agent; design: Design }) {
 /* ── the brochure ─────────────────────────────────────────────────────────── */
 
 export function buildBrochure(design: Design, input: BrochureInput): { pages: BrochurePage[]; notes: string[] } {
-  const { items, agent, draft } = input;
+  const { items, agent } = input;
   const pages: BrochurePage[] = items.map((item, i) => ({
     key: item.l.id,
     name: item.l.ref,
-    node: <PropertyPage item={item} draft={draft} n={pad(i + 1)} design={design} />,
+    node: <PropertyPage item={item} n={pad(i + 1)} design={design} />,
     w: PAGE.w,
     h: PAGE.h,
   }));
@@ -258,10 +245,9 @@ export function buildBrochure(design: Design, input: BrochureInput): { pages: Br
   const notes: string[] = [];
   const types = [...new Set(items.map((x) => x.l.propertyType))];
   if (types.length > 1) notes.push(`Mixed property types (${types.join(", ")}): each page shows its own figures — commercial pages swap bedrooms and bathrooms for size and fit-out.`);
-  for (const { l, qr } of items) {
+  for (const { l } of items) {
     if (l.segment === "Commercial" && !l.intro.length) notes.push(`${l.ref}: no description on the listing.`);
     if (l.photos.length < 3) notes.push(`${l.ref}: only ${l.photos.length} pictures, so some repeat.`);
-    if (!qr) notes.push(`${l.ref}: no permit QR uploaded, so the page leaves it off.`);
   }
   return { pages, notes };
 }
