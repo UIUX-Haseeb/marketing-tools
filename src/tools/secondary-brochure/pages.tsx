@@ -156,7 +156,11 @@ const SERVICES = [
 ];
 
 function Shot({ agent }: { agent: Agent }) {
-  return <div className={s.shot}>{agent.photo && <img src={agent.photo} alt="" draggable={false} style={{ transform: `scale(${agent.zoom})` }} />}</div>;
+  return (
+    <div className={s.shot}>
+      <img src={agent.photo ?? undefined} alt="" draggable={false} style={{ transform: `scale(${agent.zoom})` }} />
+    </div>
+  );
 }
 
 function ClosingPage({ agent, design }: { agent: Agent; design: Design }) {
@@ -186,32 +190,31 @@ function ClosingPage({ agent, design }: { agent: Agent; design: Design }) {
         ))}
       </div>
       <div className={c("m", "agent")}>
-        {design === "b" && <Shot agent={agent} />}
-        <div>
+        {agent.photo && <Shot agent={agent} />}
+        <div className={s.who}>
           <div className={s.nm}>{agent.name}</div>
           {agent.position && <div className={s.pos}>{agent.position}</div>}
-          <div className={s.cl}>
-            {agent.mobile && (
-              <div>
-                <Smartphone strokeWidth={1} /> {agent.mobile}
-              </div>
-            )}
-            {agent.email && (
-              <div>
-                <Mail strokeWidth={1} /> {agent.email}
-              </div>
-            )}
-            {agent.brn && (
-              <div>
-                <IdCard strokeWidth={1} />
-                <span>
-                  <b>BRN</b> {agent.brn}
-                </span>
-              </div>
-            )}
-          </div>
         </div>
-        {design === "a" && <Shot agent={agent} />}
+        <div className={s.cl}>
+          {agent.mobile && (
+            <div>
+              <Smartphone strokeWidth={1} /> {agent.mobile}
+            </div>
+          )}
+          {agent.email && (
+            <div>
+              <Mail strokeWidth={1} /> {agent.email}
+            </div>
+          )}
+          {agent.brn && (
+            <div>
+              <IdCard strokeWidth={1} />
+              <span>
+                <b>BRN</b> {agent.brn}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
       <div className={c("m", "legal")}>
         <div className={s.r}>
