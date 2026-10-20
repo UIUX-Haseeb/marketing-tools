@@ -41,7 +41,7 @@ export function Scaled({ children, w = PAGE.w, h = PAGE.h, className }: { childr
   );
 }
 
-const SLOT_NAMES = ["Cover", "Row 1", "Row 2", "Row 3", "Row 4"];
+const SLOT_NAMES = ["Large", "Right top", "Right bottom"];
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -64,7 +64,7 @@ function Slider({ id, label, value, min, max, step, onChange }: { id: string; la
 const sameFrame = (a: Frame, b: Frame) => a.zoom === b.zoom && a.x === b.x && a.y === b.y;
 
 /**
- * Cover framing. The portal stamps "provident." into the lower left of its pictures; "Hide portal
+ * Large-photo framing. The portal stamps "provident." into the lower left of its pictures; "Hide portal
  * logo" (the default) anchors the photo to its top so the stamp is cropped off, "Whole photo" shows it
  * all, and Zoom / Across / Down fine-tune for pictures where the stamp sits elsewhere.
  */

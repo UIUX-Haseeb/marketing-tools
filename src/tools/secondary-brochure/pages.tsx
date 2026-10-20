@@ -9,8 +9,8 @@
  *   one page per property — the booklet cover: the photo, wordmark, the location in a pill
  *   (Material "location_on" icon), the title's tags as the headline ("Fully Furnished · Ready
  *   To Move · Mid Floor"), the property ("1-Bedroom Apartment"), four key figures (`keyFigures`: residential price · beds · baths · size,
- *   commercial price · size · fit-out · plot / payment / type), a row of four more photos
- *   (three and the permit QR when there is one). Pages of different property types sit in one
+ *   commercial price · size · fit-out · plot / payment), under a full-width photo mosaic (one
+ *   large, two stacked); the permit QR beside the headline when there is one. Pages of different property types sit in one
  *   brochure side by side: each page reads its own listing, the layout is the same.
  *   one closing page — the booklet's closing: "Ask Us About…" (the upsell: second
  *   citizenship, conveyancing, currency), the agent, the company line
@@ -81,11 +81,19 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
   const showQr = !!qr || !!draft;
   const term = priceTerm(l);
   const figs = keyFigures(l);
-  const row = slots.slice(1, showQr ? 4 : 5);
+  const pic = (i: number) => l.photos[slots[i]] ?? l.photos[0];
   return (
     <section className={c("page", design === "b" && "w", "p")}>
-      <div className={s.ph}>
-        <Img src={l.photos[slots[0]] ?? l.photos[0]} frame={frame} />
+      <div className={s.mosaic}>
+        <div className={s.big}>
+          <Img src={pic(0)} frame={frame} />
+        </div>
+        <div className={s.small}>
+          <Img src={pic(1)} />
+        </div>
+        <div className={s.small}>
+          <Img src={pic(2)} />
+        </div>
       </div>
       <div className={s.shade} />
       <div className={c("m", "top")}>
@@ -94,7 +102,7 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
           {forLabel(l)} · {l.ref}
         </span>
       </div>
-      <div className={c("m", "blk")}>
+      <div className={c("m", "blk", showQr && "withqr")}>
         <div className={s.loc}>
           <LocationOn />
           <span>{kickerOf(l)}</span>
@@ -105,29 +113,22 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
         <Fit className={c("sub", "fit")} watch={headline(l)} min={0.7} lines={1} label="Property">
           {headline(l)}
         </Fit>
-        <div className={s.figs} style={{ gridTemplateColumns: figs.map((f) => `${f.w}fr`).join(" ") }}>
-          {figs.map((f, i) => (
-            <div key={f.label}>
-              <div className={s.label}>{f.label}</div>
-              <Fit className={c("v", "fit")} watch={f.value} min={0.6} lines={1} label={f.label}>
-                {f.value}
-                {i === 0 && term && <small>{term.replace("per ", "/ ")}</small>}
-              </Fit>
-            </div>
-          ))}
-        </div>
       </div>
-      <div className={c("m", "row")} style={{ gridTemplateColumns: showQr ? "1fr 1fr 1fr 152px" : "repeat(4, 1fr)" }}>
-        {row.map((i, k) => (
-          <div key={k} className={s.pic}>
-            <Img src={l.photos[i] ?? l.photos[0]} />
+      {showQr && (
+        <div className={c("qr", "pq", !qr && "qr-empty")}>
+          {qr ? <img src={qr} alt="Permit QR" draggable={false} /> : <span>Permit<br />QR</span>}
+        </div>
+      )}
+      <div className={c("m", "figs")} style={{ gridTemplateColumns: figs.map((f) => `${f.w}fr`).join(" ") }}>
+        {figs.map((f, i) => (
+          <div key={f.label}>
+            <div className={s.label}>{f.label}</div>
+            <Fit className={c("v", "fit")} watch={f.value} min={0.6} lines={1} label={f.label}>
+              {f.value}
+              {i === 0 && term && <small>{term.replace("per ", "/ ")}</small>}
+            </Fit>
           </div>
         ))}
-        {showQr && (
-          <div className={c("qr", !qr && "qr-empty")}>
-            {qr ? <img src={qr} alt="Permit QR" draggable={false} /> : <span>Permit<br />QR</span>}
-          </div>
-        )}
       </div>
       <Foot text={`Provident Estate · ${placeLine(l).split(" · ").slice(-2).join(" · ")}`} n={n} />
     </section>
@@ -229,8 +230,8 @@ export function buildBrochure(design: Design, input: BrochureInput): { pages: Br
   if (types.length > 1) notes.push(`Mixed property types (${types.join(", ")}): each page shows its own figures — commercial pages swap bedrooms and bathrooms for size and fit-out.`);
   for (const { l, qr } of items) {
     if (l.segment === "Commercial" && !l.intro.length) notes.push(`${l.ref}: no description on the listing.`);
-    if (l.photos.length < 5) notes.push(`${l.ref}: only ${l.photos.length} pictures, so some repeat.`);
-    if (!qr) notes.push(`${l.ref}: no permit QR uploaded, so the page shows four photos instead.`);
+    if (l.photos.length < 3) notes.push(`${l.ref}: only ${l.photos.length} pictures, so some repeat.`);
+    if (!qr) notes.push(`${l.ref}: no permit QR uploaded, so the page leaves it off.`);
   }
   return { pages, notes };
 }

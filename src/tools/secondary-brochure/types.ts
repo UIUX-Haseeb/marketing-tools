@@ -80,23 +80,24 @@ export const DESIGNS: { id: Design; name: string }[] = [
   { id: "b", name: "B · White" },
 ];
 
-/** The five pictures on a property page (the cover photo, then the row of four): indexes into `photos`. */
+/** The pictures on a property page — the large one, then the two stacked beside it: indexes into `photos`. */
 export type Slots = number[];
 
-/** The listing's first five pictures, repeating when it has fewer. */
+/** The listing's first three pictures, repeating when it has fewer. */
 export function defaultSlots(l: Listing): Slots {
   const n = Math.max(l.photos.length, 1);
-  return [0, 1, 2, 3, 4].map((i) => i % n);
+  return [0, 1, 2].map((i) => i % n);
 }
 
 /**
  * How the cover photo sits in its box: `zoom` 1–2.5, and the point that stays put, `x` / `y`
  * 0–1 (0, 0 = top-left). The portal bakes a "provident." watermark into the lower left of every
- * listing picture, under our own wordmark — the default anchors the photo to its top so the stamp
- * is cropped off the bottom (checked on all 13 listings; no zoom needed).
+ * listing picture, under our own wordmark. The large photo is taller than the pictures (about
+ * 712 × 690), so the default anchors it to the top right and zooms in (1.3) — the stamp,
+ * always lower left, falls outside the frame.
  */
 export type Frame = { zoom: number; x: number; y: number };
-export const HIDE_LOGO: Frame = { zoom: 1, x: 0.5, y: 0 };
+export const HIDE_LOGO: Frame = { zoom: 1.3, x: 1, y: 0 };
 export const FULL_PHOTO: Frame = { zoom: 1, x: 0.5, y: 0.5 };
 
 /** One property in a brochure: the listing, its picture picks, the cover framing and its permit QR. */

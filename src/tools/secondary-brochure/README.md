@@ -13,12 +13,12 @@ In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://ww
 
 | Page | What's on it |
 | --- | --- |
-| **Property** (one per listing) | the booklet cover: the cover photo with wordmark and *For Rent · reference*, the location in a pill (outlined like the story chips, Material *location_on* icon in gold), the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the property in gold ("1-Bedroom Apartment"), price (+ / year) · bedrooms · bathrooms · built-up (· plot), a row of four more photos — three and the permit QR when one is uploaded — and the footer |
+| **Property** (one per listing) | a full-width photo mosaic across the top — one large photo (two-thirds wide) and two stacked beside it, edge to edge — with the wordmark and *For Rent · reference*; then, the location in a pill (outlined like the story chips, Material *location_on* icon in gold), the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the property in gold ("1-Bedroom Apartment"), the key figures (see below), the permit QR beside the headline when one is uploaded, and the footer |
 | **Ask Us About** (once, last) | the booklet's closing page (bridge photo): the upsell — Second Citizenship, Conveyancing, Currency, with the old flyer's three photos (`public/tools/secondary-brochure/services/`) — then the agent (name, title, mobile, email, BRN, headshot) and the company line |
 
 **A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).
 
-**The portal's watermark.** Every listing picture has "provident." stamped into its lower left (the originals too), which doubled up with the brochure's own wordmark. The cover photo is now anchored to its top so the stamp is cropped off the bottom (`HIDE_LOGO` in `types.ts`; checked on all 13 listings), and the row thumbnails zoom toward the top right. For a picture where the stamp sits elsewhere, the Brochure dialog's **Cover** picture has *Hide portal logo* / *Whole photo* and **Zoom / Across / Down** sliders.
+**The portal's watermark.** Every listing picture has "provident." stamped into its lower left (the originals too), which doubled up with the brochure's own wordmark. The large photo is anchored to its top right and zoomed 1.3× so the stamp falls outside the frame (`HIDE_LOGO` in `types.ts`; checked on all 13 listings), and the two small ones zoom toward the top right. For a picture where the stamp sits elsewhere, the Brochure dialog's **Large** picture has *Hide portal logo* / *Whole photo* and **Zoom / Across / Down** sliders.
 
 One listing → 2 pages, like the old flyer. N listings → N + 1 pages.
 
