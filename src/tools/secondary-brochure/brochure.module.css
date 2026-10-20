@@ -63,11 +63,9 @@
       inside the margins — one fixed size on every page. Cells are ~1.42 : 1 (top 454 × 320,
       bottom 299 × 210), between the portal's 3:2 and 4:3 pictures, so little is trimmed.
       Then the booklet cover's copy and figures. ───────────────────────────────────────────── */
-.p .top { top: 86px; height: 54px; }
-.idbar { display: flex; align-items: center; gap: 20px; }
-.w.p .top .meta { color: var(--grey); }
+.p .top { top: 84px; height: 54px; }
 .w.p .wm { color: var(--navy); }
-.mosaic { top: 204px; height: 542px; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 320px 210px; gap: 12px; }
+.mosaic { top: 176px; height: 542px; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: 320px 210px; gap: 12px; }
 .cell { overflow: hidden; background: #233452; min-height: 0; border-radius: var(--r); }
 .half { grid-column: span 3; }
 .third { grid-column: span 2; }
@@ -82,12 +80,16 @@
 .deal { flex: none; display: inline-flex; align-items: center; height: 54px; padding: 0 24px; border-radius: 999px; background: rgba(236, 231, 223, 0.12); color: var(--mist);
   font-weight: 500; font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; white-space: nowrap; }
 .w .deal { background: var(--paper); color: var(--navy-2); }
-/* Location pill — the story chips' outline (social.module.css .chip) with the Material location icon */
-.loc { display: inline-flex; align-items: center; gap: 10px; min-width: 0; height: 54px; padding: 10px 24px 10px 16px; border: 2px solid rgba(236, 231, 223, 0.45); border-radius: 999px;
-  font-size: 22px; line-height: 30px; color: var(--mist); white-space: nowrap; }
-.loc span { overflow: hidden; text-overflow: ellipsis; }
-.loc svg { width: 28px; height: 28px; flex: none; color: var(--gold); }
-.w .loc { border-color: rgba(26, 41, 66, 0.22); color: var(--navy-2); }
+/* Location line: the Material location icon in gold, then the place */
+.place { top: 764px; display: flex; align-items: center; gap: 12px; font-size: 22px; line-height: 30px; color: var(--mist); white-space: nowrap; overflow: hidden; }
+.place svg { width: 28px; height: 28px; flex: none; color: var(--gold); }
+.w .place { color: var(--navy-2); }
+/* Label / value pills: an outlined pill holding a filled label and its value */
+.kv { flex: none; display: inline-flex; align-items: center; gap: 22px; height: 62px; padding: 4px 28px 4px 4px; border: 2px solid rgba(236, 231, 223, 0.45); border-radius: 999px;
+  font-weight: 500; font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; color: #fff; white-space: nowrap; }
+.kv b { font-weight: 500; display: inline-flex; align-items: center; height: 100%; padding: 0 26px; border-radius: 999px; background: rgba(236, 231, 223, 0.12); color: var(--mist); }
+.w .kv { border-color: rgba(26, 41, 66, 0.22); color: var(--navy); }
+.w .kv b { background: var(--paper); color: var(--navy-2); }
 /* Headline: the title's tags, up to two lines */
 .title { font-weight: 400; font-size: calc(68px * var(--k, 1)); line-height: 1.08; letter-spacing: -0.03em; margin: 26px 0 0 -3px; }
 .sub { font-size: calc(28px * var(--k, 1)); line-height: 1.25; color: var(--gold); margin-top: 16px; white-space: nowrap; }

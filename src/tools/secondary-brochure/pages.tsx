@@ -6,9 +6,9 @@
  * (brochure.module.css) in the Project Booklet's look (Figma › Brochure A · Paper & navy),
  * kept short like the portal's old flyer:
  *
- *   one page per property — the wordmark with the property ID and a For Sale / For Rent chip
- *   on the right; the property type chip and the location in an outlined pill (Material
- *   "location_on" icon), the property ID again in the footer, the title's tags as the headline ("Fully Furnished · Ready
+ *   one page per property — the wordmark with a For Sale / For Rent chip on the right; under
+ *   the photos the location (Material "location_on" icon), then two label / value pills —
+ *   Offering · Residential Rent, Type · Apartment — the property ID in the footer, the title's tags as the headline ("Fully Furnished · Ready
  *   To Move · Mid Floor"), four key figures (`keyFigures`: residential price · beds · baths · size,
  *   commercial price · size · fit-out · plot / payment), under the wordmark and an inset mosaic
  *   of five photos (two across, three below; rounded, inside the margins) in one fixed size on
@@ -65,11 +65,9 @@ function Foot({ text, n }: { text: string; n: string }) {
 /** Sub-community / building, community and (when short enough) city, most specific first. */
 function kickerOf(l: Listing) {
   const parts = [buildingLine(l).split(", ").pop(), l.community].filter(Boolean) as string[];
-  // The city is implied; it only goes in when it fits beside the type chip (≈13.5 px a letter in
-  // the chip, ≈10.5 px in the pill, 586 px left for both) and no part already names it.
-  const room = Math.floor((586 - l.propertyType.length * 13.5) / 10.5);
+  // The city is implied; it only goes in when the line stays short and no part already names it.
   const withCity = [...parts, l.city].join(" · ");
-  return withCity.length <= room && !parts.some((p) => p.includes(l.city)) ? withCity : parts.join(" · ");
+  return withCity.length <= 46 && !parts.some((p) => p.includes(l.city)) ? withCity : parts.join(" · ");
 }
 
 /** Google Material Symbols "location_on" (outlined), for the location pill. */
@@ -103,18 +101,22 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
       </div>
       <div className={c("m", "top")}>
         <Wordmark className={s.wm} />
-        <div className={s.idbar}>
-          <span className={s.meta}>Property ID · {l.ref}</span>
-          <span className={s.deal}>{forLabel(l)}</span>
-        </div>
+        <span className={s.deal}>{forLabel(l)}</span>
+      </div>
+      <div className={c("m", "place")}>
+        <LocationOn />
+        <span>{kickerOf(l)}</span>
       </div>
       <div className={c("m", "blk", showQr && "withqr")}>
         <div className={s.chips}>
-          <span className={s.deal}>{l.propertyType}</span>
-          <div className={s.loc}>
-            <LocationOn />
-            <span>{kickerOf(l)}</span>
-          </div>
+          <span className={s.kv}>
+            <b>Offering</b>
+            {l.offeringName}
+          </span>
+          <span className={s.kv}>
+            <b>Type</b>
+            {l.propertyType}
+          </span>
         </div>
         <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
           {tagLine(l)}
