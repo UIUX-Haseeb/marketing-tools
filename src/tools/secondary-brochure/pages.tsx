@@ -7,8 +7,9 @@
  * kept short like the portal's old flyer:
  *
  *   one page per property — the wordmark with a For Sale / For Rent chip on the right; under
- *   the photos the location (Material "location_on" icon), then two label / value pills —
- *   Offering · Residential Rent, Type · Apartment — the property ID in the footer, the title's tags as the headline ("Fully Furnished · Ready
+ *   the photos the location (Material "location_on" icon), the headline with the permit QR
+ *   beside it, then two label / value pills — Offering · Residential Rent, Type · Apartment —
+ *   the property ID in the footer, the title's tags as the headline ("Fully Furnished · Ready
  *   To Move · Mid Floor"), four key figures (`keyFigures`: residential price · beds · baths · size,
  *   commercial price · size · fit-out · plot / payment), under the wordmark and an inset mosaic
  *   of five photos (two across, three below; rounded, inside the margins) in one fixed size on
@@ -107,7 +108,13 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
         <LocationOn />
         <span>{kickerOf(l)}</span>
       </div>
-      <div className={c("m", "blk", showQr && "withqr")}>
+      <div className={c("m", "blk")}>
+        {/* beside the QR: kept clear of it, and at least as tall so the pills always start below it */}
+        <div style={showQr ? { marginRight: 192, minHeight: 152 } : undefined}>
+          <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
+            {tagLine(l)}
+          </Fit>
+        </div>
         <div className={s.chips}>
           <span className={s.kv}>
             <b>Offering</b>
@@ -118,9 +125,6 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
             {l.propertyType}
           </span>
         </div>
-        <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
-          {tagLine(l)}
-        </Fit>
       </div>
       {showQr && (
         <div className={c("qr", "pq", !qr && "qr-empty")}>
