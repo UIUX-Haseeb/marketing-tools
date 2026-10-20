@@ -18,7 +18,7 @@ In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://ww
 
 **A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).
 
-**The portal's watermark.** Every listing picture has "provident." stamped into its lower left (the originals too), which doubled up with the brochure's own wordmark. The large photo is anchored to its top right and zoomed 1.3× so the stamp falls outside the frame (`HIDE_LOGO` in `types.ts`; checked on all 13 listings), and the two small ones zoom toward the top right. For a picture where the stamp sits elsewhere, the Brochure dialog's **Large** picture has *Hide portal logo* / *Whole photo* and **Zoom / Across / Down** sliders.
+**The portal's watermark.** Every listing picture has "provident." stamped into its lower left (the originals too), which doubled up with the brochure's own wordmark. The large photo defaults to the framing picked in review — zoom 1.15, anchored bottom right (`HIDE_LOGO` in `types.ts`) — and the two small ones are shown whole. (Removing the stamp outright was tried — reversing the blend, inpainting — and left visible ghosts, so it was dropped.) For a picture where the stamp sits elsewhere, the Brochure dialog's **Large** picture has *Hide portal logo* / *Whole photo* and **Zoom / Across / Down** sliders.
 
 One listing → 2 pages, like the old flyer. N listings → N + 1 pages.
 

@@ -90,14 +90,13 @@ export function defaultSlots(l: Listing): Slots {
 }
 
 /**
- * How the cover photo sits in its box: `zoom` 1–2.5, and the point that stays put, `x` / `y`
- * 0–1 (0, 0 = top-left). The portal bakes a "provident." watermark into the lower left of every
- * listing picture, under our own wordmark. The large photo is taller than the pictures (about
- * 712 × 690), so the default anchors it to the top right and zooms in (1.3) — the stamp,
- * always lower left, falls outside the frame.
+ * How the large photo sits in its box: `zoom` 1–2.5, and the point that stays put, `x` / `y`
+ * 0–1 (0, 0 = top-left). The default is the framing picked in review (19 Oct 2026): zoomed a
+ * little and anchored to the bottom right, which keeps the portal's lower-left "provident."
+ * stamp out of the large photo. The two small photos are shown whole (no zoom).
  */
 export type Frame = { zoom: number; x: number; y: number };
-export const HIDE_LOGO: Frame = { zoom: 1.3, x: 1, y: 0 };
+export const HIDE_LOGO: Frame = { zoom: 1.15, x: 1, y: 0.96 };
 export const FULL_PHOTO: Frame = { zoom: 1, x: 0.5, y: 0.5 };
 
 /** One property in a brochure: the listing, its picture picks, the cover framing and its permit QR. */
