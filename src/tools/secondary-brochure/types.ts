@@ -50,6 +50,10 @@ export type Listing = {
   status: string;
   /** Local copies of the uploaded pictures (watermarked), in the portal's order. */
   photos: string[];
+  /** Each picture's width / height, and the listing's usual one (the median) — the brochure's
+   *  photo cells take this shape so every picture is shown whole. */
+  photoRatios: number[];
+  photoRatio: number;
   floorplan: string | null;
   description: string;
   /** Description paragraphs before any list or heading, call-to-action lines removed. */
@@ -80,28 +84,20 @@ export const DESIGNS: { id: Design; name: string }[] = [
   { id: "b", name: "B · White" },
 ];
 
-/** The pictures on a property page — the large one, then the two stacked beside it: indexes into `photos`. */
+/** The five pictures on a property page — two across the top, three below: indexes into `photos`. */
 export type Slots = number[];
 
-/** The listing's first three pictures, repeating when it has fewer. */
+/** The listing's first five pictures in its usual shape (others fill in if it has fewer). */
 export function defaultSlots(l: Listing): Slots {
-  const n = Math.max(l.photos.length, 1);
-  return [0, 1, 2].map((i) => i % n);
+  const fits = l.photos.map((_, i) => i).filter((i) => Math.abs((l.photoRatios[i] ?? l.photoRatio) / l.photoRatio - 1) < 0.08);
+  const rest = l.photos.map((_, i) => i).filter((i) => !fits.includes(i));
+  const order = [...fits, ...rest];
+  return [0, 1, 2, 3, 4].map((k) => order[k % Math.max(order.length, 1)] ?? 0);
 }
 
-/**
- * How the large photo sits in its box: `zoom` 1–2.5, and the point that stays put, `x` / `y`
- * 0–1 (0, 0 = top-left). The default is the framing picked in review (19 Oct 2026): zoomed a
- * little and anchored to the bottom right, which keeps the portal's lower-left "provident."
- * stamp out of the large photo. The two small photos are shown whole (no zoom).
- */
-export type Frame = { zoom: number; x: number; y: number };
-export const HIDE_LOGO: Frame = { zoom: 1.15, x: 1, y: 0.96 };
-export const FULL_PHOTO: Frame = { zoom: 1, x: 0.5, y: 0.5 };
+/** One property in a brochure: the listing, its picture picks and its permit QR. */
+export type Item = { l: Listing; slots: Slots; qr: string | null };
 
-/** One property in a brochure: the listing, its picture picks, the cover framing and its permit QR. */
-export type Item = { l: Listing; slots: Slots; frame: Frame; qr: string | null };
-
-export const newItem = (l: Listing): Item => ({ l, slots: defaultSlots(l), frame: HIDE_LOGO, qr: null });
+export const newItem = (l: Listing): Item => ({ l, slots: defaultSlots(l), qr: null });
 
 export const PAGE = { w: 1080, h: 1350 } as const;

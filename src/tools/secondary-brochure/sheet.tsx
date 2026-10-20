@@ -9,7 +9,6 @@
  *   /sheet/secondary?listing=<ref>                another listing (PR-09102610 …)
  *   /sheet/secondary?listing=<ref>,<ref>,<ref>    several listings in one brochure
  *   /sheet/secondary?listing=all&design=a         every listing in one brochure — the stress test
- *   &frame=full | zoom                             cover framing: whole photo / zoomed 1.2× (default: cropped off the bottom to hide the portal logo)
  */
 import type { ReactNode } from "react";
 import { EMPLOYEES } from "@/lib/demo/employees";
@@ -17,7 +16,7 @@ import { agentFrom } from "./agent";
 import { headline } from "./format";
 import { buildBrochure } from "./pages";
 import { LISTINGS } from "./real";
-import { DESIGNS, FULL_PHOTO, HIDE_LOGO, defaultSlots, type Design, type Listing } from "./types";
+import { DESIGNS, defaultSlots, type Design, type Listing } from "./types";
 
 const FONTS = [300, 400, 500]
   .map((w) => `@font-face{font-family:"Google Sans Flex";font-style:normal;font-weight:${w};font-display:block;src:url(/tools/secondary-brochure/fonts/GoogleSansFlex-${w}.woff2) format("woff2");}`)
@@ -62,11 +61,11 @@ function Row({ id, title, pages }: { id: string; title: string; pages: { name: s
   );
 }
 
-export function TemplateSheet({ listing, design, frame }: { listing?: string; design?: string; frame?: string }) {
+export function TemplateSheet({ listing, design }: { listing?: string; design?: string }) {
   const qr = sampleQr();
   const refs = listing === "all" ? LISTINGS.map((l) => l.ref) : (listing ?? LISTINGS[0].ref).split(",");
   const list = refs.map((r) => LISTINGS.find((l) => l.ref === r.trim())).filter((l): l is Listing => !!l);
-  const items = (list.length ? list : [LISTINGS[0]]).map((l) => ({ l, slots: defaultSlots(l), qr, frame: frame === "full" ? FULL_PHOTO : frame === "zoom" ? { zoom: 1.2, x: 0.5, y: 0 } : HIDE_LOGO }));
+  const items = (list.length ? list : [LISTINGS[0]]).map((l) => ({ l, slots: defaultSlots(l), qr }));
   const agent = agentFrom(EMPLOYEES[0]);
   const rows = DESIGNS.filter((d) => !design || d.id === design).map((d) => {
     const { pages } = buildBrochure(d.id as Design, { items, agent });

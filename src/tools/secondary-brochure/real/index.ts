@@ -21,7 +21,7 @@ type Raw = {
   offeringTypeName: string; categoryName: string; developerName: string | null; propertyTypeName: string;
   bedroomName: string; bathroomName: string; furnishingTypeName: string | null; rentFrequencyName: string | null;
   amenityNames: string[]; parking: number | null; cheques: number | null; isExclusive: boolean;
-  availabilityDate: string | null; propertyStatusName?: string; photos: string[]; floorplan: string | null;
+  availabilityDate: string | null; propertyStatusName?: string; photos: string[]; photoRatios: number[]; photoRatio: number; floorplan: string | null;
 };
 
 const DIR = "/tools/secondary-brochure/real";
@@ -111,6 +111,8 @@ function toListing(r: Raw): Listing {
     exclusive: !!r.isExclusive,
     status: r.propertyStatusName ?? "Approved",
     photos: r.photos.map((p) => `${folder}/${p}`),
+    photoRatios: r.photoRatios,
+    photoRatio: r.photoRatio,
     floorplan: r.floorplan ? `${folder}/${r.floorplan}` : null,
     description: r.description ?? "",
     intro,
