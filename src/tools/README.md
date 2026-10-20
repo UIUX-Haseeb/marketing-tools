@@ -11,7 +11,7 @@ Then satisfy the small **host contract** below and mount the tool's `index.tsx` 
 | Folder | What it is | Entry | Assets |
 | --- | --- | --- | --- |
 | `_shared/` | Canvas post engine: locked brand font loader, renderer, PNG/JPEG export with byte budget, ZIP writer, editor + UI pieces, in-browser background removal | — | `public/tools/_shared/fonts/`, `public/tools/_shared/bg-removal/` |
-| `birthday/` | Birthday post — month view over the employee list + manual form | `index.tsx` | `public/tools/birthday/` |
+| `birthday/` | Birthday post (Portrait or Landscape) — month view over the employee list + manual form | `index.tsx` | `public/tools/birthday/` |
 | `baby/` | New Baby post (Boy / Girl) | `index.tsx` | `public/tools/baby/` |
 | `onboarding/` | Welcome Aboard post for new joiners | `index.tsx` | `public/tools/onboarding/` |
 | `promotion/` | Promotion congratulations post (Standard/Executive design, name, new designation, cutout photo) | `index.tsx` | `public/tools/promotion/` |

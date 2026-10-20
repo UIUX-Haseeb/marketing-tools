@@ -7,7 +7,8 @@ import { logGeneratedPost } from "@/lib/store";
 import { listEmployees } from "@/lib/demo/employees";
 import { birthDay, birthMonth, type Employee } from "@/lib/demo/types";
 import { cn } from "@/lib/utils";
-import { BIRTHDAY } from "./template";
+import { BIRTHDAY_TEMPLATES } from "./template";
+import type { PostTemplate } from "@/tools/_shared/templates";
 import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
 import { exportPost, safeFileName, downloadBlob, formatBytes } from "@/tools/_shared/export";
 import { makeZip, zipSafeName } from "@/tools/_shared/zip";
@@ -30,27 +31,57 @@ type Card = {
 
 export function BirthdayTool() {
   const [mode, setMode] = useState<"month" | "manual">("month");
+  const [templateId, setTemplateId] = useState<string>(BIRTHDAY_TEMPLATES[0].id);
+  const template = BIRTHDAY_TEMPLATES.find((t) => t.id === templateId) ?? BIRTHDAY_TEMPLATES[0];
 
   return (
     <div className="space-y-6">
+      <FormatPicker value={template.id} onChange={setTemplateId} />
       {mode === "month" ? (
-        <MonthView onCreateNew={() => setMode("manual")} />
+        <MonthView template={template} onCreateNew={() => setMode("manual")} />
       ) : (
         <div className="space-y-6">
           <button type="button" onClick={() => setMode("month")} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="size-3.5" /> Back to birthdays by month
           </button>
-          <PostEditor tool={TOOL} template={BIRTHDAY} source="manual" />
+          <PostEditor key={template.id} tool={TOOL} template={template} source="manual" />
         </div>
       )}
     </div>
   );
 }
 
+/** Portrait (the original post) or Landscape — the same design, laid out for each shape. */
+function FormatPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-muted-foreground">Format</p>
+      <div role="radiogroup" aria-label="Format" className="flex flex-wrap gap-1.5">
+        {BIRTHDAY_TEMPLATES.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="radio"
+            aria-checked={t.id === value}
+            onClick={() => onChange(t.id)}
+            className={cn("h-8 rounded-full border px-3 text-sm transition-colors", t.id === value ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:border-navy-2/60 hover:text-foreground")}
+          >
+            {t.variantLabel}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ── Month view ──────────────────────────────────────────────────────────── */
 
-function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
-  const { artwork, ready, fontError } = usePostAssets(BIRTHDAY);
+function MonthView({ template, onCreateNew }: { template: PostTemplate; onCreateNew: () => void }) {
+  const assets = usePostAssets(template);
+  // Right after a format switch the hook still holds the other format's artwork for a moment.
+  const artwork = assets.artwork && assets.artwork.naturalWidth === template.width ? assets.artwork : null;
+  const ready = assets.ready && !!artwork;
+  const { fontError } = assets;
   const [months, setMonths] = useState<number[]>([new Date().getMonth() + 1]);
   const [cards, setCards] = useState<Card[]>([]);
   const [fetchedKey, setFetchedKey] = useState<string | null>(null);
@@ -118,9 +149,9 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
 
   async function downloadOne(c: Card) {
     if (!artwork || !c.photo) return;
-    const out = await exportPost({ template: BIRTHDAY, templateImage: artwork, photo: c.photo, transform: c.transform, name: c.name, jobTitle: c.jobTitle });
-    downloadBlob(out.blob, safeFileName(BIRTHDAY, c.name, out.extension));
-    logGeneratedPost({ tool: TOOL, templateId: BIRTHDAY.id, subject: c.name.trim(), source: "demo", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
+    const out = await exportPost({ template, templateImage: artwork, photo: c.photo, transform: c.transform, name: c.name, jobTitle: c.jobTitle });
+    downloadBlob(out.blob, safeFileName(template, c.name, out.extension));
+    logGeneratedPost({ tool: TOOL, templateId: template.id, subject: c.name.trim(), source: "demo", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
   }
 
   async function exportAll() {
@@ -131,17 +162,17 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
       const used = new Set<string>();
       let i = 0;
       for (const c of readyCards) {
-        const out = await exportPost({ template: BIRTHDAY, templateImage: artwork, photo: c.photo!, transform: c.transform, name: c.name, jobTitle: c.jobTitle });
-        let file = zipSafeName(safeFileName(BIRTHDAY, c.name, out.extension));
+        const out = await exportPost({ template, templateImage: artwork, photo: c.photo!, transform: c.transform, name: c.name, jobTitle: c.jobTitle });
+        let file = zipSafeName(safeFileName(template, c.name, out.extension));
         while (used.has(file)) file = file.replace(/(\.\w+)$/, `-${++i}$1`);
         used.add(file);
         entries.push({ name: file, data: new Uint8Array(await out.blob.arrayBuffer()) });
-        logGeneratedPost({ tool: TOOL, templateId: BIRTHDAY.id, subject: c.name.trim(), source: "demo", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
+        logGeneratedPost({ tool: TOOL, templateId: template.id, subject: c.name.trim(), source: "demo", employeeId: c.employee.id, format: out.extension, bytes: out.bytes });
         setZipping({ done: entries.length, total: readyCards.length });
         await new Promise((r) => setTimeout(r, 0));
       }
       const label = months.map((m) => MONTHS_LONG[m - 1]).join("-");
-      downloadBlob(makeZip(entries), `Birthday-posts-${label}.zip`);
+      downloadBlob(makeZip(entries), `Birthday-posts-${label}${template.variantLabel === "Landscape" ? "-landscape" : ""}.zip`);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -204,7 +235,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
           {cards.map((c) => (
             <li key={c.employee.id} className="flex flex-col gap-3 rounded-xl border bg-card p-3">
               <div className="relative">
-                <PostPreview template={BIRTHDAY} artwork={artwork} photo={c.photo} transform={c.transform} name={c.name} jobTitle={c.jobTitle} maxPx={560} showPlaceholder />
+                <PostPreview template={template} artwork={artwork} photo={c.photo} transform={c.transform} name={c.name} jobTitle={c.jobTitle} maxPx={560} showPlaceholder />
                 {c.photoState === "loading" && <span className="absolute left-2 top-2 rounded-full bg-paper/90 px-2 py-0.5 text-[11px] text-muted-foreground">Loading photo…</span>}
                 {(c.photoState === "missing" || c.photoState === "failed") && (
                   <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-paper/90 px-2 py-0.5 text-[11px] text-destructive">
@@ -246,7 +277,7 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
 
       {cards.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          {readyCards.length} of {cards.length} ready · exported as PNG (or JPEG when over {formatBytes(1.4 * 1024 * 1024)}) at {BIRTHDAY.width}×{BIRTHDAY.height}
+          {readyCards.length} of {cards.length} ready · exported as PNG (or JPEG when over {formatBytes(1.4 * 1024 * 1024)}) at {template.width}×{template.height}
         </p>
       )}
 
@@ -254,9 +285,9 @@ function MonthView({ onCreateNew }: { onCreateNew: () => void }) {
       <Modal open={!!editingCard} onClose={() => setEditing(null)} title={editingCard ? `Adjust — ${editingCard.name}` : ""} wide>
         {editingCard && (
           <PostEditor
-            key={editingCard.employee.id}
+            key={editingCard.employee.id + template.id}
             tool={TOOL}
-            template={BIRTHDAY}
+            template={template}
             source="demo"
             employeeId={editingCard.employee.id}
             initial={{ name: editingCard.name, jobTitle: editingCard.jobTitle, photo: editingCard.photo, transform: editingCard.transform }}
