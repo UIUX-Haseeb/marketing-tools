@@ -13,7 +13,7 @@ In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://ww
 
 | Page | What's on it |
 | --- | --- |
-| **Property** (one per listing) | the booklet cover: the cover photo with wordmark and *For Rent · reference*, the place line (gold), the headline ("1-Bedroom Apartment"), the title's tags ("Fully Furnished · Ready To Move · Mid Floor"), price (+ / year) · bedrooms · bathrooms · built-up (· plot), a row of four more photos — three and the permit QR when one is uploaded — and the footer |
+| **Property** (one per listing) | the booklet cover: the cover photo with wordmark and *For Rent · reference*, the location in a pill (outlined like the story chips, Material *location_on* icon in gold), the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the property in gold ("1-Bedroom Apartment"), price (+ / year) · bedrooms · bathrooms · built-up (· plot), a row of four more photos — three and the permit QR when one is uploaded — and the footer |
 | **Ask Us About** (once, last) | the booklet's closing page (bridge photo): the upsell — Second Citizenship, Conveyancing, Currency, with the old flyer's three photos (`public/tools/secondary-brochure/services/`) — then the agent (name, title, mobile, email, BRN, headshot) and the company line |
 
 **A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).

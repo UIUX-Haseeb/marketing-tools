@@ -6,8 +6,9 @@
  * (brochure.module.css) in the Project Booklet's look (Figma › Brochure A · Paper & navy),
  * kept short like the portal's old flyer:
  *
- *   one page per property — the booklet cover: the photo, wordmark, place, headline, the
- *   title's tags, four key figures (`keyFigures`: residential price · beds · baths · size,
+ *   one page per property — the booklet cover: the photo, wordmark, the location in a pill
+ *   (Material "location_on" icon), the title's tags as the headline ("Fully Furnished · Ready
+ *   To Move · Mid Floor"), the property ("1-Bedroom Apartment"), four key figures (`keyFigures`: residential price · beds · baths · size,
  *   commercial price · size · fit-out · plot / payment / type), a row of four more photos
  *   (three and the permit QR when there is one). Pages of different property types sit in one
  *   brochure side by side: each page reads its own listing, the layout is the same.
@@ -61,7 +62,16 @@ function Foot({ text, n }: { text: string; n: string }) {
 /** Building, sub-community, community and city, most specific first. */
 const kickerOf = (l: Listing) => [buildingLine(l).split(", ").pop(), l.community, l.city].filter(Boolean).join(" · ");
 
-/** The title's tags ("Fully Furnished · Ready To Move · Mid Floor"), or the title itself. */
+/** Google Material Symbols "location_on" (outlined), for the location pill. */
+function LocationOn() {
+  return (
+    <svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden>
+      <path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z" />
+    </svg>
+  );
+}
+
+/** The title's tags ("Fully Furnished · Ready To Move · Mid Floor") — the page's headline — or the title itself. */
 const tagLine = (l: Listing) => (l.tags.length ? l.tags.join(" · ") : l.title);
 
 /* ── property page ───────────────────────────────────────────────────────── */
@@ -85,13 +95,15 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
         </span>
       </div>
       <div className={c("m", "blk")}>
-        <div className={s.kicker}>{kickerOf(l)}</div>
-        <div className={s.rule} />
-        <Fit className={c("title", "fit")} watch={headline(l)} min={0.6} lines={1} label="Headline">
-          {headline(l)}
-        </Fit>
-        <Fit className={c("sub", "fit")} watch={tagLine(l)} min={0.7} lines={1} label="Tags">
+        <div className={s.loc}>
+          <LocationOn />
+          <span>{kickerOf(l)}</span>
+        </div>
+        <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
           {tagLine(l)}
+        </Fit>
+        <Fit className={c("sub", "fit")} watch={headline(l)} min={0.7} lines={1} label="Property">
+          {headline(l)}
         </Fit>
         <div className={s.figs} style={{ gridTemplateColumns: figs.map((f) => `${f.w}fr`).join(" ") }}>
           {figs.map((f, i) => (
@@ -105,7 +117,7 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
           ))}
         </div>
       </div>
-      <div className={c("m", "row")} style={{ gridTemplateColumns: showQr ? "1fr 1fr 1fr 168px" : "repeat(4, 1fr)" }}>
+      <div className={c("m", "row")} style={{ gridTemplateColumns: showQr ? "1fr 1fr 1fr 152px" : "repeat(4, 1fr)" }}>
         {row.map((i, k) => (
           <div key={k} className={s.pic}>
             <Img src={l.photos[i] ?? l.photos[0]} />

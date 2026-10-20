@@ -60,28 +60,34 @@
 .fit { overflow: hidden; }
 
 /* ── property page: the booklet cover, with a photo row ─────────────────── */
-.p .ph { height: 600px; }
-.p .shade { position: absolute; left: 0; right: 0; top: 0; height: 600px; background:
+.p .ph { height: 568px; }
+.p .shade { position: absolute; left: 0; right: 0; top: 0; height: 568px; background:
   linear-gradient(180deg, rgba(26, 41, 66, 0.72) 0, rgba(26, 41, 66, 0) 250px),
-  linear-gradient(180deg, rgba(26, 41, 66, 0) 360px, rgba(26, 41, 66, 0.8) 530px, #1a2942 598px); }
+  linear-gradient(180deg, rgba(26, 41, 66, 0) 360px, rgba(26, 41, 66, 0.8) 500px, #1a2942 566px); }
 .w.p .shade { background: linear-gradient(180deg, rgba(26, 41, 66, 0.62), rgba(26, 41, 66, 0) 260px); height: 260px; }
 .w.p .meta { color: #fff; }
-.w.p .ph { height: 572px; }
-.blk { top: 616px; }
-.blk .kicker { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.title { font-weight: 400; font-size: calc(92px * var(--k, 1)); line-height: 1.02; letter-spacing: -0.035em; margin: 0 0 0 -4px; white-space: nowrap; }
-.sub { font-size: calc(28px * var(--k, 1)); line-height: 1.25; color: var(--mist); margin-top: 18px; white-space: nowrap; }
-.w .sub { color: var(--grey); }
+.w.p .ph { height: 556px; }
+.blk { top: 592px; }
+/* Location pill — the story chips' outline (social.module.css .chip) with the Material location icon */
+.loc { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 10px 24px 10px 16px; border: 2px solid rgba(236, 231, 223, 0.45); border-radius: 999px;
+  font-size: 22px; line-height: 30px; color: var(--mist); white-space: nowrap; }
+.loc span { overflow: hidden; text-overflow: ellipsis; }
+.loc svg { width: 28px; height: 28px; flex: none; color: var(--gold); }
+.w .loc { border-color: rgba(26, 41, 66, 0.22); color: var(--navy-2); }
+/* Headline: the title's tags, up to two lines */
+.title { font-weight: 400; font-size: calc(68px * var(--k, 1)); line-height: 1.08; letter-spacing: -0.03em; margin: 26px 0 0 -3px; }
+.sub { font-size: calc(28px * var(--k, 1)); line-height: 1.25; color: var(--gold); margin-top: 16px; white-space: nowrap; }
+.w .sub { color: var(--gold); }
 .figs { display: grid; margin-top: 38px; padding-top: 28px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
 .w .figs { border-color: var(--line); }
 .figs > div { min-width: 0; }
 .figs .v { font-weight: 400; font-size: 40px; line-height: 1; letter-spacing: -0.015em; margin-top: 16px; white-space: nowrap; }
 .figs .v small { font-size: 19px; letter-spacing: 0; margin-left: 8px; color: var(--stone); }
 .w .figs .v small { color: var(--grey); }
-.row { top: 1042px; height: 168px; display: grid; gap: 16px; }
+.row { top: 1062px; height: 152px; display: grid; gap: 16px; }
 /* The portal's watermark sits in each picture's lower left: the thumbnails zoom toward the top right so it falls out. */
 .row .pic img { transform: scale(1.38); transform-origin: 100% 0; }
-.qr { height: 168px; width: 168px; padding: 10px; border-radius: 12px; background: #fff; }
+.qr { height: 152px; width: 152px; padding: 10px; border-radius: 12px; background: #fff; }
 .w .qr { box-shadow: inset 0 0 0 1px var(--line); }
 .qr img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .qr-empty { display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); border: 1.5px dashed rgba(236, 231, 223, 0.5); }
