@@ -108,7 +108,7 @@
 .w .qr-empty span { color: var(--grey); }
 
 /* ── closing page: the booklet's closing, with the Ask Us About upsell ─── */
-.c .ph { height: 1350px; background-color: #233452; background-repeat: no-repeat; background-size: auto 1500px; background-position: 60% 100%; }
+.c .ph { height: 692px; background-color: #233452; background-repeat: no-repeat; background-size: cover; background-position: center; }
 .c .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26, 41, 66, 0.88) 0, rgba(26, 41, 66, 0.42) 230px,
   rgba(26, 41, 66, 0.55) 420px, rgba(26, 41, 66, 0.92) 600px, #1a2942 720px); }
 .w.c .ph { height: 600px; background-size: cover; background-position: 62% 55%; }
