@@ -118,7 +118,9 @@
 .w.c .top .meta { color: var(--gold); }
 .msg { top: 268px; }
 .svc { top: 640px; display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 24px; }
-.svc .pic { height: 210px; }
+.svc .ico { height: 210px; display: flex; align-items: center; justify-content: center; border-radius: var(--r); background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px var(--line-dark); color: var(--gold); }
+.w .svc .ico { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.svc .ico svg { width: 104px; height: 104px; display: block; }
 .svc h3 { font-weight: 400; font-size: 26px; line-height: 1.2; letter-spacing: -0.01em; margin: 20px 0 0; }
 .svc .s { font-size: 17px; line-height: 1.45; color: var(--stone); margin-top: 6px; }
 .w .svc .s { color: var(--grey); }

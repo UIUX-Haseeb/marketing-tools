@@ -149,10 +149,23 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
 
 /* ── closing page: Ask Us About + the agent ─────────────────────────────── */
 
+/** Material Symbols (Light), 960 × 960 on a -960 baseline; drawn in currentColor. */
 const SERVICES = [
-  { img: "citizenship.jpg", name: "Second Citizenship", text: "Residency and citizenship options." },
-  { img: "conveyancing.jpg", name: "Conveyancing", text: "The transfer and its paperwork." },
-  { img: "currency.jpg", name: "Currency", text: "Exchange for your purchase or rent." },
+  {
+    name: "Second Citizenship",
+    text: "Residency and citizenship options.",
+    icon: "M340-236h280v-28H340v28Zm140-128q72 0 123.5-51.5T655-540q0-72-51.5-123.5T480-715q-73 0-124.5 51.5T304-540q0 73 51.5 124.5T480-364Zm0-32q-19-28-30-61t-13-69h85q-2 36-13 69t-29 61Zm-37 0q-44-12-74-47t-37-83h77q1 30 9 62.5t25 67.5Zm67 0q18-32 28-65t12-65h77q-8 48-39.5 83T510-396ZM332-554q8-51 40.5-87t77.5-45q-19 26-29 59.5T409-554h-77Zm105 0q2-38 13-71.5t30-60.5q18 27 29 60.5t13 71.5h-85Zm113 0q-1-36-11-69.5T509-686q48 9 80.5 45.5T627-554h-77ZM212-132v-696h482q21.75 0 37.88 16.12Q748-795.75 748-774v588q0 21.75-16.12 37.87Q715.75-132 694-132H212Zm22-22h460q12 0 22-10t10-22v-588q0-12-10-22t-22-10H234v652Zm0 0v-652 652Z",
+  },
+  {
+    name: "Conveyancing",
+    text: "The transfer and its paperwork.",
+    icon: "M380-644v-22h320v22H380Zm0 108v-22h320v22H380Zm98 382H194h284Zm0 22H236q-26.75 0-45.37-18.63Q172-169.25 172-196v-112h120v-520h496v308q-6.5 1-11.46 1.86-4.96.86-10.54 2.14v-290H314v498h222l-22 22H194v90q0 17.85 12.14 29.93Q218.27-154 235-154h243v22Zm94 0v-78l211-210q5-5 10-6.5t10-1.5q5 0 10.5 2t9.5 6l37 38q4 5 6 10t2 10q0 5-2.5 10t-5.41 10L650-132h-78Zm268-230-37-38 37 38ZM600-160h38l144-144-19-19-18-20-145 145v38Zm163-163-18-20 37 39-19-19Z",
+  },
+  {
+    name: "Currency",
+    text: "Exchange for your purchase or rent.",
+    icon: "M528-464q-29 0-48.5-19.5T460-532q0-29 19.5-48.5T528-600q29 0 48.5 19.5T596-532q0 29-19.5 48.5T528-464ZM278-328q-21.5 0-37.75-16.25T224-382v-300q0-21.5 16.25-37.75T278-736h500q21.5 0 37.75 16.25T832-682v300q0 21.5-16.25 37.75T778-328H278Zm34-22h432q0-27 19.63-46.5Q783.25-416 810-416v-232q-27 0-46.5-19.63Q744-687.25 744-714H312q0 27-19.62 46.5Q272.75-648 246-648v232q27 0 46.5 19.62Q312-376.75 312-350Zm402 118H182q-21.5 0-37.75-16.25T128-286v-332h22v332q0 12 10 22t22 10h532v22ZM278-350h-32v-364h32q-13 0-22.5 9.5T246-682v300q0 13 9.5 22.5T278-350Z",
+  },
 ];
 
 function Shot({ agent }: { agent: Agent }) {
@@ -181,8 +194,10 @@ function ClosingPage({ agent, design }: { agent: Agent; design: Design }) {
       <div className={c("m", "svc")}>
         {SERVICES.map((x) => (
           <div key={x.name}>
-            <div className={s.pic}>
-              <Img src={`${ASSETS}/services/${x.img}`} />
+            <div className={s.ico}>
+              <svg viewBox="0 -960 960 960" aria-hidden>
+                <path d={x.icon} fill="currentColor" />
+              </svg>
             </div>
             <h3>{x.name}</h3>
             <div className={s.s}>{x.text}</div>
