@@ -6,8 +6,8 @@
  * (brochure.module.css) in the Project Booklet's look (Figma › Brochure A · Paper & navy),
  * kept short like the portal's old flyer:
  *
- *   one page per property — the booklet cover: the photo, wordmark, the location in a pill
- *   (Material "location_on" icon), the title's tags as the headline ("Fully Furnished · Ready
+ *   one page per property — a filled For Sale / For Rent chip and the location in an outlined
+ *   pill (Material "location_on" icon), the property ID in the footer, the title's tags as the headline ("Fully Furnished · Ready
  *   To Move · Mid Floor"), the property ("1-Bedroom Apartment"), four key figures (`keyFigures`: residential price · beds · baths · size,
  *   commercial price · size · fit-out · plot / payment), under a full-width photo mosaic (one
  *   large, two stacked); the permit QR beside the headline when there is one. Pages of different property types sit in one
@@ -22,7 +22,7 @@ import type { ReactNode } from "react";
 import { IdCard, Mail, Smartphone } from "lucide-react";
 import s from "./brochure.module.css";
 import { Fit } from "./fit";
-import { buildingLine, forLabel, headline, keyFigures, placeLine, priceTerm } from "./format";
+import { buildingLine, forLabel, headline, keyFigures, priceTerm } from "./format";
 import { Wordmark } from "./wordmark";
 import { PAGE, type Agent, type Design, type Frame, type Item, type Listing } from "./types";
 
@@ -59,8 +59,13 @@ function Foot({ text, n }: { text: string; n: string }) {
   );
 }
 
-/** Building, sub-community, community and city, most specific first. */
-const kickerOf = (l: Listing) => [buildingLine(l).split(", ").pop(), l.community, l.city].filter(Boolean).join(" · ");
+/** Sub-community / building, community and (when short enough) city, most specific first. */
+function kickerOf(l: Listing) {
+  const parts = [buildingLine(l).split(", ").pop(), l.community].filter(Boolean) as string[];
+  // The city is implied; it only goes in when the pill has room and no part already names it.
+  const long = parts.join(" · ").length > 34 || parts.some((p) => p.includes(l.city));
+  return (long ? parts : [...parts, l.city]).join(" · ");
+}
 
 /** Google Material Symbols "location_on" (outlined), for the location pill. */
 function LocationOn() {
@@ -98,14 +103,14 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
       <div className={s.shade} />
       <div className={c("m", "top")}>
         <Wordmark className={s.wm} />
-        <span className={s.meta}>
-          {forLabel(l)} · {l.ref}
-        </span>
       </div>
       <div className={c("m", "blk", showQr && "withqr")}>
-        <div className={s.loc}>
-          <LocationOn />
-          <span>{kickerOf(l)}</span>
+        <div className={s.chips}>
+          <span className={s.deal}>{forLabel(l)}</span>
+          <div className={s.loc}>
+            <LocationOn />
+            <span>{kickerOf(l)}</span>
+          </div>
         </div>
         <Fit className={c("title", "fit")} watch={tagLine(l)} min={0.6} lines={2} label="Headline">
           {tagLine(l)}
@@ -130,7 +135,7 @@ function PropertyPage({ item, draft, n, design }: { item: Item; draft?: boolean;
           </div>
         ))}
       </div>
-      <Foot text={`Provident Estate · ${placeLine(l).split(" · ").slice(-2).join(" · ")}`} n={n} />
+      <Foot text={`Property ID · ${l.ref}`} n={n} />
     </section>
   );
 }

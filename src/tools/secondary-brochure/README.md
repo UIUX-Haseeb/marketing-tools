@@ -13,7 +13,7 @@ In the Project Booklet's look ([Figma › Brochure A · Paper & navy](https://ww
 
 | Page | What's on it |
 | --- | --- |
-| **Property** (one per listing) | a full-width photo mosaic across the top — one large photo (two-thirds wide) and two stacked beside it, edge to edge — with the wordmark and *For Rent · reference*; then, the location in a pill (outlined like the story chips, Material *location_on* icon in gold), the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the property in gold ("1-Bedroom Apartment"), the key figures (see below), the permit QR beside the headline when one is uploaded, and the footer |
+| **Property** (one per listing) | a full-width photo mosaic across the top — one large photo (two-thirds wide) and two stacked beside it, edge to edge — with the wordmark; then a filled gold *For Sale* / *For Rent* chip and the location in a pill (outlined like the story chips, Material *location_on* icon in gold), the title's tags as the headline ("Fully Furnished · Ready To Move · Mid Floor", up to two lines), the property in gold ("1-Bedroom Apartment"), the key figures (see below), the permit QR beside the headline when one is uploaded, and the footer with the **property ID** (*Property ID · PR-09102610*) |
 | **Ask Us About** (once, last) | the booklet's closing page (bridge photo): the upsell — Second Citizenship, Conveyancing, Currency, with the old flyer's three photos (`public/tools/secondary-brochure/services/`) — then the agent (name, title, mobile, email, BRN, headshot) and the company line |
 
 **A · Navy** is the booklet's navy cover; **B · White** puts the same page on white (the booklet's B).

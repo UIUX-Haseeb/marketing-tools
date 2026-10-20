@@ -72,8 +72,12 @@
 .blk { top: 738px; }
 .blk.withqr { right: 272px; }
 .pq { position: absolute; right: 80px; top: 738px; }
+/* Chip row: the deal (filled) then the location (outlined) */
+.chips { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.deal { flex: none; display: inline-flex; align-items: center; height: 54px; padding: 0 24px; border-radius: 999px; background: var(--gold); color: var(--navy);
+  font-weight: 500; font-size: 15px; letter-spacing: 0.22em; text-transform: uppercase; white-space: nowrap; }
 /* Location pill — the story chips' outline (social.module.css .chip) with the Material location icon */
-.loc { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 10px 24px 10px 16px; border: 2px solid rgba(236, 231, 223, 0.45); border-radius: 999px;
+.loc { display: inline-flex; align-items: center; gap: 10px; min-width: 0; height: 54px; padding: 10px 24px 10px 16px; border: 2px solid rgba(236, 231, 223, 0.45); border-radius: 999px;
   font-size: 22px; line-height: 30px; color: var(--mist); white-space: nowrap; }
 .loc span { overflow: hidden; text-overflow: ellipsis; }
 .loc svg { width: 28px; height: 28px; flex: none; color: var(--gold); }
