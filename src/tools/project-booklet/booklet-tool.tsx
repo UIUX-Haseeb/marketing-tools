@@ -10,7 +10,7 @@
  * them, picking another project locks them again, and only the fields the chosen output uses are
  * shown. Social posts get the listing tools' photo controls — pick any of the project's pictures
  * or upload one, Size it and drag it in the preview — per photo frame (a carousel has one or
- * more per slide). The agent and permit QR sections are the listing tools' own and always editable.
+ * more per slide). The agent section is the listing tools' own and always editable; the permit QR is preloaded (`_shared/permit-qr.ts`).
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, Download, ExternalLink, LoaderCircle, Lock, LockOpen, Maximize2, Plus, RotateCcw, Trash2, TriangleAlert, X } from "lucide-react";
@@ -22,6 +22,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import { logGeneratedPost } from "@/lib/store";
+import { PERMIT_QR_SRC } from "@/tools/_shared/permit-qr";
 import { agentFrom } from "./agent";
 import { downloadBlob, drawFrames, formatBytes, jpegOf, pdfOf, picturesReady, slug, zipOf } from "./exporter";
 import { buildBooklet, type BookletPage } from "./pages";
@@ -69,12 +70,6 @@ const SECTIONS: Record<"brochure" | PostFormat | "carousel", SectionId[]> = {
 };
 
 /** "2026-09-25" → "25 Sep 2026" (UTC, so the server and the browser print the same day). */
-/** The permit QR's wording per source: Dubai's is the DLD permit; Abu Dhabi's is kept generic. */
-const PERMIT: Record<SourceId, { label: string; hint: string; missing: string }> = {
-  dubai: { label: "DLD QR code", hint: "The QR from the project’s Dubai Land Department permit — required on every brochure and post.", missing: "Upload your DLD permit QR — every brochure and post needs it." },
-  "abu-dhabi": { label: "Permit QR code", hint: "The QR from the project’s advertising permit — required on every brochure and post.", missing: "Upload the project’s permit QR — every brochure and post needs it." },
-};
-
 const savedDate = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 /* ── small pieces ────────────────────────────────────────────────────────── */
@@ -273,7 +268,7 @@ export function BookletTool() {
   const [data, setData] = useState<ProjectData>(loaded);
   const [slots, setSlots] = useState<Record<SlotSet, ImageSlots>>(() => slotsFor(loaded));
   const [agent, setAgent] = useState<Agent>(() => agentFrom(EMPLOYEES[0]));
-  const [qr, setQr] = useState<string | null>(null);
+  const qr = PERMIT_QR_SRC;
   const [singleDesign, setSingleDesign] = useState<SocialDesign>("a");
   const [carouselDesign, setCarouselDesign] = useState<SocialDesign>("a");
   const [adjust, setAdjust] = useState<Record<SocialKind, Adjusts>>(noAdjusts);
@@ -380,7 +375,6 @@ export function BookletTool() {
   if (!data.name.trim()) problems.push("Add the project name.");
   if (!agent.name.trim()) problems.push("Add the agent name.");
   if (!agent.photo) problems.push("Add the agent headshot.");
-  if (!qr) problems.push(PERMIT[saved.source].missing);
 
   const [job, setJob] = useState<{ pages: BookletPage[]; key: string } | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
@@ -848,13 +842,6 @@ export function BookletTool() {
             {agent.photo && <SizeRow id="headshot-size" zoom={agent.zoom} onZoom={(z) => setAgent((a) => ({ ...a, zoom: z }))} onReset={() => setAgent((a) => ({ ...a, zoom: 1 }))} />}
           </div>
           <p className="text-xs text-muted-foreground">Demo agents. Mobile, email and BRN are placeholders until the CRM provides them.</p>
-        </div>
-
-        {/* Permit QR (Dubai: DLD) — the listing tools' section */}
-        <div className="space-y-2 border-t pt-5">
-          <Label>{PERMIT[saved.source].label}</Label>
-          <PhotoDropzone compact label={qr ? "Replace QR image" : "Upload your permit QR image"} onFile={(f) => setQr((q) => objectUrl(f, q))} />
-          <p className="text-xs text-muted-foreground">{PERMIT[saved.source].hint}</p>
         </div>
 
         {/* Download */}

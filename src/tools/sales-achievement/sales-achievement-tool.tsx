@@ -17,6 +17,7 @@ import { logGeneratedPost } from "@/lib/store";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import { ensurePostFont, isPostFontReady, unsupportedCharacters } from "@/tools/_shared/font";
 import { IDENTITY_TRANSFORM, loadImage, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
+import { usePermitQr } from "@/tools/_shared/permit-qr";
 import { downloadBlob, encodeCanvas, formatBytes, safeFileName, type ExportResult } from "@/tools/_shared/export";
 import { toDrawable } from "@/tools/_shared/use-post";
 import { Counter, PhotoDropzone } from "@/tools/_shared/ui";
@@ -110,7 +111,7 @@ export function SalesAchievementTool() {
   const [useCutout, setUseCutout] = useState(true);
   const person = useCutout && cutout ? cutout : original;
   const [personT, setPersonT] = useState<PhotoTransform>(IDENTITY_TRANSFORM);
-  const [qr, setQr] = useState<Drawable | null>(null);
+  const qr = usePermitQr();
   const [dragTarget, setDragTarget] = useState<"person" | "background">("person");
   const [removing, setRemoving] = useState<RemoveBgProgress | null | false>(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
@@ -181,7 +182,7 @@ export function SalesAchievementTool() {
   if (!amount.trim()) problems.push("Add the total sale value.");
   if (layout === "total" && !transactions.trim()) problems.push("Add the number of transactions.");
   if (layout === "split" && (!primary.trim() || !secondary.trim())) problems.push("Add the primary and secondary transactions.");
-  if (!qr) problems.push("Upload your DLD permit QR.");
+  if (!qr) problems.push("Loading the DLD permit QR…");
   if (bad.length) problems.push(`The font can't draw: ${[...new Set(bad)].join(" ")}`);
   const ready = fontReady && problems.length === 0;
 
@@ -300,12 +301,6 @@ export function SalesAchievementTool() {
             </div>
           )}
           <p className="text-xs text-muted-foreground">Reads “Secured #{rank || "1"} for {period || "Q3"}, closing on a high note with {amount || "AED 80.3 Million"} in sales”.</p>
-        </div>
-
-        {/* QR */}
-        <div className="space-y-2 border-t pt-5">
-          <Label>DLD QR code</Label>
-          <PhotoDropzone compact label={qr ? "Replace QR image" : "Upload your permit QR image"} onFile={load(setQr)} />
         </div>
 
         <div className="space-y-3 border-t pt-5">

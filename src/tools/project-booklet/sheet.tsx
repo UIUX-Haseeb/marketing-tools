@@ -12,39 +12,12 @@
  */
 import type { ReactNode } from "react";
 import { EMPLOYEES } from "@/lib/demo/employees";
+import { PERMIT_QR_SRC } from "@/tools/_shared/permit-qr";
 import { agentFrom } from "./agent";
 import { PROJECTS } from "./projects";
 import { buildBooklet } from "./pages";
 import { buildCarousel, buildSingle } from "./social";
 import { defaultSlots, type PostFormat, type SocialDesign } from "./types";
-
-/** A made-up QR — finder squares and seeded modules — so the white plate shows as it prints. */
-function sampleQr(): string {
-  const n = 33;
-  let seed = 7;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const on = new Set<string>();
-  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (rnd() > 0.5) on.add(`${x},${y}`);
-  const finder = [
-    [0, 0],
-    [n - 7, 0],
-    [0, n - 7],
-  ];
-  for (const [fx, fy] of finder)
-    for (let y = -1; y < 8; y++)
-      for (let x = -1; x < 8; x++) {
-        const k = `${fx + x},${fy + y}`;
-        const ring = Math.max(Math.abs(x - 3), Math.abs(y - 3));
-        if (ring === 3 || ring <= 1) on.add(k);
-        else on.delete(k);
-      }
-  const rects = [...on]
-    .map((k) => k.split(",").map(Number))
-    .filter(([x, y]) => x >= 0 && y >= 0 && x < n && y < n)
-    .map(([x, y]) => `<rect x="${x}" y="${y}" width="1" height="1"/>`)
-    .join("");
-  return `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 ${n + 2} ${n + 2}" shape-rendering="crispEdges"><rect x="-1" y="-1" width="${n + 2}" height="${n + 2}" fill="#fff"/><g fill="#000">${rects}</g></svg>`)}`;
-}
 
 type Design = { name: string; w: number; h: number; node: ReactNode };
 
@@ -68,7 +41,7 @@ export function TemplateSheet({ projectId, row }: { projectId?: string; row?: st
   const saved = PROJECTS.find((p) => p.id === projectId) ?? PROJECTS[0];
   const d = saved.data;
   const agent = agentFrom(EMPLOYEES[0]);
-  const qr = sampleQr();
+  const qr = PERMIT_QR_SRC;
   const single = (format: PostFormat, design: SocialDesign, label: string): Design => {
     const page = buildSingle(format, { d, agent, qr, slots: defaultSlots(d, "single"), adjust: {}, design }).pages[0];
     return { name: `Single · ${page.name} · ${label}`, w: page.w, h: page.h, node: page.node };

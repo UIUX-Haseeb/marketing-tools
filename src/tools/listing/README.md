@@ -4,6 +4,7 @@ Entries: `just-sold.tsx`, `just-listed.tsx`, `just-rented.tsx`, `for-sale.tsx` (
 different `variant`). **For Sale** replicates Just Listed exactly — same chips, tagline and
 geometry on every design × format — with "For Sale" as the headline; `usesChips(variant)` is
 true for both, so everything below that says "Just Listed only" applies to For Sale too.
+The DLD permit QR is preloaded on every variant (`_shared/permit-qr.ts`, `public/tools/_shared/permit-qr.png`) — there is no QR upload.
 All four variants are also in Figma as editable layers —
 [ProvToys-Templates](https://www.figma.com/design/HCABfiwAEynJOq69sx3arO/ProvToys-Templates), Page 1,
 sections *Just Sold*, *Just Listed*, *Just Rented* and *For Sale* (Classic / Minimal × Post / Story each). Renderer + locked geometry: `listing.ts` — originally measured from Figma

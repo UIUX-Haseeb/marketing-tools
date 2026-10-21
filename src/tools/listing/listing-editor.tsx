@@ -3,7 +3,7 @@
 /**
  * Just Sold / Just Listed / Just Rented editor. Property photo + bedrooms/bathrooms/sqft +
  * property type + location + price + agent (from the employee list, editable) + the agent's
- * DLD QR image. Renders with renderListing(); exports via encodeCanvas().
+ * DLD QR (preloaded, `_shared/permit-qr.ts`). Renders with renderListing(); exports via encodeCanvas().
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, Minus, Plus } from "lucide-react";
@@ -16,6 +16,7 @@ import { logGeneratedPost } from "@/lib/store";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import { ensurePostFont, isPostFontReady } from "@/tools/_shared/font";
 import { IDENTITY_TRANSFORM, type Drawable, type PhotoTransform } from "@/tools/_shared/render";
+import { usePermitQr } from "@/tools/_shared/permit-qr";
 import { canvasSize, coverRect, headshotBoxFor, HEADLINES, LISTING_DESIGNS, LISTING_FORMATS, LISTING_LIMITS, photoBoxFor, renderListing, usesChips, type ListingDesign, type ListingFormat, type ListingVariant } from "./listing";
 import { downloadBlob, encodeCanvas, formatBytes, type ExportResult } from "@/tools/_shared/export";
 import { locationOf, picturesOf, PRIMARY_PROJECTS, unitsOf } from "./primary";
@@ -113,7 +114,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   const [agentTitle, setAgentTitle] = useState(EMPLOYEES[0]?.designation ?? "");
   const [headshot, setHeadshot] = useState<Drawable | null>(null);
   const [headshotT, setHeadshotT] = useState<PhotoTransform>(IDENTITY_TRANSFORM);
-  const [qr, setQr] = useState<Drawable | null>(null);
+  const qr = usePermitQr();
   // Just Sold only: SECONDARY = a resale, typed in (the original form); PRIMARY = an off-plan unit
   // sold by the developer, filled from the saved project database the brochure uses.
   const hasSourcePicker = variant === "just-sold";
@@ -256,7 +257,7 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
   if (!price.trim()) problems.push("Add the price.");
   if (!agentName.trim()) problems.push("Add the agent name.");
   if (!headshot) problems.push("Add the agent headshot.");
-  if (!qr) problems.push("Upload your DLD permit QR — every listing post needs it.");
+  if (!qr) problems.push("Loading the DLD permit QR…");
   const canGenerate = fontReady && problems.length === 0 && !busy;
 
   const stateKey = JSON.stringify([variant, design, format, !!photo, photoT, bedrooms, bathrooms, sqft, propertyType, location, price, listingLine, agentName, agentTitle, !!headshot, headshotT, !!qr]);
@@ -443,13 +444,6 @@ export function ListingEditor({ variant, tool }: { variant: ListingVariant; tool
             <PhotoDropzone compact label={headshot ? "Replace headshot" : "Add headshot"} onFile={load(setHeadshot, () => setHeadshotT(IDENTITY_TRANSFORM))} />
             {headshot && <SizeRow id="headshot-size" transform={headshotT} onZoom={(z) => setHeadshotT((t) => coverRect(headshot, headshotBox, { ...t, zoom: z }).clamped)} onReset={() => setHeadshotT(IDENTITY_TRANSFORM)} />}
           </div>
-        </div>
-
-        {/* QR */}
-        <div className="space-y-2 border-t pt-5">
-          <Label>DLD QR code</Label>
-          <PhotoDropzone compact label={qr ? "Replace QR image" : "Upload your permit QR image"} onFile={load(setQr)} />
-          <p className="text-xs text-muted-foreground">The QR from your Dubai Land Department permit — required on every listing post.</p>
         </div>
 
         {/* Generate */}

@@ -10,6 +10,6 @@ Layers, bottom to top: the **background photo** the agent uploads (cover-fit to 
 
 "Drag moves Agent / Background" under the preview picks which photo a drag positions.
 
-Fields: stats layout; agent (from the employee list — name, designation, photo prefilled, all editable — or typed); agent photo; background photo; rank, period, total sale value; transactions, or primary + secondary; DLD QR. All required except rank and period (the headline drops the parts left empty).
+Fields: stats layout; agent (from the employee list — name, designation, photo prefilled, all editable — or typed); agent photo; background photo; rank, period, total sale value; transactions, or primary + secondary. The DLD permit QR is preloaded (`_shared/permit-qr.ts`), not uploaded. All required except rank and period (the headline drops the parts left empty).
 
 Depends on: `_shared/` (font, export, remove-bg, bg-removal overlay, `PhotoDropzone`, `Counter`), `@/lib/demo/employees`, `@/lib/store`, `@/components/ui/{button,input,label,select}`, `@/lib/utils`.
