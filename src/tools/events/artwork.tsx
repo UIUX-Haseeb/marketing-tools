@@ -8,9 +8,10 @@
  * media tab only picks the design and the photo. Native size here; <ScaledArt> fits it to a box.
  */
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { Clock, Link2, MapPin, Phone } from "lucide-react";
+import { Clock, Link2, Mail, MapPin, Phone } from "lucide-react";
 import { Fit } from "./fit";
 import { artDate, artTitle, placeLine, shortDate, shortLink } from "./format";
+import type { FlyerAgent } from "./my-card";
 import { DEVELOPER_LOGOS, developerInText, developerLogoSrc } from "./photos";
 import { ART_SIZES, LOGO_TYPES, NO_ADJUST, type Adjust, type ArtDesign, type ArtKind, type EventRecord } from "./types";
 import s from "./artwork.module.css";
@@ -289,22 +290,23 @@ function Thumb({ e, design }: { e: EventRecord; design: ArtDesign }) {
 /**
  * 9:16 story flyer (1080 × 1920) — the banner's content plus what a flyer is for: a short
  * description, the full address, the registration / livestream link and the contact. Still
- * never the long description, audience or status.
+ * never the long description, audience or status. With `agent` (the downloader's own contact
+ * card, my-card.ts) the card sits at the bottom and takes the event contact's place.
  */
-function Flyer({ e, design }: { e: EventRecord; design: ArtDesign }) {
+function Flyer({ e, design, agent }: { e: EventRecord; design: ArtDesign; agent?: FlyerAgent }) {
   const d = artDate(e);
   const tone = design === "c" ? "navy" : "white";
   const provident = design === "c" ? "/tools/events/provident-logo-navy.svg" : "/tools/events/provident-wordmark-white.svg";
   const sub = e.subtitle.trim();
   const desc = e.shortDescription.trim();
   const address = e.online ? "" : [e.address2, e.address1, e.city, e.country && e.country !== "United Arab Emirates" ? e.country : ""].filter(Boolean).join(", ");
-  const contact = [e.contactName, e.contactPhone].filter(Boolean).join(" · ") || e.contactEmail;
+  const contact = agent ? "" : [e.contactName, e.contactPhone].filter(Boolean).join(" · ") || e.contactEmail;
   const link = e.online ? e.livestream || e.website : e.registrationUrl || e.website;
   const cta = e.online ? "Join online" : e.registrationUrl ? "Register" : e.website ? "More details" : e.registrationRequired ? "Registration required" : "No registration needed";
   const ic = { size: 30, strokeWidth: 1.6 };
   const lockup = <Lockup e={e} tone={tone} area={4450} provident={provident} />;
   return (
-    <div className={c("art", "flyer", `${design}Flyer`)}>
+    <div className={c("art", "flyer", `${design}Flyer`, agent && "withAgent")}>
       {design !== "c" && <Photo e={e} kind="flyer" />}
       <div className={s.shade} />
       {design !== "c" && <div className={s.fTop}>{lockup}</div>}
@@ -361,15 +363,48 @@ function Flyer({ e, design }: { e: EventRecord; design: ArtDesign }) {
             </span>
           )}
         </div>
+        {agent && <AgentCard a={agent} />}
       </div>
     </div>
   );
 }
 
+/** The downloader's contact card at the foot of the flyer; a cut-out portrait stands out of its top. */
+function AgentCard({ a }: { a: FlyerAgent }) {
+  const ic = { size: 26, strokeWidth: 1.6 };
+  return (
+    <div className={c("agent", a.photo && (a.cutout ? "cutout" : "round"))}>
+      <div className={s.agentText}>
+        <Fit className={s.agentName} watch={a.name} min={0.7} label="Name">
+          {a.name}
+        </Fit>
+        {a.title && <div className={s.agentRole}>{a.title}</div>}
+        {(a.email || a.phone) && (
+          <div className={s.agentLines}>
+            {a.email && (
+              <span>
+                <Mail {...ic} />
+                {a.email}
+              </span>
+            )}
+            {a.phone && (
+              <span>
+                <Phone {...ic} />
+                {a.phone}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+      {a.photo && <img src={a.photo} alt="" className={s.agentPhoto} />}
+    </div>
+  );
+}
+
 /** The artwork at its native size (what gets drawn into the PNG). */
-export function Artwork({ e, kind, design }: { e: EventRecord; kind: ArtKind; design?: ArtDesign }) {
+export function Artwork({ e, kind, design, agent }: { e: EventRecord; kind: ArtKind; design?: ArtDesign; agent?: FlyerAgent }) {
   const dz = design ?? e.artwork.design;
-  if (kind === "flyer") return <Flyer e={e} design={dz} />;
+  if (kind === "flyer") return <Flyer e={e} design={dz} agent={agent} />;
   return kind === "banner" ? <Banner e={e} design={dz} /> : <Thumb e={e} design={dz} />;
 }
 
@@ -377,7 +412,7 @@ export function Artwork({ e, kind, design }: { e: EventRecord; kind: ArtKind; de
  * The artwork scaled to its box's width. `artRef` gets the native-size node (for download and
  * for the preview drag, which reads [data-frame] inside it).
  */
-export function ScaledArt({ e, kind, design, className, artRef, rounded = true }: { e: EventRecord; kind: ArtKind; design?: ArtDesign; className?: string; artRef?: (el: HTMLDivElement | null) => void; rounded?: boolean }) {
+export function ScaledArt({ e, kind, design, agent, className, artRef, rounded = true }: { e: EventRecord; kind: ArtKind; design?: ArtDesign; agent?: FlyerAgent; className?: string; artRef?: (el: HTMLDivElement | null) => void; rounded?: boolean }) {
   const { w, h } = ART_SIZES[kind];
   const box = useRef<HTMLDivElement>(null);
   const [k, setK] = useState(0);
@@ -392,7 +427,7 @@ export function ScaledArt({ e, kind, design, className, artRef, rounded = true }
   return (
     <div ref={box} className={className} style={{ position: "relative", width: "100%", aspectRatio: `${w} / ${h}`, overflow: "hidden", borderRadius: rounded ? 12 : 0 }}>
       <div ref={artRef} style={{ position: "absolute", left: 0, top: 0, width: w, height: h, transform: `scale(${k})`, transformOrigin: "0 0", visibility: k ? "visible" : "hidden" }}>
-        <Artwork e={e} kind={kind} design={design} />
+        <Artwork e={e} kind={kind} design={design} agent={agent} />
       </div>
     </div>
   );

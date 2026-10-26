@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { logGeneratedPost } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { ScaledArt } from "./artwork";
+import { flyerAgent, useMyCard } from "./my-card";
+import { MyCardPanel } from "./my-card-panel";
 import { artworkBlob, download, photoDataUrl } from "./exporter";
 import { artDate, placeLine, shortDate } from "./format";
 import { DEVELOPER_LOGOS, developerLogoSrc, photosFor } from "./photos";
@@ -137,6 +139,8 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
   const [error, setError] = useState<string | null>(null);
   const nodes = useRef<Record<ArtKind, HTMLDivElement | null>>({ banner: null, thumb: null, flyer: null });
   const library = photosFor(e.project);
+  const card = useMyCard();
+  const agent = flyerAgent(card);
 
   const pick = (src: string) => setArt({ photo: src, adjust: { banner: NO_ADJUST, thumb: NO_ADJUST, flyer: NO_ADJUST } });
 
@@ -178,7 +182,7 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
       // The flyer is already story size (1080 × 1920), so it saves at 1×; banner and thumbnail at 2×.
       const blob = await artworkBlob(node, w, h, kind === "flyer" ? 1 : 2);
       download(blob, `${e.slug || "event"}-${kind === "thumb" ? "thumbnail" : kind}.png`);
-      logGeneratedPost({ tool: "events", templateId: `events-${kind}-${art.design}`, subject: e.title.trim(), source: "manual", format: kind, bytes: blob.size });
+      logGeneratedPost({ tool: "events", templateId: `events-${kind}-${art.design}`, subject: e.title.trim(), source: "manual", format: kind, bytes: blob.size, ...(kind === "flyer" && agent && card.employeeId ? { employeeId: card.employeeId } : {}) });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Download failed.");
     } finally {
@@ -312,7 +316,7 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
         <div className="grid gap-6 border-t pt-5 sm:grid-cols-[13rem_minmax(0,1fr)]">
           <div className="space-y-2">
             <div onPointerDown={(ev) => startDrag("flyer", ev)} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} className={cn("touch-none", art.photo && "cursor-grab active:cursor-grabbing")}>
-              <ScaledArt e={e} kind="flyer" artRef={(el) => (nodes.current.flyer = el)} className="ring-1 ring-border" />
+              <ScaledArt e={e} kind="flyer" agent={agent} artRef={(el) => (nodes.current.flyer = el)} className="ring-1 ring-border" />
             </div>
             {art.photo && <SizeRow id="flyer-size" zoom={adj("flyer").zoom} onZoom={(zoom) => setAdj("flyer", { ...adj("flyer"), zoom })} onReset={() => setAdj("flyer", NO_ADJUST)} />}
           </div>
@@ -326,9 +330,10 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
               <li>Short description <span className="text-xs">(Details)</span></li>
               <li>Full address <span className="text-xs">(Location)</span></li>
               <li>{e.online ? "Livestream link" : "Registration link, or whether it’s needed"} <span className="text-xs">(Links &amp; media · Registration)</span></li>
-              <li>Contact name and phone <span className="text-xs">(Contact)</span></li>
+              <li>{agent ? "Your contact card (below)" : <>Contact name and phone <span className="text-xs">(Contact)</span></>}</li>
             </ul>
             <p className="text-xs text-muted-foreground">Anything left empty is left off.</p>
+            <MyCardPanel />
           </div>
         </div>
 

@@ -11,9 +11,11 @@
  *   /sheet/events?design=b     another design: a | b | c
  *   /sheet/events?kind=flyer   the 9:16 flyers only (to add them to the Figma frames)
  *   /sheet/events?set=real     every real portal event (banner, thumbnail, flyer) — the stress test
+ *   …&agent=cutout|round       flyers personalised with a demo contact card (templates or ?set=real)
  */
 import { Artwork } from "./artwork";
 import { DEMO_EVENTS } from "./data";
+import type { FlyerAgent } from "./my-card";
 import { REAL_EVENTS } from "./real";
 import { ART_DESIGNS, ART_SIZES, EVENT_TYPES, type ArtDesign, type ArtKind, type EventType } from "./types";
 
@@ -28,12 +30,15 @@ const BY_TYPE: Record<EventType, string> = {
   "Sales Event": "fc5f9483-9974-484a-9ee5-76178ea98dfd",
 };
 
+/** Demo contact card for the personalised flyers (an illustrated cut-out, or a round profile photo). */
+const DEMO_AGENT: FlyerAgent = { name: "Fatima Al Zahra", title: "Senior Property Consultant", email: "fatima.zahra@providentestate.com", phone: "+971 50 137 4263", photo: "/tools/events/agent-cutout-demo.png", cutout: true };
+
 const FONTS = [300, 400, 500]
   .map((w) => `@font-face{font-family:"Google Sans Flex";font-style:normal;font-weight:${w};font-display:block;src:url(/tools/events/fonts/GoogleSansFlex-${w}.woff2) format("woff2");}`)
   .join("");
 
 /** Every real portal event in one design: banner, thumbnail and flyer side by side. */
-function RealSheet({ design, label }: { design: ArtDesign; label: string }) {
+function RealSheet({ design, label, agent }: { design: ArtDesign; label: string; agent?: FlyerAgent }) {
   return (
     <main data-sheet="events-real" style={{ ["--font-google-sans" as string]: '"Google Sans Flex"', fontFamily: '"Google Sans Flex", sans-serif', display: "flex", flexDirection: "column", gap: 90, padding: 120, background: "#e9e6e1", width: "max-content", minHeight: "100vh" }}>
       <style>{FONTS}</style>
@@ -46,7 +51,7 @@ function RealSheet({ design, label }: { design: ArtDesign; label: string }) {
           <div style={{ display: "flex", alignItems: "flex-start", gap: 48 }}>
             {(["banner", "thumb", "flyer"] as ArtKind[]).map((kind) => (
               <div key={kind} data-kind={kind} style={{ width: ART_SIZES[kind].w, height: ART_SIZES[kind].h, position: "relative", flex: "none", zoom: kind === "flyer" ? 0.45 : 1 }}>
-                <Artwork e={{ ...e, artwork: { ...e.artwork, design } }} kind={kind} design={design} />
+                <Artwork e={{ ...e, artwork: { ...e.artwork, design } }} kind={kind} design={design} agent={kind === "flyer" ? agent : undefined} />
               </div>
             ))}
           </div>
@@ -56,11 +61,12 @@ function RealSheet({ design, label }: { design: ArtDesign; label: string }) {
   );
 }
 
-export function TemplateSheet({ design: want, kind: only, set }: { design?: string; kind?: string; set?: string }) {
+export function TemplateSheet({ design: want, kind: only, set, agent: withAgent }: { design?: string; kind?: string; set?: string; agent?: string }) {
+  const agent = withAgent === "cutout" ? DEMO_AGENT : withAgent === "round" ? { ...DEMO_AGENT, photo: "/tools/events/agent-cutout-demo.png", cutout: false } : undefined;
   const kinds: ArtKind[] = only === "flyer" ? ["flyer"] : ["banner", "thumb"];
   const design = (ART_DESIGNS.find((d) => d.value === want) ?? ART_DESIGNS[0]).value as ArtDesign;
   const label = ART_DESIGNS.find((d) => d.value === design)!.label;
-  if (set === "real") return <RealSheet design={design} label={label} />;
+  if (set === "real") return <RealSheet design={design} label={label} agent={agent} />;
   return (
     <main data-sheet="events" style={{ ["--font-google-sans" as string]: '"Google Sans Flex"', fontFamily: '"Google Sans Flex", sans-serif', display: "flex", flexDirection: "column", gap: 120, padding: 120, background: "#e9e6e1", width: "max-content", minHeight: "100vh" }}>
       <style>{FONTS}</style>
@@ -75,7 +81,7 @@ export function TemplateSheet({ design: want, kind: only, set }: { design?: stri
                 <figure key={kind} data-design={`${type} · ${ART_SIZES[kind].label}`} style={{ margin: 0, display: "flex", flexDirection: "column", gap: 14 }}>
                   <figcaption style={{ fontSize: 20, fontWeight: 400, color: "#5b6472" }}>{ART_SIZES[kind].use}</figcaption>
                   <div style={{ width: ART_SIZES[kind].w, height: ART_SIZES[kind].h, position: "relative", flex: "none" }}>
-                    <Artwork e={e} kind={kind} design={design} />
+                    <Artwork e={e} kind={kind} design={design} agent={kind === "flyer" ? agent : undefined} />
                   </div>
                 </figure>
               ))}

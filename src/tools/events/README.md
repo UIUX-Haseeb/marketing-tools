@@ -20,6 +20,8 @@ Never on either: description, registration, audience, contact, links, status.
 
 **Flyer 9:16** (1080 × 1920, saved at 1×) — a story flyer in the event's design (A / B / C), with more on it than the banner: type chips, title, subtitle, the **short description**, the date block, time, venue with the **full address**, the **contact** (name · phone), and a footer with the **registration link** (or "Join online" + livestream for online events, "No registration needed" when it isn't). Anything left empty is left off, and the copy stacks up from the bottom so a sparse event gives the room to the photo. Download it from Links & media (*Flyer 9:16 PNG*, with its own preview, Size and drag) or from the Event details header (*Flyer 9:16*). Never on it: the full description, audience, status.
 
+**Personalised flyer** — *Add my contact card* (Links & media, under the flyer preview) puts the downloader's own card at the foot of the flyer, in place of the event contact: name, title (gold caps), email, phone and photo. A PNG with a transparent background (a cut-out portrait) stands out of the card's top edge; any other photo sits in a circle. It belongs to the person, not the event: it's kept in this browser (`my-card.ts`, key `provtoys-events:my-card`) and used by every flyer download, including the Event details header (*Flyer 9:16 · yours*). Switching it on fills it from the signed-in person — a demo employee picker here; in the CRM, the user's profile (the `Employee` contract has no email or phone, so the demo makes them up). The copy above the card tightens to make room; all 44 real events fit in all three designs. Downloads are logged with the `employeeId`.
+
 **Developer logo** — on Project Launch, Webinar, Briefing, Exhibition and Open House only (`LOGO_TYPES`). On the banner it pairs with the Provident wordmark as a lockup (developer logo | provident.); on the thumbnail it sits alone in the corner. The Links & media tab offers the linked developer's logo from the library (Location → Developer), an upload (SVG or PNG, printed white on navy / navy on paper) or none. The demo library — Emaar, Beyond, Imtiaz, Meeras — is in `public/tools/events/developers/` as white and navy copies of the brand files; library logos are sized to the same area, so a wide wordmark and a compact one carry the same weight.
 
 Everything comes from fields the person already filled in — **Details** (title, subtitle, event type), **Schedule** (date, time, weekdays, timezone) and **Location** (venue, city, online). The Links & media tab only adds: **Design** (A · Navy panel, B · Full photo, C · Paper), **Photo** (a library strip with the linked project's photos first, or an upload; **Size** 1–3 and drag in either preview), and **Show on the banner** (subtitle / time / location). A checklist at the top says which source fields are set and jumps to the tab to fix one.
@@ -31,7 +33,7 @@ Everything comes from fields the person already filled in — **Details** (title
 - **Placeholder times** — a start before 6 AM is treated as "no time given" and left off; an end at midnight reads "From 7 PM"; a dates-only run (00:00 → 00:00) keeps its last day.
 - **Junk venues** — TBA / TBC read "Venue to be announced", anything with "online" reads "Online"; long links on the flyer are cut to the host name.
 - **Developer logo** — when no developer is linked (the portal never links one), a library developer named in the title (Emaar, Beyond, Imtiaz, Meeras) is used.
-- `/sheet/events?set=real&design=a|b|c` draws every real event's banner, thumbnail and flyer on one page for checking.
+- `/sheet/events?set=real&design=a|b|c` draws every real event's banner, thumbnail and flyer on one page for checking; add `&agent=cutout` (or `round`) for the flyers with a demo contact card (`public/tools/events/agent-cutout-demo.png`, an illustrated stand-in).
 
 Date block rules (`format.ts › artDate`): one day → `14` + `OCT 2026` + `Wednesday`; a run in one month → `23–24` + `OCT 2026` + `Fri & Sat`; across months → `17 OCT – 1 NOV`; with weekdays picked → `Every Sat & Sun`; an end at 00:00 the next day counts as the same day ("9 AM – Midnight"); outside Dubai the time gets the city ("11 AM – 6 PM London time"); online events read "Online".
 
@@ -48,6 +50,7 @@ Date block rules (`format.ts › artDate`): one day → `14` + `OCT 2026` + `Wed
 | `format.ts` | Dates, times, the artwork's date block and place line |
 | `artwork.tsx` + `artwork.module.css` | Banner, thumbnail and flyer, three designs each; `<ScaledArt>` fits one to a box |
 | `links-media.tsx` | Links & media tab: artwork controls, then the link fields |
+| `my-card.ts`, `my-card-panel.tsx` | The downloader's contact card for the flyer, and its controls |
 | `event-form.tsx` | Add / Edit dialog, six tabs, validation, test samples |
 | `stage-page.tsx`, `event-detail.tsx`, `ui.tsx` | Stage page, pop-out, small UI pieces |
 | `exporter.ts` | Artwork → PNG (html-to-image); uploads → JPEG data URLs |

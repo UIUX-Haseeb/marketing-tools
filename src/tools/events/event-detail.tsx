@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { logGeneratedPost } from "@/lib/store";
 import { Artwork, ScaledArt } from "./artwork";
 import { artworkBlob, download } from "./exporter";
+import { flyerAgent, useMyCard } from "./my-card";
 import { ART_SIZES } from "./types";
 import { fmtDate, fmtDateTime, fmtDay, isPast, nextOccurrence, occurrences, placeLine, timeRange, weekdayList } from "./format";
 import type { EventRecord } from "./types";
@@ -31,6 +32,8 @@ function FlyerButton({ e }: { e: EventRecord }) {
   const box = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+  const card = useMyCard();
+  const agent = flyerAgent(card);
   const { w, h } = ART_SIZES.flyer;
   return (
     <>
@@ -38,7 +41,7 @@ function FlyerButton({ e }: { e: EventRecord }) {
         variant="secondary"
         size="sm"
         disabled={busy}
-        title={error ? "The flyer couldn’t be made — try again." : "9:16 story flyer, 1080 × 1920"}
+        title={error ? "The flyer couldn’t be made — try again." : agent ? `9:16 story flyer, 1080 × 1920, with your contact card (${agent.name}) — change it in Edit › Links & media` : "9:16 story flyer, 1080 × 1920"}
         onClick={async () => {
           const node = box.current?.firstElementChild as HTMLElement | null;
           if (!node) return;
@@ -47,7 +50,7 @@ function FlyerButton({ e }: { e: EventRecord }) {
           try {
             const blob = await artworkBlob(node, w, h, 1);
             download(blob, `${e.slug || "event"}-flyer.png`);
-            logGeneratedPost({ tool: "events", templateId: `events-flyer-${e.artwork.design}`, subject: e.title, source: "demo", format: "flyer", bytes: blob.size });
+            logGeneratedPost({ tool: "events", templateId: `events-flyer-${e.artwork.design}`, subject: e.title, source: "demo", format: "flyer", bytes: blob.size, ...(agent && card.employeeId ? { employeeId: card.employeeId } : {}) });
           } catch {
             setError(true);
           } finally {
@@ -55,10 +58,10 @@ function FlyerButton({ e }: { e: EventRecord }) {
           }
         }}
       >
-        {busy ? <Loader2 className="animate-spin" /> : <Download />} Flyer 9:16
+        {busy ? <Loader2 className="animate-spin" /> : <Download />} Flyer 9:16{agent && <span className="text-muted-foreground">· yours</span>}
       </Button>
       <div ref={box} aria-hidden style={{ position: "fixed", left: -20000, top: 0, width: w, height: h, pointerEvents: "none" }}>
-        <Artwork e={e} kind="flyer" />
+        <Artwork e={e} kind="flyer" agent={agent} />
       </div>
     </>
   );
