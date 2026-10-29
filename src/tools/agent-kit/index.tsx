@@ -1,6 +1,6 @@
-import { Download, ExternalLink, FileText } from "lucide-react";
+import { Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { KIT_BANNERS, KIT_DOCS, driveDownload, driveView } from "./kit";
+import { KIT_BANNERS, KIT_DOCS, driveDownload, drivePreview, driveView } from "./kit";
 
 export default function AgentKitPage() {
   return (
@@ -12,25 +12,31 @@ export default function AgentKitPage() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {KIT_DOCS.map((doc) => (
-            <div key={doc.name} className="flex flex-col gap-4 rounded-xl border bg-card p-5">
-              <span className="flex size-10 items-center justify-center rounded-lg bg-secondary">
-                <FileText className="size-[18px]" strokeWidth={1.75} />
-              </span>
-              <div className="space-y-1">
-                <p className="font-normal">{doc.name}</p>
-                <p className="text-sm leading-relaxed text-muted-foreground">{doc.description}</p>
-              </div>
-              <div className="mt-auto flex flex-wrap gap-2">
-                <Button asChild size="sm">
-                  <a href={driveDownload(doc.driveId)} target="_blank" rel="noopener noreferrer">
-                    <Download /> Download
-                  </a>
-                </Button>
-                <Button asChild size="sm" variant="outline">
-                  <a href={driveView(doc.driveId)} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink /> Open in Drive
-                  </a>
-                </Button>
+            <div key={doc.name} className="flex flex-col overflow-hidden rounded-xl border bg-card">
+              <iframe
+                src={drivePreview(doc.driveId)}
+                title={`${doc.name} preview`}
+                loading="lazy"
+                allow="fullscreen"
+                className="block h-[420px] w-full border-b bg-secondary"
+              />
+              <div className="flex flex-1 flex-col gap-4 p-5">
+                <div className="space-y-1">
+                  <p className="font-normal">{doc.name}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{doc.description}</p>
+                </div>
+                <div className="mt-auto flex flex-wrap gap-2">
+                  <Button asChild size="sm">
+                    <a href={driveDownload(doc.driveId)} target="_blank" rel="noopener noreferrer">
+                      <Download /> Download
+                    </a>
+                  </Button>
+                  <Button asChild size="sm" variant="outline">
+                    <a href={driveView(doc.driveId)} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink /> Open in Drive
+                    </a>
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
