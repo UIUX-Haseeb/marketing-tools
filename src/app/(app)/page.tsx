@@ -48,6 +48,7 @@ export default function HomePage() {
   const posts = TOOLS.filter((t) => t.category === "posts");
   const booklets = TOOLS.filter((t) => t.category === "booklets");
   const events = TOOLS.filter((t) => t.category === "events");
+  const kits = TOOLS.filter((t) => t.category === "kits");
 
   return (
     <div className="space-y-12">
@@ -66,6 +67,7 @@ export default function HomePage() {
       <Section kicker="Create" title="Posts" tools={posts} />
       <Section kicker="Create" title="Booklets" tools={booklets} />
       <Section kicker="Manage" title="Events" tools={events} />
+      <Section kicker="Download" title="Kits" tools={kits} />
     </div>
   );
 }

@@ -13,7 +13,7 @@
 import type { ComponentType } from "react";
 import type { Team } from "@/lib/teams";
 
-export type ToolCategory = "posts" | "booklets" | "events";
+export type ToolCategory = "posts" | "booklets" | "events" | "kits";
 
 export interface ToolDef {
   slug: string;
@@ -103,6 +103,16 @@ export const TOOLS: ToolDef[] = [
     category: "booklets",
     icon: "FileText",
     component: () => import("@/tools/secondary-brochure"),
+  },
+
+  {
+    slug: "agent-kit",
+    name: "Agent Kit",
+    description: "Company Profile, Investment Guide and ready-made LinkedIn and Facebook banners to download.",
+    teams: ["AGENTS"],
+    category: "kits",
+    icon: "Briefcase",
+    component: () => import("@/tools/agent-kit"),
   },
 
   {
