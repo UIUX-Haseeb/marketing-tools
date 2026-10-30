@@ -1,6 +1,6 @@
 import { Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { KIT_BANNERS, KIT_DOCS, driveDownload, drivePreview, driveView } from "./kit";
+import { KIT_BANNERS, KIT_DOCS, driveDownload, driveView } from "./kit";
 
 export default function AgentKitPage() {
   return (
@@ -13,13 +13,16 @@ export default function AgentKitPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {KIT_DOCS.map((doc) => (
             <div key={doc.name} className="flex flex-col overflow-hidden rounded-xl border bg-card">
-              <iframe
-                src={drivePreview(doc.driveId)}
-                title={`${doc.name} preview`}
-                loading="lazy"
-                allow="fullscreen"
-                className="block h-[420px] w-full border-b bg-secondary"
-              />
+              <a href={driveView(doc.driveId)} target="_blank" rel="noopener noreferrer" className="group block overflow-hidden border-b">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static mockup, shown as-is */}
+                <img
+                  src={doc.cover}
+                  alt={`${doc.name} brochure`}
+                  width={2000}
+                  height={1333}
+                  className="block aspect-[16/10] w-full scale-[1.3] object-cover transition-transform duration-300 group-hover:scale-[1.36]"
+                />
+              </a>
               <div className="flex flex-1 flex-col gap-4 p-5">
                 <div className="space-y-1">
                   <p className="font-normal">{doc.name}</p>

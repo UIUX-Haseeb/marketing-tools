@@ -4,25 +4,18 @@ const nextConfig: NextConfig = {
   // Cross-origin isolation lets the in-browser background remover (ONNX runtime wasm) use
   // SharedArrayBuffer and run multi-threaded — several times faster than the single-thread
   // fallback. `credentialless` keeps same-origin assets working without extra CORP headers.
-  // Everything this app loads is same-origin, so nothing else is affected (bar the Agent Kit, below).
+  // Everything this app loads is same-origin, so nothing else is affected.
   async headers() {
     return [
       {
         source: "/:path*",
         headers: [
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-        ],
-      },
-      {
-        // Everywhere except the Agent Kit, whose Google Drive PDF previews are cross-origin
-        // iframes that an embedder policy would block.
-        source: "/((?!tools/agent-kit).*)",
-        headers: [
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
         ],
       },
       {

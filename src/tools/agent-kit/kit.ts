@@ -8,6 +8,8 @@ export interface KitDoc {
   description: string;
   /** Google Drive file id (the part after /file/d/ in a share link). */
   driveId: string;
+  /** Mockup shown as the preview, path under /public. */
+  cover: string;
 }
 
 export interface KitBanner {
@@ -26,11 +28,13 @@ export const KIT_DOCS: KitDoc[] = [
     name: "Company Profile",
     description: "Company Profile 2026 — who Provident is: history, people, companies and offices.",
     driveId: "1NB3LsXOA6o5gmJNT7-_84Xj4sZQKiw6b",
+    cover: "/tools/agent-kit/company-profile.jpg",
   },
   {
     name: "Investment Guide",
     description: "The Investment Compass 2026 — the guide to send to buyers and investors.",
     driveId: "1S4iO3Nn6fpcHbT8moPPCC1s7yfLHMEZO",
+    cover: "/tools/agent-kit/investment-guide.jpg",
   },
 ];
 
@@ -54,5 +58,4 @@ export const KIT_BANNERS: KitBanner[] = [
 ];
 
 export const driveView = (id: string) => `https://drive.google.com/file/d/${id}/view`;
-export const drivePreview = (id: string) => `https://drive.google.com/file/d/${id}/preview`;
 export const driveDownload = (id: string) => `https://drive.google.com/uc?export=download&id=${id}`;
