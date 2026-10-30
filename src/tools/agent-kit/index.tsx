@@ -1,8 +1,14 @@
 import { Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { KIT_BANNERS, KIT_DOCS, driveDownload, driveView } from "./kit";
+import { KitTabs } from "./tabs";
+import { BusinessCard } from "./business-card/business-card";
 
 export default function AgentKitPage() {
+  return <KitTabs downloads={<Downloads />} businessCard={<BusinessCard />} />;
+}
+
+function Downloads() {
   return (
     <div className="space-y-10">
       <section className="space-y-4">

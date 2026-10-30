@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Provident Business Card Studio</title>
+<style>
+:root{--navy:#1E273D;--ink:#1E273D;--muted:#666D7F;--brass:#AA8B4C;--paper:#FCFBF7;--cream:#F4F1EC;--line:#E4DFD6;--blue:#2F6BFF;--bg:#EEEAE3;--r:10px}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:'GSF','Google Sans Flex',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:400;color:var(--ink);background:var(--bg);font-size:13px;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+#top{display:flex;align-items:center;gap:14px;padding:8px 14px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:6px}
+.brand .logo{font-size:20px;font-weight:300;letter-spacing:-.02em}.brand .logo i{color:#F26530;font-style:normal}
+.brand .app{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.seg{display:inline-flex;background:var(--cream);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-weight:500;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--navy);color:#fff}
+.seg.sm button{padding:4px 9px;font-size:12px}
+#modeNote{font-size:11px;color:var(--muted);max-width:230px;line-height:1.25}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;font-weight:500}
+.btn:hover{border-color:var(--brass)}
+.btn.sm{padding:5px 9px;font-size:12px}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.on{background:var(--cream);border-color:var(--brass)}
+.btn.danger{color:#c0392b}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+main{flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr 300px}
+aside{background:#fff;overflow:auto;border-right:1px solid var(--line)}
+#right{border-right:0;border-left:1px solid var(--line)}
+.tabs{display:flex;position:sticky;top:0;background:#fff;z-index:2;border-bottom:1px solid var(--line)}
+.tab{flex:1;border:0;background:transparent;padding:11px 4px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent}
+.tab.on{color:var(--navy);border-bottom-color:var(--brass)}
+.pane{display:none;padding:12px 14px 40px}.pane.on{display:block}
+.sec{padding:10px 0 12px;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:0}
+.sec h4{margin:0 0 8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:500}
+.hint{color:var(--muted);font-size:11.5px;line-height:1.4;margin:8px 0 0}
+.crow{display:grid;grid-template-columns:62px 1fr 30px;gap:6px;align-items:center;margin-bottom:7px}
+.crow .lb{font-size:11.5px;color:var(--muted)}
+.crow .two{display:grid;grid-template-columns:54px 1fr;gap:5px}
+input[type=text],input[type=number],select,textarea{width:100%;font:inherit;border:1px solid var(--line);border-radius:7px;padding:6px 8px;background:#fff;color:var(--ink);min-width:0}
+input:focus,textarea:focus,select:focus{outline:2px solid rgba(47,107,255,.35);border-color:var(--blue)}
+textarea{resize:vertical}
+.eye,.lk{border:0;background:transparent;font-size:14px;padding:4px;border-radius:6px;line-height:1}
+.eye:hover,.lk:hover{background:var(--cream)}
+.eye.off{opacity:.45}
+.f{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:12px}
+.f>span{width:62px;color:var(--muted);flex:none;font-size:11.5px}
+.f.wide{display:block}.f.wide>span{display:block;width:auto;margin-bottom:3px}
+.f em{font-style:normal;color:var(--muted);font-size:11px;width:20px;flex:none}
+.f.chk{gap:8px}.f.chk>span{width:auto;color:var(--ink);font-size:12.5px}
+.f.col{display:block}.f.col>span{display:block;width:auto;margin-bottom:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.grid2 .f>span{width:auto;min-width:34px}
+.cr{display:flex;gap:6px;margin-bottom:6px}.pick{width:38px;height:30px;padding:0;border:1px solid var(--line);border-radius:7px;background:#fff;flex:none}
+.hex{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.sw{display:flex;flex-wrap:wrap;gap:4px}.sw button{width:20px;height:20px;border-radius:5px;border:1px solid rgba(0,0,0,.18);padding:0}
+.btnrow{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.btnrow.tight{gap:4px}
+.ic{width:30px;height:28px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0;font-size:13px}.ic:hover{border-color:var(--brass)}.ic.danger{color:#c0392b}
+.ihead{display:flex;align-items:center;gap:8px;margin-bottom:8px}.ihead b{font-weight:500;font-size:14px}.tag{font-size:10px;text-transform:uppercase;letter-spacing:.1em;background:var(--cream);color:var(--muted);padding:2px 7px;border-radius:99px}
+#insp{padding:12px 14px 40px}.empty p{color:var(--muted);line-height:1.45}
+.layers{margin-top:8px;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.layer{display:flex;align-items:center;gap:4px;padding:5px 6px;border-bottom:1px solid var(--line);cursor:pointer;background:#fff}
+.layer:last-child{border-bottom:0}.layer.sel{background:#EAF0FF}.layer.off .nm{opacity:.4;text-decoration:line-through}
+.layer .nm{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.layer small{color:var(--muted)}
+#stage{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+.sbar{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--cream);border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+#coords{font-family:ui-monospace,Menlo,monospace;font-size:11px;margin-left:auto}
+#frame{flex:1;min-height:0;position:relative;display:grid;grid-template:20px 1fr / 20px 1fr}
+#corner{background:#F7F4EE;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+#rulerTop{grid-area:1/2;cursor:s-resize;border-bottom:1px solid var(--line);display:block}
+#rulerLeft{grid-area:2/1;cursor:e-resize;border-right:1px solid var(--line);display:block}
+#scroll{grid-area:2/2;overflow:auto;position:relative;background:#E7E3DB;display:flex;touch-action:pan-x pan-y}
+#ws{margin:auto;display:block;flex:none;touch-action:none;user-select:none}
+#curX,#curY{position:absolute;pointer-events:none;background:#16b9c9;z-index:3}
+#curX{top:0;width:1px;height:100%;left:-5px}#curY{left:0;height:1px;width:100%;top:-5px}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:9px 16px;border-radius:9px;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:80vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+dialog{border:0;border-radius:14px;padding:0;width:min(520px,94vw);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(20,26,40,.5)}
+dialog form{padding:20px 22px}
+dialog h3{margin:0 0 12px;font-weight:400;font-size:20px;letter-spacing:-.01em}
+.opts{display:grid;gap:6px;margin-bottom:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 11px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--brass);background:#FBF8F1}
+.opt b{font-weight:500;display:block}.opt small{color:var(--muted);display:block;margin-top:1px}
+.xrow{display:flex;align-items:center;gap:10px;margin:8px 0}.xrow>span{width:96px;color:var(--muted);font-size:12px}
+.xrow select,.xrow input[type=text],.xrow input[type=number]{flex:1}
+#expNote{background:var(--cream);border-radius:9px;padding:9px 11px;font-size:12px;color:#454d60;line-height:1.4;margin:10px 0}
+#expWarn{background:#FFF4E5;border:1px solid #F3C98B;border-radius:9px;padding:8px 11px;font-size:12px;margin:8px 0}
+.dfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+@media (max-width:1000px){
+ body{overflow:auto}
+ main{display:flex;flex-direction:column;min-height:auto;flex:none}
+ aside{overflow:visible}
+ #stage{order:1;height:62vh}
+ #left{order:2;border-right:0;max-height:none}#right{order:3;border-left:0}
+ #modeNote{display:none}
+}
+#adjBar{background:#EAF0FF;border-bottom:1px solid #C9D7FF;padding:7px 12px;font-size:12px;color:#26407e;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#adjBar b{font-weight:500}
+body.kiosk #right,body.kiosk .tab[data-tab=layers],body.kiosk .tab[data-tab=design]{display:none}
+body.kiosk main{grid-template-columns:320px 1fr}
+.fixlab{font-weight:500;font-size:12px;color:var(--navy);align-self:center}
+.crow .two{align-items:center}
+.crow.tog{grid-template-columns:1fr 30px}
+body.kiosk #lockBtn{display:none}
+.crow .lb.wide{grid-column:1/3;font-size:12.5px;color:var(--ink)}
+.imgname{font-size:11.5px;color:var(--muted);word-break:break-all}
+.rng{width:100%;accent-color:var(--navy);margin:2px 0 8px}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 10px}
+.lgbtn{display:flex;align-items:center;justify-content:center;padding:14px 10px;border:1px solid var(--line,#ddd);background:#fff;border-radius:8px;cursor:pointer;font:inherit;font-size:10.5px;color:#4a5170;text-align:center}
+.lgbtn img{width:100%;height:40px;object-fit:contain}
+.lgrid.dark .lgbtn{background:#1f2842;color:#d9dcea;border-color:#1f2842}
+.lgbtn:hover{border-color:#a8894a}.lgbtn.on{outline:2px solid #a8894a;outline-offset:-1px}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="brand"><span class="app">Business Card Studio</span></div>
+  <div class="seg" id="modeSeg"></div>
+  <span id="modeNote"></span>
+  <div class="seg" id="sideSeg"><button data-side="front">Front</button><button data-side="back">Back</button></div>
+  <span class="spacer"></span>
+  <div class="tools">
+    <button class="btn sm" id="undo" title="Undo (Ctrl/⌘+Z)">↶</button><button class="btn sm" id="redo" title="Redo">↷</button>
+    <button class="btn sm" id="lockBtn"></button><button class="btn sm" id="snapBtn" title="Snap to edges, centre and guides">Snap</button>
+    <button class="btn sm" id="openBtn">Open</button><button class="btn sm" id="saveBtn">Save</button><button class="btn sm" id="resetBtn">Reset</button>
+    <button class="btn pri" id="expBtn">Download…</button>
+  </div>
+</header>
+<main>
+  <aside id="left">
+    <div class="tabs"><button class="tab on" data-tab="content">Details</button><button class="tab" data-tab="images">Images</button><button class="tab" data-tab="layers">Layers</button><button class="tab" data-tab="design">Design</button></div>
+    <div class="pane on" id="pane-content"></div><div class="pane" id="pane-images"></div><div class="pane" id="pane-layers"></div><div class="pane" id="pane-design"></div>
+  </aside>
+  <section id="stage">
+    <div class="sbar"><button class="btn sm" id="zout">−</button><span id="zlabel">100%</span><button class="btn sm" id="zin">+</button><button class="btn sm" id="zfit">Fit</button><span>Rulers in mm · drag from a ruler to pull out a guide</span><span id="coords"></span></div>
+    <div id="adjBar" style="display:none"><b>Adjusting the PNG</b> — drag it on the card, use the corner handles to scale, or use the controls in the Images tab. <button class="btn sm pri" id="adjDone">Done</button></div>
+    <div id="frame">
+      <div id="corner"></div><canvas id="rulerTop"></canvas><canvas id="rulerLeft"></canvas>
+      <div id="scroll"><div id="curX"></div><div id="curY"></div>
+        <svg id="ws" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="cardClip"><rect x="0" y="0" width="240.9449" height="155.9055"/></clipPath><filter id="sh" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow dx="0" dy="1.5" stdDeviation="2.2" flood-color="#1E273D" flood-opacity=".25"/></filter></defs>
+          <rect x="0" y="0" width="240.9449" height="155.9055" fill="#fff" filter="url(#sh)"/><g id="art" clip-path="url(#cardClip)"></g><g id="ov"></g></svg>
+      </div>
+    </div>
+  </section>
+  <aside id="right"><div class="tabs"><button class="tab on" style="cursor:default">Selected element</button></div><div id="insp"></div></aside>
+</main>
+<dialog id="expDlg"><form id="expForm" method="dialog">
+  <h3>Download your card</h3>
+  <div class="opts">
+    <label class="opt"><input type="radio" name="fmt" value="pdfprint" checked><span><b>PDF — print file</b><small>With crop marks, registration &amp; colour bars (like your printing PDFs)</small></span></label>
+    <label class="opt"><input type="radio" name="fmt" value="pdfdigital"><span><b>PDF — digital card</b><small>Exact card size, no marks</small></span></label>
+    <label class="opt"><input type="radio" name="fmt" value="svg"><span><b>SVG — vector</b><small>Editable in Illustrator / Figma</small></span></label>
+    <label class="opt"><input type="radio" name="fmt" value="png"><span><b>PNG</b><small>Digital use · transparent edges not needed</small></span></label>
+    <label class="opt"><input type="radio" name="fmt" value="jpg"><span><b>JPEG</b><small>Smaller file for WhatsApp / email</small></span></label>
+  </div>
+  <div class="xrow"><span>Sides</span><select name="sides"><option value="both">Front + Back</option><option value="front">Front only</option><option value="back">Back only</option></select></div>
+  <div class="xrow" id="rowBleed"><span>Bleed</span><select name="bleed"><option value="0">None (trim size)</option><option value="3">3 mm</option><option value="5">5 mm</option></select></div>
+  <div class="xrow" id="rowMarks"><span>Printer’s marks</span><label><input type="checkbox" name="marks" checked> Crop · registration · colour bars · page info</label></div>
+  <div class="xrow" id="rowDpi"><span>Resolution</span><select name="dpi"><option value="150">150 dpi (web)</option><option value="300">300 dpi (print)</option><option value="600" selected>600 dpi (2008 × 1300 px)</option><option value="1200">1200 dpi</option></select></div>
+  <div class="xrow" id="rowQ"><span>JPEG quality</span><select name="q"><option value="0.8">Medium</option><option value="0.92">High</option><option value="0.98" selected>Maximum</option></select></div>
+  <div class="xrow" id="rowLive"><span>SVG text</span><label><input type="checkbox" name="live"> Keep live text (needs Google Sans Flex installed)</label></div>
+  <div class="xrow"><span>File name</span><input type="text" name="fname" placeholder="Name - Title - Business Card"></div>
+  <div id="expNote"></div>
+  <div id="expWarn" style="display:none">No sub-company logo has been uploaded yet — the card will export with the Provident logo. Upload one in the Design tab first.</div>
+  <div class="dfoot"><button type="button" class="btn" id="expCancel">Cancel</button><button type="button" class="btn pri" id="expGo">Download</button></div>
+</form></dialog>
+<div id="toast"></div>
+<script>/*OT*/</script>
+<script>/*FONTS*/</script>
+<script>/*DATA*/</script>
+<script>/*LOGOS*/</script>
+<script>/*APP*/</script>
+</body>
+</html>

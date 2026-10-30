@@ -108,7 +108,7 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "agent-kit",
     name: "Agent Kit",
-    description: "Company Profile, Investment Guide and ready-made LinkedIn and Facebook banners to download.",
+    description: "Company Profile, Investment Guide, LinkedIn and Facebook banners — and your business card, ready to print.",
     teams: ["AGENTS"],
     category: "kits",
     icon: "Briefcase",

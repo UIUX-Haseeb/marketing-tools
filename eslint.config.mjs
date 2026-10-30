@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The designer's Business Card Studio, kept verbatim (vanilla browser JS, built by build.py).
+    "src/tools/agent-kit/business-card/studio/**",
+    "src/tools/agent-kit/business-card/embed.js",
+    "public/**",
   ]),
 ]);
 
