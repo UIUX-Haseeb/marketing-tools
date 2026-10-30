@@ -1,7 +1,8 @@
-# agent-kit — Agent Kit
+# agent-kit — Agent Download Kit
 
-Entry: `index.tsx`, two tabs (`tabs.tsx`): **Downloads** — company documents and ready-made social
-banners, all listed in `kit.ts` (edit that list to add or swap an item) — and **Business card**.
+Entry: `index.tsx`, three tabs (`tabs.tsx`): **Documents & banners** and **Logos** — everything listed
+in `kit.ts` (edit that list to add or swap an item) — and **Business card**. The slug stays
+`agent-kit` so existing links keep working.
 
 - **Documents** (Company Profile, Investment Guide) stay on Google Drive. Each card shows a
   brochure mockup (`public/tools/agent-kit/company-profile.jpg`, `investment-guide.jpg`) that
@@ -11,6 +12,15 @@ banners, all listed in `kit.ts` (edit that list to add or swap an item) — and 
 - **Banners** are static files in `public/tools/agent-kit/` — LinkedIn 1584 × 396, Facebook
   1702 × 630 — downloaded as-is with the `download` attribute. Replace the PNG to update one
   (keep the size in `kit.ts` in step).
+
+## Logos (`logos.tsx`)
+
+The Provident logo from the brand folder on Drive (`LOGO_FOLDER` in `kit.ts`), copied into
+`public/tools/agent-kit/logos/` so the previews and downloads work without a Google sign-in:
+wordmark, logo mark ("p.") and Arabic wordmark, each navy and white (Arabic also white with the
+orange dot). SVG + PNG for all; JPG (logo on an 800 × 800 white or navy square) where the folder has
+one. Each tile previews the SVG on the background it's meant for. To change a logo, replace the
+file(s) — names are `<stem>.<svg|png|jpg>` — and keep `KIT_LOGOS` in step.
 
 ## Business card (`business-card/`)
 

@@ -2,10 +2,19 @@ import { Download, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { KIT_BANNERS, KIT_DOCS, driveDownload, driveView } from "./kit";
 import { KitTabs } from "./tabs";
+import { Logos } from "./logos";
 import { BusinessCard } from "./business-card/business-card";
 
 export default function AgentKitPage() {
-  return <KitTabs downloads={<Downloads />} businessCard={<BusinessCard />} />;
+  return (
+    <KitTabs
+      tabs={[
+        { id: "downloads", label: "Documents & banners", content: <Downloads /> },
+        { id: "logos", label: "Logos", content: <Logos /> },
+        { id: "business-card", label: "Business card", content: <BusinessCard />, wide: true },
+      ]}
+    />
+  );
 }
 
 function Downloads() {

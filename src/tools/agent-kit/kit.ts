@@ -1,5 +1,5 @@
 /**
- * What's in the Agent Kit. Documents live on Google Drive (the PDFs are too big to ship here);
+ * What's in the Agent Download Kit. Documents live on Google Drive (the PDFs are too big to ship here);
  * the banners are static files in public/tools/agent-kit/.
  * To add or swap an item, edit this list — the page reads nothing else.
  */
@@ -59,3 +59,54 @@ export const KIT_BANNERS: KitBanner[] = [
 
 export const driveView = (id: string) => `https://drive.google.com/file/d/${id}/view`;
 export const driveDownload = (id: string) => `https://drive.google.com/uc?export=download&id=${id}`;
+
+/** The brand logo folder on Drive (the source of the files in public/tools/agent-kit/logos/). */
+export const LOGO_FOLDER = "https://drive.google.com/drive/folders/1a4cce_vQYlsnrhZrkTH7E97_3TIMo9Lt";
+
+export type LogoFormat = "svg" | "png" | "jpg";
+
+export interface KitLogo {
+  label: string;
+  /** What it sits on: navy logos go on light backgrounds, white ones on dark. */
+  tone: "navy" | "white";
+  /** File stem under /public — each format is `${file}.${format}`. */
+  file: string;
+  /** Formats on hand. JPG is the logo on a square background (white or navy). */
+  formats: LogoFormat[];
+}
+
+export interface KitLogoSet {
+  name: string;
+  description: string;
+  logos: KitLogo[];
+}
+
+const L = "/tools/agent-kit/logos/";
+
+export const KIT_LOGOS: KitLogoSet[] = [
+  {
+    name: "Wordmark",
+    description: "The main logo. Use it wherever there's room.",
+    logos: [
+      { label: "Navy", tone: "navy", file: `${L}provident-navy`, formats: ["svg", "png", "jpg"] },
+      { label: "White", tone: "white", file: `${L}provident-white`, formats: ["svg", "png", "jpg"] },
+    ],
+  },
+  {
+    name: "Logo mark",
+    description: "The “p.” — for small or square spaces like profile pictures and favicons.",
+    logos: [
+      { label: "Navy", tone: "navy", file: `${L}provident-mark-navy`, formats: ["svg", "png"] },
+      { label: "White", tone: "white", file: `${L}provident-mark-white`, formats: ["svg", "png"] },
+    ],
+  },
+  {
+    name: "Arabic wordmark",
+    description: "For Arabic-language material.",
+    logos: [
+      { label: "Navy", tone: "navy", file: `${L}provident-arabic-navy`, formats: ["svg", "png", "jpg"] },
+      { label: "White", tone: "white", file: `${L}provident-arabic-white`, formats: ["svg", "png", "jpg"] },
+      { label: "White, orange dot", tone: "white", file: `${L}provident-arabic-white-orange-dot`, formats: ["svg", "png"] },
+    ],
+  },
+];
