@@ -34,8 +34,11 @@ export const cropShare = (imgW: number, imgH: number, frameW: number, frameH: nu
 function Photo({ e, kind, align = "center" }: { e: EventRecord; kind: ArtKind; align?: "center" | "right" }) {
   const src = e.artwork.photo;
   const box = useRef<HTMLDivElement>(null);
-  const [whole, setWhole] = useState(e.artwork.fit === "whole");
+  // the 4:5 post always fills its width — never the "whole picture" with blurred sides
+  const fillOnly = kind === "post";
+  const [whole, setWhole] = useState(e.artwork.fit === "whole" && !fillOnly);
   const decide = (img: HTMLImageElement) => {
+    if (fillOnly) return setWhole(false);
     const fit = e.artwork.fit ?? "auto";
     const el = box.current;
     if (fit !== "auto" || !el || !img.naturalWidth) return setWhole(fit === "whole");
@@ -46,8 +49,9 @@ function Photo({ e, kind, align = "center" }: { e: EventRecord; kind: ArtKind; a
     const img = box.current?.querySelector<HTMLImageElement>("img[data-photo]");
     if (img?.complete) decide(img);
   });
-  // the 4:5 post has no framing of its own (it isn't made in Add event); it borrows the flyer's
-  const adj = e.artwork.adjust[kind] ?? (kind === "post" ? e.artwork.adjust.flyer : undefined) ?? NO_ADJUST;
+  // the 4:5 post has no framing of its own (it isn't made in Add event): it takes the flyer's
+  // position but not its Size, which was set for the flyer's taller frame
+  const adj = e.artwork.adjust[kind] ?? (kind === "post" && e.artwork.adjust.flyer ? { ...e.artwork.adjust.flyer, zoom: 1 } : undefined) ?? NO_ADJUST;
   return (
     <div ref={box} className={c("frame", whole && "whole")} data-frame={kind} data-fit={whole ? "whole" : "fill"}>
       {src && whole && <img className={s.backdrop} src={src} alt="" aria-hidden decoding="async" draggable={false} />}
