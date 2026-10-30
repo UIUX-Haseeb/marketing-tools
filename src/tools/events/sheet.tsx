@@ -11,11 +11,12 @@
  *   /sheet/events?design=b     another design: a | b | c
  *   /sheet/events?kind=flyer   the 9:16 flyers only (to add them to the Figma frames)
  *   /sheet/events?set=real     every real portal event (banner, thumbnail, flyer) — the stress test
- *   …&agent=cutout|round       flyers personalised with a demo contact card (templates or ?set=real)
+ *   …&agent=1                  flyers personalised with a demo contact card (templates or ?set=real)
  */
 import { Artwork } from "./artwork";
 import { DEMO_EVENTS } from "./data";
-import type { FlyerAgent } from "./my-card";
+import { EMPLOYEES } from "@/lib/demo/employees";
+import { cardFromEmployee, type FlyerAgent } from "./my-card";
 import { REAL_EVENTS } from "./real";
 import { ART_DESIGNS, ART_SIZES, EVENT_TYPES, type ArtDesign, type ArtKind, type EventType } from "./types";
 
@@ -30,8 +31,8 @@ const BY_TYPE: Record<EventType, string> = {
   "Sales Event": "fc5f9483-9974-484a-9ee5-76178ea98dfd",
 };
 
-/** Demo contact card for the personalised flyers (an illustrated cut-out, or a round profile photo). */
-const DEMO_AGENT: FlyerAgent = { name: "Fatima Al Zahra", title: "Senior Property Consultant", email: "fatima.zahra@providentestate.com", phone: "+971 50 137 4263", photo: "/tools/events/agent-cutout-demo.png", cutout: true };
+/** Demo contact card for the personalised flyers — the first demo employee, as on the Project Booklet. */
+const DEMO_AGENT: FlyerAgent = { ...(cardFromEmployee(EMPLOYEES[0].id) as FlyerAgent) };
 
 const FONTS = [300, 400, 500]
   .map((w) => `@font-face{font-family:"Google Sans Flex";font-style:normal;font-weight:${w};font-display:block;src:url(/tools/events/fonts/GoogleSansFlex-${w}.woff2) format("woff2");}`)
@@ -62,7 +63,7 @@ function RealSheet({ design, label, agent }: { design: ArtDesign; label: string;
 }
 
 export function TemplateSheet({ design: want, kind: only, set, agent: withAgent }: { design?: string; kind?: string; set?: string; agent?: string }) {
-  const agent = withAgent === "cutout" ? DEMO_AGENT : withAgent === "round" ? { ...DEMO_AGENT, photo: "/tools/events/agent-cutout-demo.png", cutout: false } : undefined;
+  const agent = withAgent ? DEMO_AGENT : undefined;
   const kinds: ArtKind[] = only === "flyer" ? ["flyer"] : ["banner", "thumb"];
   const design = (ART_DESIGNS.find((d) => d.value === want) ?? ART_DESIGNS[0]).value as ArtDesign;
   const label = ART_DESIGNS.find((d) => d.value === design)!.label;

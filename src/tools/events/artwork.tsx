@@ -8,7 +8,7 @@
  * media tab only picks the design and the photo. Native size here; <ScaledArt> fits it to a box.
  */
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { Clock, Link2, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Link2, Mail, MapPin, Phone, Smartphone } from "lucide-react";
 import { Fit } from "./fit";
 import { artDate, artTitle, placeLine, shortDate, shortLink } from "./format";
 import type { FlyerAgent } from "./my-card";
@@ -369,34 +369,40 @@ function Flyer({ e, design, agent }: { e: EventRecord; design: ArtDesign; agent?
   );
 }
 
-/** The downloader's contact card at the foot of the flyer; a cut-out portrait stands out of its top. */
+/**
+ * The downloader's contact card at the foot of the flyer — the Project Booklet's agent card
+ * (project-booklet/social.tsx): headshot, the name with the BRN at the right, the designation,
+ * then phone and email.
+ */
 function AgentCard({ a }: { a: FlyerAgent }) {
-  const ic = { size: 26, strokeWidth: 1.6 };
   return (
-    <div className={c("agent", a.photo && (a.cutout ? "cutout" : "round"))}>
-      <div className={s.agentText}>
-        <Fit className={s.agentName} watch={a.name} min={0.7} label="Name">
-          {a.name}
-        </Fit>
-        {a.title && <div className={s.agentRole}>{a.title}</div>}
-        {(a.email || a.phone) && (
-          <div className={s.agentLines}>
-            {a.email && (
-              <span>
-                <Mail {...ic} />
-                {a.email}
-              </span>
-            )}
+    <div className={s.acard}>
+      <div className={s.ashot}>{a.photo && <img src={a.photo} alt="" />}</div>
+      <div className={s.abody}>
+        <div className={s.ahead}>
+          <Fit className={s.an} watch={a.name} min={0.7} lines={1} label="Name">
+            {a.name}
+          </Fit>
+          {a.brn && <div className={s.brn}>BRN: {a.brn}</div>}
+        </div>
+        {a.title && <div className={s.ap}>{a.title}</div>}
+        {(a.phone || a.email) && (
+          <div className={s.acontact}>
             {a.phone && (
-              <span>
-                <Phone {...ic} />
+              <div className={s.aline}>
+                <Smartphone strokeWidth={1} />
                 {a.phone}
-              </span>
+              </div>
+            )}
+            {a.email && (
+              <div className={s.aline}>
+                <Mail strokeWidth={1} />
+                {a.email}
+              </div>
             )}
           </div>
         )}
       </div>
-      {a.photo && <img src={a.photo} alt="" className={s.agentPhoto} />}
     </div>
   );
 }

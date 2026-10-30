@@ -3,8 +3,9 @@
 /**
  * "My contact card" for the 9:16 flyer — the person downloading the flyer adds their own name,
  * title, email, phone and photo at the bottom, so the flyer they share brings the leads to them.
- * It belongs to the person, not the event: kept in this browser's localStorage and used by every
- * flyer download (Links & media and the Event details header). In the CRM it would be the
+ * The card is the Project Booklet's agent card (round headshot, name with the BRN at the right,
+ * designation, phone and email). It belongs to the person, not the event: kept in this
+ * browser's localStorage and used by every flyer download (Links & media and the Event details header). In the CRM it would be the
  * signed-in user's profile; here a demo employee stands in for "who's signed in".
  */
 import { useSyncExternalStore } from "react";
@@ -18,17 +19,17 @@ export type MyCard = {
   title: string;
   email: string;
   phone: string;
+  /** RERA broker registration number; "" = left off. */
+  brn: string;
   /** Data URL or path; "" = no photo. */
   photo: string;
-  /** The photo is a cut-out (transparent background) — it stands out of the card's top edge. */
-  cutout: boolean;
 };
 
 /** The flyer's view of the card: only when it's switched on and has a name. */
 export type FlyerAgent = Omit<MyCard, "on" | "employeeId">;
 
 const KEY = "provtoys-events:my-card";
-const OFF: MyCard = { on: false, employeeId: "", name: "", title: "", email: "", phone: "", photo: "", cutout: false };
+const OFF: MyCard = { on: false, employeeId: "", name: "", title: "", email: "", phone: "", brn: "", photo: "" };
 let cache: MyCard | null = null;
 const listeners = new Set<() => void>();
 
@@ -66,55 +67,17 @@ export function useMyCard() {
 
 export function flyerAgent(card: MyCard): FlyerAgent | undefined {
   if (!card.on || !card.name.trim()) return undefined;
-  const { name, title, email, phone, photo, cutout } = card;
-  return { name: name.trim(), title: title.trim(), email: email.trim(), phone: phone.trim(), photo, cutout };
+  const { name, title, email, phone, brn, photo } = card;
+  return { name: name.trim(), title: title.trim(), email: email.trim(), phone: phone.trim(), brn: brn.trim(), photo };
 }
 
-/** Demo stand-in for the signed-in user's profile (the Employee contract has no email / phone). */
+/**
+ * Demo stand-in for the signed-in user's profile. The Employee contract has no phone, email or
+ * BRN, so these are the same placeholders as the Project Booklet's (project-booklet/agent.ts).
+ */
 export function cardFromEmployee(id: string): Partial<MyCard> {
   const e = EMPLOYEES.find((x) => x.id === id);
   if (!e) return { employeeId: "" };
-  const [first, ...rest] = e.fullName.toLowerCase().split(/\s+/);
-  const n = Number(id.replace(/\D/g, "")) || 1;
-  return {
-    employeeId: id,
-    name: e.fullName,
-    title: e.designation,
-    email: `${first}.${rest.at(-1) ?? ""}@providentestate.com`.replace(/\.@/, "@"),
-    phone: `+971 50 ${String(100 + n * 37).slice(-3)} ${String(4000 + n * 263).slice(-4)}`,
-    photo: e.photoUrl ?? "",
-    cutout: false,
-  };
-}
-
-/** True when the image has see-through pixels along its edges (a cut-out portrait). */
-export function hasTransparentEdges(src: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const im = new Image();
-    im.onload = () => {
-      try {
-        const w = 64;
-        const h = Math.max(1, Math.round((64 * im.naturalHeight) / im.naturalWidth));
-        const cv = document.createElement("canvas");
-        cv.width = w;
-        cv.height = h;
-        const g = cv.getContext("2d")!;
-        g.drawImage(im, 0, 0, w, h);
-        const px = g.getImageData(0, 0, w, h).data;
-        let clear = 0;
-        let edge = 0;
-        for (let y = 0; y < h; y++)
-          for (let x = 0; x < w; x++) {
-            if (x > 1 && x < w - 2 && y > 1) continue; // top row and sides only — a cut-out often touches the bottom
-            edge++;
-            if (px[(y * w + x) * 4 + 3] < 32) clear++;
-          }
-        resolve(clear / edge > 0.4);
-      } catch {
-        resolve(false);
-      }
-    };
-    im.onerror = () => resolve(false);
-    im.src = src;
-  });
+  const email = `${e.fullName.toLowerCase().normalize("NFD").replace(/[^a-z\s]/g, "").trim().split(/\s+/).join(".")}@providentestate.com`;
+  return { employeeId: id, name: e.fullName, title: e.designation, email, phone: "+971 50 123 4567", brn: "12345", photo: e.photoUrl ?? "" };
 }
