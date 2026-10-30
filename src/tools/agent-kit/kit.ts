@@ -60,10 +60,11 @@ export const KIT_BANNERS: KitBanner[] = [
 export const driveView = (id: string) => `https://drive.google.com/file/d/${id}/view`;
 export const driveDownload = (id: string) => `https://drive.google.com/uc?export=download&id=${id}`;
 
-/** The brand logo folder on Drive (the source of the files in public/tools/agent-kit/logos/). */
+/** The brand logo folder on Drive (the source of the files in public/tools/agent-kit/logos/; the mark's files were
+ * re-rendered here without the stray dashed outline in the Drive SVG). */
 export const LOGO_FOLDER = "https://drive.google.com/drive/folders/1a4cce_vQYlsnrhZrkTH7E97_3TIMo9Lt";
 
-export type LogoFormat = "svg" | "png" | "jpg";
+export type LogoFormat = "png" | "jpg";
 
 export interface KitLogo {
   label: string;
@@ -88,25 +89,16 @@ export const KIT_LOGOS: KitLogoSet[] = [
     name: "Wordmark",
     description: "The main logo. Use it wherever there's room.",
     logos: [
-      { label: "Navy", tone: "navy", file: `${L}provident-navy`, formats: ["svg", "png", "jpg"] },
-      { label: "White", tone: "white", file: `${L}provident-white`, formats: ["svg", "png", "jpg"] },
+      { label: "Navy", tone: "navy", file: `${L}provident-navy`, formats: ["png", "jpg"] },
+      { label: "White", tone: "white", file: `${L}provident-white`, formats: ["png", "jpg"] },
     ],
   },
   {
     name: "Logo mark",
     description: "The “p.” — for small or square spaces like profile pictures and favicons.",
     logos: [
-      { label: "Navy", tone: "navy", file: `${L}provident-mark-navy`, formats: ["svg", "png"] },
-      { label: "White", tone: "white", file: `${L}provident-mark-white`, formats: ["svg", "png"] },
-    ],
-  },
-  {
-    name: "Arabic wordmark",
-    description: "For Arabic-language material.",
-    logos: [
-      { label: "Navy", tone: "navy", file: `${L}provident-arabic-navy`, formats: ["svg", "png", "jpg"] },
-      { label: "White", tone: "white", file: `${L}provident-arabic-white`, formats: ["svg", "png", "jpg"] },
-      { label: "White, orange dot", tone: "white", file: `${L}provident-arabic-white-orange-dot`, formats: ["svg", "png"] },
+      { label: "Navy", tone: "navy", file: `${L}provident-mark-navy`, formats: ["png", "jpg"] },
+      { label: "White", tone: "white", file: `${L}provident-mark-white`, formats: ["png", "jpg"] },
     ],
   },
 ];

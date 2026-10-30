@@ -17,10 +17,10 @@ in `kit.ts` (edit that list to add or swap an item) — and **Business card**. T
 
 The Provident logo from the brand folder on Drive (`LOGO_FOLDER` in `kit.ts`), copied into
 `public/tools/agent-kit/logos/` so the previews and downloads work without a Google sign-in:
-wordmark, logo mark ("p.") and Arabic wordmark, each navy and white (Arabic also white with the
-orange dot). SVG + PNG for all; JPG (logo on an 800 × 800 white or navy square) where the folder has
-one. Each tile previews the SVG on the background it's meant for. To change a logo, replace the
-file(s) — names are `<stem>.<svg|png|jpg>` — and keep `KIT_LOGOS` in step.
+wordmark and logo mark ("p."), each navy and white, as PNG (transparent) and JPG (logo on an
+800 × 800 white or navy square). Each tile previews the PNG on the background it's meant for. The
+mark's PNG/JPG were re-rendered from the Drive SVG with its stray dashed outline removed. To change a
+logo, replace the files — names are `<stem>.<png|jpg>` — and keep `KIT_LOGOS` in step.
 
 ## Business card (`business-card/`)
 
