@@ -30,6 +30,9 @@ export type FlyerAgent = Omit<MyCard, "on" | "employeeId">;
 
 const KEY = "provtoys-events:my-card";
 const OFF: MyCard = { on: false, employeeId: "", name: "", title: "", email: "", phone: "", brn: "", photo: "" };
+// On from the start, filled from the signed-in person (the first demo employee), so a downloaded
+// flyer carries the card without anyone having to find the switch first.
+const START: MyCard = { ...OFF, on: true, ...cardFromEmployee(EMPLOYEES[0].id) };
 let cache: MyCard | null = null;
 const listeners = new Set<() => void>();
 
@@ -37,9 +40,9 @@ function read(): MyCard {
   if (cache) return cache;
   try {
     const raw = localStorage.getItem(KEY);
-    cache = raw ? { ...OFF, ...(JSON.parse(raw) as Partial<MyCard>) } : OFF;
+    cache = raw ? { ...OFF, ...(JSON.parse(raw) as Partial<MyCard>) } : START;
   } catch {
-    cache = OFF;
+    cache = START;
   }
   return cache;
 }
@@ -61,7 +64,7 @@ export function useMyCard() {
       return () => listeners.delete(l);
     },
     read,
-    () => OFF,
+    () => START,
   );
 }
 

@@ -6,13 +6,15 @@
  * Location / Registration / Dates on the left and At a glance / Contact / Record on the right.
  * The banner is the generated artwork (no uploaded banner any more).
  */
-import { Download, EyeOff, Eye, Loader2, FileText, Globe, Map as MapIcon, MapPin, PencilLine, Radio, Ticket, Video } from "lucide-react";
-import { useRef, useState, type ReactNode } from "react";
+import { ChevronDown, Download, EyeOff, Eye, Loader2, FileText, IdCard, Globe, Map as MapIcon, MapPin, PencilLine, Radio, Ticket, Video } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { logGeneratedPost } from "@/lib/store";
 import { Artwork, ScaledArt } from "./artwork";
 import { artworkBlob, download } from "./exporter";
-import { flyerAgent, useMyCard } from "./my-card";
+import { flyerAgent, saveMyCard, useMyCard } from "./my-card";
+import { slugify } from "./data";
+import { cn } from "@/lib/utils";
 import { ART_SIZES } from "./types";
 import { fmtDate, fmtDateTime, fmtDay, isPast, nextOccurrence, occurrences, placeLine, timeRange, weekdayList } from "./format";
 import type { EventRecord } from "./types";
@@ -27,43 +29,85 @@ function LinkChip({ href, icon, children }: { href: string; icon: ReactNode; chi
   );
 }
 
-/** Downloads the 9:16 flyer, drawn at full size off-screen (it isn't shown on the page). */
+/**
+ * Downloads the 9:16 flyer, drawn at full size off-screen (it isn't shown on the page). The button
+ * opens a choice: with the downloader's contact card (my-card.ts) or with the event contact.
+ */
 function FlyerButton({ e }: { e: EventRecord }) {
-  const box = useRef<HTMLDivElement>(null);
+  const wrap = useRef<HTMLDivElement>(null);
+  const withCard = useRef<HTMLDivElement>(null);
+  const plain = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const card = useMyCard();
-  const agent = flyerAgent(card);
+  const agent = flyerAgent({ ...card, on: true });
   const { w, h } = ART_SIZES.flyer;
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (ev: MouseEvent) => !wrap.current?.contains(ev.target as Node) && setOpen(false);
+    const esc = (ev: KeyboardEvent) => ev.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+
+  const save = async (mine: boolean) => {
+    setOpen(false);
+    const node = (mine ? withCard : plain).current?.firstElementChild as HTMLElement | null;
+    if (!node) return;
+    setBusy(true);
+    setError(false);
+    try {
+      const blob = await artworkBlob(node, w, h, 1);
+      download(blob, `${e.slug || "event"}-flyer${mine ? "-" + slugify(agent?.name ?? "") : ""}.png`);
+      logGeneratedPost({ tool: "events", templateId: `events-flyer-${e.artwork.design}`, subject: e.title, source: "demo", format: "flyer", bytes: blob.size, ...(mine && card.employeeId ? { employeeId: card.employeeId } : {}) });
+      if (card.on !== mine) saveMyCard({ on: mine }); // remembered as the default for the next one
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const opt = "flex w-full items-start gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-secondary disabled:pointer-events-none disabled:opacity-50";
   return (
-    <>
-      <Button
-        variant="secondary"
-        size="sm"
-        disabled={busy}
-        title={error ? "The flyer couldn’t be made — try again." : agent ? `9:16 story flyer, 1080 × 1920, with your contact card (${agent.name}) — change it in Edit › Links & media` : "9:16 story flyer, 1080 × 1920"}
-        onClick={async () => {
-          const node = box.current?.firstElementChild as HTMLElement | null;
-          if (!node) return;
-          setBusy(true);
-          setError(false);
-          try {
-            const blob = await artworkBlob(node, w, h, 1);
-            download(blob, `${e.slug || "event"}-flyer.png`);
-            logGeneratedPost({ tool: "events", templateId: `events-flyer-${e.artwork.design}`, subject: e.title, source: "demo", format: "flyer", bytes: blob.size, ...(agent && card.employeeId ? { employeeId: card.employeeId } : {}) });
-          } catch {
-            setError(true);
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        {busy ? <Loader2 className="animate-spin" /> : <Download />} Flyer 9:16{agent && <span className="text-muted-foreground">· yours</span>}
+    <div ref={wrap} className="relative">
+      <Button variant="secondary" size="sm" disabled={busy} aria-expanded={open} title={error ? "The flyer couldn’t be made — try again." : "9:16 story flyer, 1080 × 1920"} onClick={() => setOpen((v) => !v)}>
+        {busy ? <Loader2 className="animate-spin" /> : <Download />} Flyer 9:16 <ChevronDown className="size-3.5 opacity-60" />
       </Button>
-      <div ref={box} aria-hidden style={{ position: "fixed", left: -20000, top: 0, width: w, height: h, pointerEvents: "none" }}>
-        <Artwork e={e} kind="flyer" agent={agent} />
+      {open && (
+        <div role="menu" className="absolute right-0 top-full z-20 mt-1 w-72 rounded-xl border bg-popover p-1.5 text-sm shadow-lg">
+          <button type="button" role="menuitem" disabled={!agent} onClick={() => save(true)} className={cn(opt, card.on && "bg-secondary/60")}>
+            <IdCard className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0">
+              <span className="block font-medium">With my contact card</span>
+              <span className="block truncate text-xs text-muted-foreground">{agent ? [agent.name, agent.brn && `BRN ${agent.brn}`].filter(Boolean).join(" · ") : "Set up your card first"}</span>
+            </span>
+          </button>
+          <button type="button" role="menuitem" onClick={() => save(false)} className={cn(opt, !card.on && "bg-secondary/60")}>
+            <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0">
+              <span className="block font-medium">Without — event contact</span>
+              <span className="block truncate text-xs text-muted-foreground">{[e.contactName, e.contactPhone].filter(Boolean).join(" · ") || "No contact on this event"}</span>
+            </span>
+          </button>
+          <p className="border-t px-3 pb-1 pt-2 text-xs text-muted-foreground">Change your card in Edit › Links &amp; media.</p>
+        </div>
+      )}
+      <div aria-hidden style={{ position: "fixed", left: -20000, top: 0, pointerEvents: "none" }}>
+        <div ref={withCard} style={{ width: w, height: h }}>
+          <Artwork e={e} kind="flyer" agent={agent} />
+        </div>
+        <div ref={plain} style={{ width: w, height: h }}>
+          <Artwork e={e} kind="flyer" />
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
