@@ -241,3 +241,25 @@
 .acontact { display: flex; flex-wrap: wrap; gap: 4px 24px; }
 .aline { display: flex; align-items: center; gap: 8px; font-weight: 300; font-size: 23px; line-height: 37px; color: var(--soft); white-space: nowrap; }
 .aline svg { width: 28px; height: 28px; flex: none; color: var(--stone); }
+
+/* 4:5 feed post (1080 × 1350, Event Flyers page) — the flyer's layout, shorter: no description,
+   no registration footer; the copy and the agent card stack up from the bottom over the photo */
+.flyer.post { height: 1350px; }
+.flyer.post .fTop { top: 56px; }
+.flyer.post .body { top: 330px; bottom: 64px; }
+.post.aFlyer.withAgent .body, .post.bFlyer.withAgent .body { top: 150px; }
+.flyer.post .title { font-size: calc(66px * var(--k, 1)); max-height: 146px; margin-top: 22px; }
+.flyer.post .sub { font-size: 28px; line-height: 38px; margin-top: 12px; }
+.flyer.post .when { margin-top: 30px; gap: 26px; }
+.flyer.post .big { font-size: 118px; }
+.flyer.post .big.long { font-size: 68px; }
+.flyer.post .month { gap: 8px; }
+.flyer.post .month b, .flyer.post .month i { font-size: 24px; }
+.flyer.post .rows { margin-top: 28px; gap: 14px; }
+.flyer.post .drow { font-size: 27px; }
+.flyer.post .drow small { font-size: 23px; margin-top: 4px; }
+.flyer.post .acard { margin-top: 32px; }
+.post.aFlyer .frame, .post.bFlyer .frame { height: 820px; }
+.post.aFlyer .shade, .post.bFlyer .shade { background: linear-gradient(180deg, rgba(26, 41, 66, 0.75) 90px, rgba(26, 41, 66, 0.05) 250px, rgba(26, 41, 66, 0.55) 600px, var(--navy) 810px); }
+.post.cFlyer .body { top: 48px; bottom: 56px; }
+.post.cFlyer .frame { min-height: 260px; margin-bottom: 40px; }

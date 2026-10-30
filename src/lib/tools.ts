@@ -124,6 +124,15 @@ export const TOOLS: ToolDef[] = [
     icon: "CalendarDays",
     component: () => import("@/tools/events"),
   },
+  {
+    slug: "event-flyers",
+    name: "Event Flyers",
+    description: "Pick an event and download it as a 9:16 story or a 4:5 post — with your own contact card on it.",
+    teams: ["AGENTS"],
+    category: "events",
+    icon: "Megaphone",
+    component: () => import("@/tools/events/flyers"),
+  },
 
   // ── HR ────────────────────────────────────────────────────────────────
   {

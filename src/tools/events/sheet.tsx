@@ -10,6 +10,7 @@
  *   /sheet/events              design A (the default)
  *   /sheet/events?design=b     another design: a | b | c
  *   /sheet/events?kind=flyer   the 9:16 flyers only (to add them to the Figma frames)
+ *   /sheet/events?kind=post    the 4:5 feed posts only (Event Flyers page)
  *   /sheet/events?set=real     every real portal event (banner, thumbnail, flyer) — the stress test
  *   …&agent=1                  flyers personalised with a demo contact card (templates or ?set=real)
  */
@@ -50,9 +51,9 @@ function RealSheet({ design, label, agent }: { design: ArtDesign; label: string;
             {i + 1}. {e.title} <span style={{ color: "#5b6472", fontSize: 18 }}>· {e.types.join(", ")}</span>
           </h2>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 48 }}>
-            {(["banner", "thumb", "flyer"] as ArtKind[]).map((kind) => (
-              <div key={kind} data-kind={kind} style={{ width: ART_SIZES[kind].w, height: ART_SIZES[kind].h, position: "relative", flex: "none", zoom: kind === "flyer" ? 0.45 : 1 }}>
-                <Artwork e={{ ...e, artwork: { ...e.artwork, design } }} kind={kind} design={design} agent={kind === "flyer" ? agent : undefined} />
+            {(["banner", "thumb", "flyer", "post"] as ArtKind[]).map((kind) => (
+              <div key={kind} data-kind={kind} style={{ width: ART_SIZES[kind].w, height: ART_SIZES[kind].h, position: "relative", flex: "none", zoom: kind === "flyer" || kind === "post" ? 0.45 : 1 }}>
+                <Artwork e={{ ...e, artwork: { ...e.artwork, design } }} kind={kind} design={design} agent={kind === "flyer" || kind === "post" ? agent : undefined} />
               </div>
             ))}
           </div>
@@ -64,7 +65,7 @@ function RealSheet({ design, label, agent }: { design: ArtDesign; label: string;
 
 export function TemplateSheet({ design: want, kind: only, set, agent: withAgent }: { design?: string; kind?: string; set?: string; agent?: string }) {
   const agent = withAgent ? DEMO_AGENT : undefined;
-  const kinds: ArtKind[] = only === "flyer" ? ["flyer"] : ["banner", "thumb"];
+  const kinds: ArtKind[] = only === "flyer" ? ["flyer"] : only === "post" ? ["post"] : ["banner", "thumb"];
   const design = (ART_DESIGNS.find((d) => d.value === want) ?? ART_DESIGNS[0]).value as ArtDesign;
   const label = ART_DESIGNS.find((d) => d.value === design)!.label;
   if (set === "real") return <RealSheet design={design} label={label} agent={agent} />;
@@ -82,7 +83,7 @@ export function TemplateSheet({ design: want, kind: only, set, agent: withAgent 
                 <figure key={kind} data-design={`${type} · ${ART_SIZES[kind].label}`} style={{ margin: 0, display: "flex", flexDirection: "column", gap: 14 }}>
                   <figcaption style={{ fontSize: 20, fontWeight: 400, color: "#5b6472" }}>{ART_SIZES[kind].use}</figcaption>
                   <div style={{ width: ART_SIZES[kind].w, height: ART_SIZES[kind].h, position: "relative", flex: "none" }}>
-                    <Artwork e={e} kind={kind} design={design} agent={kind === "flyer" ? agent : undefined} />
+                    <Artwork e={e} kind={kind} design={design} agent={kind === "flyer" || kind === "post" ? agent : undefined} />
                   </div>
                 </figure>
               ))}

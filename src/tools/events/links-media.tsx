@@ -137,7 +137,7 @@ export function LinksMedia({ e, set, goTo }: { e: EventRecord; set: (p: Partial<
   const [uploads, setUploads] = useState<string[]>(() => (art.photo.startsWith("data:") ? [art.photo] : []));
   const [busy, setBusy] = useState<ArtKind | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const nodes = useRef<Record<ArtKind, HTMLDivElement | null>>({ banner: null, thumb: null, flyer: null });
+  const nodes = useRef<Record<ArtKind, HTMLDivElement | null>>({ banner: null, thumb: null, flyer: null, post: null });
   const library = photosFor(e.project);
   const card = useMyCard();
   const agent = flyerAgent(card);

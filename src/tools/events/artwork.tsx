@@ -46,7 +46,8 @@ function Photo({ e, kind, align = "center" }: { e: EventRecord; kind: ArtKind; a
     const img = box.current?.querySelector<HTMLImageElement>("img[data-photo]");
     if (img?.complete) decide(img);
   });
-  const adj = e.artwork.adjust[kind] ?? NO_ADJUST;
+  // the 4:5 post has no framing of its own (it isn't made in Add event); it borrows the flyer's
+  const adj = e.artwork.adjust[kind] ?? (kind === "post" ? e.artwork.adjust.flyer : undefined) ?? NO_ADJUST;
   return (
     <div ref={box} className={c("frame", whole && "whole")} data-frame={kind} data-fit={whole ? "whole" : "fill"}>
       {src && whole && <img className={s.backdrop} src={src} alt="" aria-hidden decoding="async" draggable={false} />}
@@ -292,13 +293,17 @@ function Thumb({ e, design }: { e: EventRecord; design: ArtDesign }) {
  * description, the full address, the registration / livestream link and the contact. Still
  * never the long description, audience or status. With `agent` (the downloader's own contact
  * card, my-card.ts) the card sits at the bottom and takes the event contact's place.
+ *
+ * `post` is the 4:5 feed version (1080 × 1350, Event Flyers page): the same layout, shorter —
+ * no description and no registration footer (the post's caption carries those).
  */
-function Flyer({ e, design, agent }: { e: EventRecord; design: ArtDesign; agent?: FlyerAgent }) {
+function Flyer({ e, design, agent, post }: { e: EventRecord; design: ArtDesign; agent?: FlyerAgent; post?: boolean }) {
+  const kind: ArtKind = post ? "post" : "flyer";
   const d = artDate(e);
   const tone = design === "c" ? "navy" : "white";
   const provident = design === "c" ? "/tools/events/provident-logo-navy.svg" : "/tools/events/provident-wordmark-white.svg";
   const sub = e.subtitle.trim();
-  const desc = e.shortDescription.trim();
+  const desc = post ? "" : e.shortDescription.trim();
   const address = e.online ? "" : [e.address2, e.address1, e.city, e.country && e.country !== "United Arab Emirates" ? e.country : ""].filter(Boolean).join(", ");
   const contact = agent ? "" : [e.contactName, e.contactPhone].filter(Boolean).join(" · ") || e.contactEmail;
   const link = e.online ? e.livestream || e.website : e.registrationUrl || e.website;
@@ -306,13 +311,13 @@ function Flyer({ e, design, agent }: { e: EventRecord; design: ArtDesign; agent?
   const ic = { size: 30, strokeWidth: 1.6 };
   const lockup = <Lockup e={e} tone={tone} area={4450} provident={provident} />;
   return (
-    <div className={c("art", "flyer", `${design}Flyer`, agent && "withAgent")}>
-      {design !== "c" && <Photo e={e} kind="flyer" />}
+    <div className={c("art", "flyer", post && "post", `${design}Flyer`, agent && "withAgent")}>
+      {design !== "c" && <Photo e={e} kind={kind} />}
       <div className={s.shade} />
       {design !== "c" && <div className={s.fTop}>{lockup}</div>}
       <div className={s.body}>
         {/* C: the photo is the column's first item and grows into whatever the copy leaves */}
-        {design === "c" && <Photo e={e} kind="flyer" />}
+        {design === "c" && <Photo e={e} kind={kind} />}
         <div className={s.row1}>
           {design === "c" && lockup}
           <Chips e={e} max={2} />
@@ -354,15 +359,17 @@ function Flyer({ e, design, agent }: { e: EventRecord; design: ArtDesign; agent?
             </div>
           )}
         </div>
-        <div className={s.cta}>
-          <span className={s.ctaLabel}>{cta}</span>
-          {link && (
-            <span className={s.ctaLink}>
-              <Link2 size={26} strokeWidth={1.6} />
-              {shortLink(link)}
-            </span>
-          )}
-        </div>
+        {!post && (
+          <div className={s.cta}>
+            <span className={s.ctaLabel}>{cta}</span>
+            {link && (
+              <span className={s.ctaLink}>
+                <Link2 size={26} strokeWidth={1.6} />
+                {shortLink(link)}
+              </span>
+            )}
+          </div>
+        )}
         {agent && <AgentCard a={agent} />}
       </div>
     </div>
@@ -410,7 +417,7 @@ function AgentCard({ a }: { a: FlyerAgent }) {
 /** The artwork at its native size (what gets drawn into the PNG). */
 export function Artwork({ e, kind, design, agent }: { e: EventRecord; kind: ArtKind; design?: ArtDesign; agent?: FlyerAgent }) {
   const dz = design ?? e.artwork.design;
-  if (kind === "flyer") return <Flyer e={e} design={dz} agent={agent} />;
+  if (kind === "flyer" || kind === "post") return <Flyer e={e} design={dz} agent={agent} post={kind === "post"} />;
   return kind === "banner" ? <Banner e={e} design={dz} /> : <Thumb e={e} design={dz} />;
 }
 

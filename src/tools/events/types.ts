@@ -29,11 +29,13 @@ export const ART_DESIGNS: { value: ArtDesign; label: string }[] = [
   { value: "c", label: "C · Paper" },
 ];
 
-export type ArtKind = "banner" | "thumb" | "flyer";
+/** banner / thumb / flyer are made in Add event; post (4:5 feed) only on the Event Flyers page. */
+export type ArtKind = "banner" | "thumb" | "flyer" | "post";
 export const ART_SIZES: Record<ArtKind, { w: number; h: number; label: string; use: string }> = {
   banner: { w: 1143, h: 420, label: "Banner", use: "Inside page · 1143 × 420" },
   thumb: { w: 443, h: 243, label: "Thumbnail", use: "Grid card · 443 × 243" },
   flyer: { w: 1080, h: 1920, label: "Flyer", use: "Story flyer 9:16 · 1080 × 1920" },
+  post: { w: 1080, h: 1350, label: "Post", use: "Feed post 4:5 · 1080 × 1350" },
 };
 
 export interface EventArtwork {
