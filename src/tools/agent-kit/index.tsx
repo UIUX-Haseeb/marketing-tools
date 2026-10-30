@@ -13,14 +13,14 @@ export default function AgentKitPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {KIT_DOCS.map((doc) => (
             <div key={doc.name} className="flex flex-col overflow-hidden rounded-xl border bg-card">
-              <a href={driveView(doc.driveId)} target="_blank" rel="noopener noreferrer" className="group block overflow-hidden border-b">
-                {/* eslint-disable-next-line @next/next/no-img-element -- static mockup, shown as-is */}
+              <a href={driveView(doc.driveId)} target="_blank" rel="noopener noreferrer" className="group block overflow-hidden border-b bg-[#e3e3e3]">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static mockup, cropped to fit (1440 × 800) */}
                 <img
                   src={doc.cover}
                   alt={`${doc.name} brochure`}
-                  width={2000}
-                  height={1333}
-                  className="block aspect-[16/10] w-full scale-[1.3] object-cover transition-transform duration-300 group-hover:scale-[1.36]"
+                  width={1440}
+                  height={800}
+                  className="block h-auto w-full transition-transform duration-300 group-hover:scale-[1.03]"
                 />
               </a>
               <div className="flex flex-1 flex-col gap-4 p-5">
