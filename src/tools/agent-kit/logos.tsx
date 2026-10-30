@@ -1,7 +1,7 @@
-import { Download, ExternalLink } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { KIT_LOGOS, LOGO_FOLDER, type KitLogo, type LogoFormat } from "./kit";
+import { KIT_LOGOS, type KitLogo, type LogoFormat } from "./kit";
 
 const FORMAT_HINT: Record<LogoFormat, string> = {
   png: "Transparent background, for documents and web",
@@ -11,19 +11,12 @@ const FORMAT_HINT: Record<LogoFormat, string> = {
 export function Logos() {
   return (
     <div className="space-y-10">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="kicker">Logos</p>
-          <h2 className="mt-1 text-h2">Provident logo</h2>
-          <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-            Navy on light backgrounds, white on dark ones. Don&apos;t stretch, recolour or redraw it.
-          </p>
-        </div>
-        <Button asChild size="sm" variant="outline">
-          <a href={LOGO_FOLDER} target="_blank" rel="noopener noreferrer">
-            <ExternalLink /> All files in Drive
-          </a>
-        </Button>
+      <div>
+        <p className="kicker">Logos</p>
+        <h2 className="mt-1 text-h2">Provident logo</h2>
+        <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+          Navy on light backgrounds, white on dark ones. Don&apos;t stretch, recolour or redraw it.
+        </p>
       </div>
 
       {KIT_LOGOS.map((set) => (
