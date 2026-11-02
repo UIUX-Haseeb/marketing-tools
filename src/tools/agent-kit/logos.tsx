@@ -6,6 +6,7 @@ import { KIT_LOGOS, type KitLogo, type LogoFormat } from "./kit";
 const FORMAT_HINT: Record<LogoFormat, string> = {
   png: "Transparent background, for documents and web",
   jpg: "On a square background, for WhatsApp and social",
+  pdf: "Vector, transparent — sharp at any size, for print",
 };
 
 export function Logos() {

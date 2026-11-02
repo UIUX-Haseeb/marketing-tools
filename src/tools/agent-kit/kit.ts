@@ -64,7 +64,7 @@ export const driveDownload = (id: string) => `https://drive.google.com/uc?export
  * re-rendered here without the stray dashed outline in the Drive SVG). */
 export const LOGO_FOLDER = "https://drive.google.com/drive/folders/1a4cce_vQYlsnrhZrkTH7E97_3TIMo9Lt";
 
-export type LogoFormat = "png" | "jpg";
+export type LogoFormat = "png" | "jpg" | "pdf";
 
 export interface KitLogo {
   label: string;
@@ -72,7 +72,7 @@ export interface KitLogo {
   tone: "navy" | "white";
   /** File stem under /public — each format is `${file}.${format}`. */
   file: string;
-  /** Formats on hand. JPG is the logo on a square background (white or navy). */
+  /** Formats on hand. JPG is the logo on a square background (white or navy); PDF is vector, transparent. */
   formats: LogoFormat[];
 }
 
@@ -89,16 +89,16 @@ export const KIT_LOGOS: KitLogoSet[] = [
     name: "Wordmark",
     description: "The main logo. Use it wherever there's room.",
     logos: [
-      { label: "Navy", tone: "navy", file: `${L}provident-navy`, formats: ["png", "jpg"] },
-      { label: "White", tone: "white", file: `${L}provident-white`, formats: ["png", "jpg"] },
+      { label: "Navy", tone: "navy", file: `${L}provident-navy`, formats: ["png", "jpg", "pdf"] },
+      { label: "White", tone: "white", file: `${L}provident-white`, formats: ["png", "jpg", "pdf"] },
     ],
   },
   {
     name: "Logo mark",
     description: "The “p.” — for small or square spaces like profile pictures and favicons.",
     logos: [
-      { label: "Navy", tone: "navy", file: `${L}provident-mark-navy`, formats: ["png", "jpg"] },
-      { label: "White", tone: "white", file: `${L}provident-mark-white`, formats: ["png", "jpg"] },
+      { label: "Navy", tone: "navy", file: `${L}provident-mark-navy`, formats: ["png", "jpg", "pdf"] },
+      { label: "White", tone: "white", file: `${L}provident-mark-white`, formats: ["png", "jpg", "pdf"] },
     ],
   },
 ];
