@@ -72,7 +72,7 @@ export interface KitLogo {
   tone: "navy" | "white";
   /** File stem under /public — each format is `${file}.${format}`. */
   file: string;
-  /** Formats on hand. JPG is the logo on a square background (white or navy); PDF is vector, transparent. */
+  /** Formats on hand. JPG is the logo on a square background (white or navy); PDF is the same square, in vector. */
   formats: LogoFormat[];
 }
 
