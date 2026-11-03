@@ -13,7 +13,7 @@
 import type { ComponentType } from "react";
 import type { Team } from "@/lib/teams";
 
-export type ToolCategory = "posts" | "booklets" | "events" | "kits";
+export type ToolCategory = "posts" | "booklets" | "events" | "kits" | "requests";
 
 export interface ToolDef {
   slug: string;
@@ -132,6 +132,17 @@ export const TOOLS: ToolDef[] = [
     category: "events",
     icon: "Megaphone",
     component: () => import("@/tools/events/flyers"),
+  },
+
+  // ── Everyone ──────────────────────────────────────────────────────────
+  {
+    slug: "design-request",
+    name: "Graphic Design Request",
+    description: "Ask Marketing & Design for a design — brief, formats, copy, assets and approvals, with the terms and status updates.",
+    teams: ["AGENTS", "HR", "MARKETING", "OTHER"],
+    category: "requests",
+    icon: "Palette",
+    component: () => import("@/tools/design-request"),
   },
 
   // ── HR ────────────────────────────────────────────────────────────────
