@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { TOOLS, type ToolDef } from "@/lib/tools";
-import { TEAM_LABELS } from "@/lib/teams";
+import { TEAM_LABELS, type Team } from "@/lib/teams";
 import { ToolIcon } from "@/components/tool-icon";
 import { MascotLoop } from "@/components/mascot";
 
@@ -44,12 +44,45 @@ function Section({ kicker, title, tools }: { kicker: string; title: string; tool
   );
 }
 
-export default function HomePage() {
-  const posts = TOOLS.filter((t) => t.category === "posts");
-  const booklets = TOOLS.filter((t) => t.category === "booklets");
-  const events = TOOLS.filter((t) => t.category === "events");
-  const kits = TOOLS.filter((t) => t.category === "kits");
-  const requests = TOOLS.filter((t) => t.category === "requests");
+/** Teams that have at least one tool, in TEAM_LABELS order. */
+const TEAMS = (Object.keys(TEAM_LABELS) as Team[]).filter((team) => TOOLS.some((t) => t.teams.includes(team)));
+
+function TeamFilter({ active }: { active?: Team }) {
+  const options: { label: string; href: string; on: boolean }[] = [
+    { label: "All", href: "/", on: !active },
+    ...TEAMS.map((team) => ({ label: TEAM_LABELS[team], href: `/?team=${team.toLowerCase()}`, on: active === team })),
+  ];
+  return (
+    <nav aria-label="Filter tools by team" className="flex flex-wrap items-center gap-2">
+      <span className="mr-1 text-sm text-muted-foreground">Who it&apos;s for</span>
+      {options.map((o) => (
+        <Link
+          key={o.label}
+          href={o.href}
+          scroll={false}
+          aria-current={o.on ? "page" : undefined}
+          className={
+            o.on
+              ? "rounded-full border border-navy bg-navy px-3 py-1 text-sm text-paper"
+              : "rounded-full border px-3 py-1 text-sm text-muted-foreground transition-colors hover:border-navy-2/60 hover:text-foreground"
+          }
+        >
+          {o.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ team?: string }> }) {
+  const { team } = await searchParams;
+  const active = TEAMS.find((t) => t === team?.toUpperCase());
+  const tools = active ? TOOLS.filter((t) => t.teams.includes(active)) : TOOLS;
+  const posts = tools.filter((t) => t.category === "posts");
+  const booklets = tools.filter((t) => t.category === "booklets");
+  const events = tools.filter((t) => t.category === "events");
+  const kits = tools.filter((t) => t.category === "kits");
+  const requests = tools.filter((t) => t.category === "requests");
 
   return (
     <div className="space-y-12">
@@ -64,6 +97,8 @@ export default function HomePage() {
           <p className="max-w-md text-sidebar-muted">Create on-brand posts and brochures in minutes.</p>
         </div>
       </header>
+
+      <TeamFilter active={active} />
 
       <Section kicker="Create" title="Posts" tools={posts} />
       <Section kicker="Create" title="Booklets" tools={booklets} />
