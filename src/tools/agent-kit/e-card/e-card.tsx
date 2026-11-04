@@ -2,14 +2,15 @@
 
 /**
  * E-business card tab: pick the person, choose with or without the cover photo, check the name,
- * title and photo, choose what the QR opens (their contact or a link), and download a 1080 × 1920
+ * title and photo, choose what the QR opens (their contact page or a link), and download a 1080 × 1920
  * PNG for WhatsApp, a story or a phone screen. Fields fill from the employee record (record.ts,
  * the same one the Business card uses) and can be edited; nothing is saved. The headshot works as on
  * Just Sold: the employee's profile photo comes in with the person, "Add / Replace headshot" swaps
- * it, and Size + dragging inside the circle frame it.
+ * it, and Size + dragging inside the circle frame it. The contact page (/card/<id>, contact.ts) is
+ * what a client sees after scanning, with Save to phone.
  */
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Download, ImageUp, Loader2, Minus, Plus } from "lucide-react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Download, ExternalLink, ImageUp, Loader2, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,7 @@ import { cardRecord } from "../business-card/record";
 import { PersonPicker } from "../person-picker";
 import { CARD_H, CARD_W, DEFAULT_COVER, PHOTO_AT_START, ScaledCard, shotRect, type ECardData, type PhotoAt } from "./artwork";
 import { cardBlob, download, photoDataUrl } from "./export";
-import { vCard } from "./qr";
+import { contactPath } from "./contact";
 
 interface Fields {
   name: string;
@@ -33,6 +34,8 @@ interface Fields {
 }
 
 const START = EMPLOYEES.find((e) => e.active) ?? EMPLOYEES[0];
+const LIVE = "https://provtoys.vercel.app";
+const noop = () => () => {};
 
 function fieldsFor(id: string | null): Fields {
   const e = EMPLOYEES.find((x) => x.id === id);
@@ -81,7 +84,11 @@ export function ECardTab() {
     setPhotoAt(PHOTO_AT_START);
   };
 
-  const qr = useMemo(() => (qrMode === "link" ? link.trim() : vCard(f)), [qrMode, link, f]);
+  // the QR holds this site's address for the contact page (the live site when rendered on the server)
+  const origin = useSyncExternalStore(noop, () => location.origin, () => LIVE);
+  const page = contactPath({ id: personId ?? "card", ...f });
+  const qr = qrMode === "link" ? link.trim() : origin + page;
+  const ownPhoto = !!f.photo && f.photo !== (EMPLOYEES.find((e) => e.id === personId)?.photoUrl ?? "");
   const data: ECardData = { name: f.name, title: f.title, brn: f.brn, photo: f.photo, photoSize, photoAt, cover: withCover ? cover : "", qr };
 
   const save = async () => {
@@ -123,6 +130,12 @@ export function ECardTab() {
             <Field id="ec-brn" label="BRN">
               <Input id="ec-brn" value={f.brn} onChange={(e) => set({ brn: e.target.value })} placeholder="Leave empty if you have none" />
             </Field>
+            <Field id="ec-phone" label="Mobile">
+              <Input id="ec-phone" type="tel" value={f.phone} onChange={(e) => set({ phone: e.target.value })} />
+            </Field>
+            <Field id="ec-email" label="Email">
+              <Input id="ec-email" type="email" value={f.email} onChange={(e) => set({ email: e.target.value })} />
+            </Field>
           </div>
 
           <div className="space-y-2">
@@ -159,19 +172,23 @@ export function ECardTab() {
               value={qrMode}
               onChange={(v) => setQrMode(v as "contact" | "link")}
               options={[
-                { id: "contact", label: "My contact details" },
+                { id: "contact", label: "My contact page" },
                 { id: "link", label: "A link" },
               ]}
             />
             {qrMode === "contact" ? (
-              <div className="grid gap-3 pt-1 sm:grid-cols-2">
-                <Field id="ec-phone" label="Mobile">
-                  <Input id="ec-phone" type="tel" value={f.phone} onChange={(e) => set({ phone: e.target.value })} />
-                </Field>
-                <Field id="ec-email" label="Email">
-                  <Input id="ec-email" type="email" value={f.email} onChange={(e) => set({ email: e.target.value })} />
-                </Field>
-                <p className="text-xs text-muted-foreground sm:col-span-2">Scanning offers to save your name, title, mobile and email to the phone&apos;s contacts.</p>
+              <div className="space-y-2 pt-1">
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Scanning opens your contact page: Call, WhatsApp, Email and Directions, your details, and <span className="text-foreground">Save to phone</span>, which adds you to their contacts with your photo.
+                  {ownPhoto && " The page shows your profile photo from the employee record, not the one uploaded here."}
+                </p>
+                {f.name.trim() && (
+                  <Button asChild size="sm" variant="outline">
+                    <a href={page} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink /> Open my contact page
+                    </a>
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="pt-1">

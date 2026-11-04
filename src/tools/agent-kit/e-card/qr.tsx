@@ -1,44 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 /**
- * The e-card's QR code: drawn as SVG modules (sharp at any export size), error correction Q so the
+ * The e-card's QR code: drawn as SVG modules (sharp at any export size), error correction H so the
  * Provident wordmark can sit in a white box across the middle — the box is module-aligned and
- * covers well under the ~25% of the code that Q can lose. It encodes either the agent's contact (a
- * vCard the phone offers to save, kept lean — no website line — so the code stays coarse enough to
- * scan off another phone's screen) or a link.
+ * covers well under the ~30% of the code that H can lose. It encodes the agent's contact-page address
+ * (contact.ts) or a link.
  */
 import { useMemo } from "react";
 import { encode } from "uqr";
 
-export interface VCardFields {
-  name: string;
-  title: string;
-  phone: string;
-  email: string;
-}
-
-const esc = (v: string) => v.replace(/\\/g, "\\\\").replace(/([,;])/g, "\\$1").replace(/\n/g, "\\n");
-
-export function vCard({ name, title, phone, email }: VCardFields) {
-  // first word is the given name, the rest the family name ("Fatima | Al Zahra")
-  const [first = "", ...rest] = name.trim().split(/\s+/);
-  return [
-    "BEGIN:VCARD",
-    "VERSION:3.0",
-    `N:${esc(rest.join(" "))};${esc(first)};;;`,
-    `FN:${esc(name.trim())}`,
-    "ORG:Provident Real Estate",
-    title.trim() && `TITLE:${esc(title.trim())}`,
-    phone.trim() && `TEL:${phone.replace(/[^\d+]/g, "")}`,
-    email.trim() && `EMAIL:${esc(email.trim())}`,
-    "END:VCARD",
-  ]
-    .filter(Boolean)
-    .join("\r\n");
-}
-
 export function QrCode({ text, logo, className }: { text: string; logo: string; className?: string }) {
   const { n, path, box } = useMemo(() => {
-    const { data, size } = encode(text || " ", { ecc: "Q", border: 0 });
+    // H and at least version 5 (37 × 37): a short contact-page link would otherwise make a code so
+    // small that the wordmark box hides too much of it
+    const { data, size } = encode(text || " ", { ecc: "H", minVersion: 5, border: 0 });
     // the wordmark box: ~56% wide, ~15% high, centred on whole modules
     const bw = Math.round(size * 0.56) | 1;
     const bh = Math.max(5, Math.round(size * 0.15) | 1);

@@ -62,8 +62,20 @@ own) or **no cover** (all navy).
   their profile photo (`Employee.photoUrl`); the shared `PhotoDropzone` ("Add / Replace headshot")
   swaps in an upload; the Size slider (1–3×, Reset) and dragging inside the circle frame it.
   `shotRect()` in `artwork.tsx` is the cover-and-clamp maths, like Just Sold's `coverRect`.
-- The QR (`qr.tsx`, `uqr`, error correction Q) holds either the agent's contact as a vCard (the
-  phone offers to save it) or a link. Checked to decode with the wordmark in place.
+- The QR (`qr.tsx`, `uqr`, error correction H, at least version 5) holds the agent's **contact page**
+  address — or a link the agent types. Checked to decode with the wordmark in place, from the bare
+  `/card/emp-1` (37 × 37) up to a link carrying every edited field.
+- **Contact page** — what a client sees after scanning, like the portal's: `/card/<employee id>`
+  (`src/app/card/[id]/page.tsx`, public, outside the app shell; `contact-page.tsx`). Navy hero with the
+  skyline, brass-ringed photo, name, title, BRN; Call / WhatsApp / Email / Directions; mobile, email,
+  company, office (Business Park 4, Dubai Hills Estate) with Show on map, website; Provident's social
+  channels (as linked from providentestate.com, `contact.ts`; glyphs from `simple-icons`, LinkedIn
+  drawn as "in"); and **Save to phone** — a vCard 3.0 with every field and the photo embedded as JPEG
+  (`vcard.ts`), which iPhone opens as the "new contact" sheet and Android hands to Contacts.
+- The page reads the person from the employee record; fields the agent edited on the card ride along
+  in the URL (`n` name, `t` title, `b` BRN, `m` mobile, `e` email — only what differs from the record,
+  so the QR stays coarse). A photo can't fit in a URL, so the page shows the record's profile photo; in
+  the CRM `recordContact()` would read the agent's real profile.
 - The look follows the agent "Rented" posts: deep navy, brass (#b0905b) as the hero colour (headshot
   ring, "Scan me", the BRN text and the QR wordmark's dot), white name, stone caps title, the BRN in
   a white pill (left off when empty — most non-agents have none).
