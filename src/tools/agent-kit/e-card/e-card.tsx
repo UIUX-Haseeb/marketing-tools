@@ -23,6 +23,7 @@ import { vCard } from "./qr";
 interface Fields {
   name: string;
   title: string;
+  brn: string;
   phone: string;
   email: string;
   photo: string;
@@ -32,9 +33,9 @@ const START = EMPLOYEES.find((e) => e.active) ?? EMPLOYEES[0];
 
 function fieldsFor(id: string | null): Fields {
   const e = EMPLOYEES.find((x) => x.id === id);
-  if (!e) return { name: "", title: "", phone: "", email: "", photo: "" };
+  if (!e) return { name: "", title: "", brn: "", phone: "", email: "", photo: "" };
   const r = cardRecord(e);
-  return { name: r.fullName, title: r.position ?? "", phone: r.phone ?? "", email: r.email ?? "", photo: e.photoUrl ?? "" };
+  return { name: r.fullName, title: r.position ?? "", brn: r.brn ?? "", phone: r.phone ?? "", email: r.email ?? "", photo: e.photoUrl ?? "" };
 }
 
 export function ECardTab() {
@@ -55,7 +56,7 @@ export function ECardTab() {
   };
 
   const qr = useMemo(() => (qrMode === "link" ? link.trim() : vCard(f)), [qrMode, link, f]);
-  const data: ECardData = { name: f.name, title: f.title, photo: f.photo, cover: withCover ? cover : "", qr };
+  const data: ECardData = { name: f.name, title: f.title, brn: f.brn, photo: f.photo, cover: withCover ? cover : "", qr };
 
   const save = async () => {
     if (!node.current) return;
@@ -92,6 +93,9 @@ export function ECardTab() {
             </Field>
             <Field id="ec-title" label="Job title">
               <Input id="ec-title" value={f.title} onChange={(e) => set({ title: e.target.value })} />
+            </Field>
+            <Field id="ec-brn" label="BRN">
+              <Input id="ec-brn" value={f.brn} onChange={(e) => set({ brn: e.target.value })} placeholder="Leave empty if you have none" />
             </Field>
           </div>
 

@@ -3,10 +3,11 @@
 /* eslint-disable @next/next/no-img-element */
 /**
  * The e-business card, 1080 × 1920 (a phone screen / story): the Provident wordmark, a round
- * headshot, name, job title, and a QR code to scan for the agent's contact or a link. Accents are
- * brass (#b0905b): the headshot ring, the title, the QR frame. With a cover photo the top band is
- * the photo under a navy wash with the white wordmark; without one the card is all paper with the
- * navy wordmark. Native size here; <ScaledCard> fits it to a box.
+ * headshot, name, job title, BRN, and a QR code to scan for the agent's contact or a link. Deep navy
+ * with brass (#b0905b) as the hero colour, after the agent "Rented" posts: white name, stone caps
+ * title, the BRN in a white pill, brass headshot ring and "Scan me". With a cover photo the top band
+ * is the photo fading into the navy; without one the card is all navy. Native size here;
+ * <ScaledCard> fits it to a box.
  */
 import { useLayoutEffect, useRef, useState } from "react";
 import { QrCode } from "./qr";
@@ -23,6 +24,8 @@ export interface ECardData {
   title: string;
   /** Data URL or path; "" = initials. */
   photo: string;
+  /** RERA broker number; "" = left off. */
+  brn: string;
   /** Data URL or path; "" = no cover. */
   cover: string;
   /** What the QR code holds (a vCard or a link). */
@@ -45,6 +48,7 @@ const fitSize = (text: string, base: number, room: number) => Math.min(base, Mat
 export function ECard({ d }: { d: ECardData }) {
   const name = d.name.trim() || "Your name";
   const title = d.title.trim();
+  const brn = d.brn.trim();
   return (
     <div className={`${s.card} ${d.cover ? s.withCover : s.noCover}`} style={{ width: CARD_W, height: CARD_H }}>
       {d.cover && (
@@ -53,7 +57,9 @@ export function ECard({ d }: { d: ECardData }) {
           <div className={s.wash} />
         </div>
       )}
-      <img className={s.wordmark} src={`${A}${d.cover ? "wordmark-white.svg" : "wordmark-navy.svg"}`} alt="Provident" />
+      <div className={s.sweep} />
+      <div className={s.line} />
+      <img className={s.wordmark} src={`${A}wordmark-white.svg`} alt="Provident" />
 
       <div className={s.shot}>{d.photo ? <img src={d.photo} alt="" /> : <span>{initials(name)}</span>}</div>
 
@@ -65,6 +71,7 @@ export function ECard({ d }: { d: ECardData }) {
           {title}
         </div>
       )}
+      {brn && <div className={s.brn}>BRN {brn}</div>}
 
       <div className={s.qrCard}>
         <QrCode text={d.qr} logo={`${A}wordmark-navy.svg`} />
