@@ -108,7 +108,7 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "agent-kit",
     name: "Agent Download Kit",
-    description: "Company Profile, Investment Guide, social banners, the Provident logo — and your business card, ready to print.",
+    description: "Company Profile, Investment Guide, social banners, the Provident logo — and your business card, printed or digital.",
     teams: ["AGENTS"],
     category: "kits",
     icon: "Briefcase",

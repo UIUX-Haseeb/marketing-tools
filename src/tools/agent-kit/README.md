@@ -1,7 +1,7 @@
 # agent-kit — Agent Download Kit
 
-Entry: `index.tsx`, three tabs (`tabs.tsx`): **Documents & banners** and **Logos** — everything listed
-in `kit.ts` (edit that list to add or swap an item) — and **Business card**. The slug stays
+Entry: `index.tsx`, four tabs (`tabs.tsx`): **Documents & banners** and **Logos** — everything listed
+in `kit.ts` (edit that list to add or swap an item) — **Business card** and **E-business card**. The slug stays
 `agent-kit` so existing links keep working.
 
 - **Documents** (Company Profile, Investment Guide) stay on Google Drive. Each card shows a
@@ -46,3 +46,19 @@ layout under 1000 px.
   browser.
 
 No `_shared/`. Copy this folder plus `public/tools/agent-kit/`.
+
+## E-business card (`e-card/`)
+
+A 1080 × 1920 PNG for WhatsApp, a story or a phone screen — the portal's "Scan me" card redrawn in
+the ProvToys look (HTML/CSS artwork like the Events flyer, `e-card.module.css`, drawn with
+html-to-image in `export.ts`): Provident wordmark, round headshot, name, job title, a QR code with
+the wordmark across its middle, "Scan me". Two looks: **with cover photo** (the Dubai canal-bridge
+skyline `public/tools/agent-kit/e-card/cover.jpg` under a navy wash, white wordmark; the agent can
+upload their own) or **no cover** (all paper, navy wordmark).
+
+- Pick the person with the same picker as Business card (`person-picker.tsx`); name, title, mobile
+  and email fill from `business-card/record.ts` and stay editable. Nothing is saved.
+- The QR (`qr.tsx`, `uqr`, error correction Q) holds either the agent's contact as a vCard (the
+  phone offers to save it) or a link. Checked to decode with the wordmark in place.
+- Accent is brass (#b0905b, like the Events artwork): headshot ring, job title, QR frame, "For more
+  information", and the navy wordmark's dot.

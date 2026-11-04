@@ -16,7 +16,7 @@ export function KitTabs({ tabs }: { tabs: KitTab[] }) {
   const tab = tabs.find((t) => t.id === active) ?? tabs[0];
   return (
     <div className="space-y-6">
-      <div role="tablist" className="inline-flex gap-0.5 rounded-lg bg-secondary p-1">
+      <div role="tablist" className="inline-flex max-w-full gap-0.5 overflow-x-auto rounded-lg bg-secondary p-1">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -24,7 +24,7 @@ export function KitTabs({ tabs }: { tabs: KitTab[] }) {
             aria-selected={t.id === tab.id}
             onClick={() => setActive(t.id)}
             className={cn(
-              "rounded-md px-3.5 py-1.5 text-sm transition-colors",
+              "shrink-0 whitespace-nowrap rounded-md px-3.5 py-1.5 text-sm transition-colors",
               t.id === tab.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
