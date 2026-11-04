@@ -58,6 +58,10 @@ own) or **no cover** (all navy).
 
 - Pick the person with the same picker as Business card (`person-picker.tsx`); name, title, mobile
   and email fill from `business-card/record.ts` and stay editable. Nothing is saved.
+- The headshot works as on Just Sold (`listing/listing-editor.tsx`): picking the person brings in
+  their profile photo (`Employee.photoUrl`); the shared `PhotoDropzone` ("Add / Replace headshot")
+  swaps in an upload; the Size slider (1–3×, Reset) and dragging inside the circle frame it.
+  `shotRect()` in `artwork.tsx` is the cover-and-clamp maths, like Just Sold's `coverRect`.
 - The QR (`qr.tsx`, `uqr`, error correction Q) holds either the agent's contact as a vCard (the
   phone offers to save it) or a link. Checked to decode with the wordmark in place.
 - The look follows the agent "Rented" posts: deep navy, brass (#b0905b) as the hero colour (headshot

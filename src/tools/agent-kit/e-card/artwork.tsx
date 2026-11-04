@@ -24,12 +24,41 @@ export interface ECardData {
   title: string;
   /** Data URL or path; "" = initials. */
   photo: string;
+  /** The photo's natural size (for the framing maths); null while it loads. */
+  photoSize: { w: number; h: number } | null;
+  /** Headshot framing inside the circle, as on Just Sold: zoom 1–3 and an offset in card px. */
+  photoAt: PhotoAt;
   /** RERA broker number; "" = left off. */
   brn: string;
   /** Data URL or path; "" = no cover. */
   cover: string;
   /** What the QR code holds (a vCard or a link). */
   qr: string;
+}
+
+export interface PhotoAt {
+  zoom: number;
+  x: number;
+  y: number;
+}
+export const PHOTO_AT_START: PhotoAt = { zoom: 1, x: 0, y: 0 };
+
+/** Inside diameter of the headshot circle (460 less the 5 px ring and 14 px gap each side). */
+export const SHOT_D = 422;
+
+/**
+ * The headshot covering the circle (like object-fit: cover), zoomed and moved, with the offset
+ * clamped so the photo always fills the circle — the same rule as Just Sold's coverRect.
+ */
+export function shotRect(size: { w: number; h: number }, at: PhotoAt) {
+  const scale = (SHOT_D / Math.min(size.w, size.h)) * at.zoom;
+  const w = size.w * scale;
+  const h = size.h * scale;
+  const mx = (w - SHOT_D) / 2;
+  const my = (h - SHOT_D) / 2;
+  const x = Math.max(-mx, Math.min(mx, at.x));
+  const y = Math.max(-my, Math.min(my, at.y));
+  return { w, h, left: (SHOT_D - w) / 2 + x, top: (SHOT_D - h) / 2 + y, clamped: { ...at, x, y } };
 }
 
 const initials = (name: string) =>
@@ -61,7 +90,15 @@ export function ECard({ d }: { d: ECardData }) {
       <div className={s.line} />
       <img className={s.wordmark} src={`${A}wordmark-white.svg`} alt="Provident" />
 
-      <div className={s.shot}>{d.photo ? <img src={d.photo} alt="" /> : <span>{initials(name)}</span>}</div>
+      <div className={s.shot} data-shot>
+        <div className={s.shotIn}>
+          {d.photo && d.photoSize ? (
+            <img src={d.photo} alt="" draggable={false} style={(({ w, h, left, top }) => ({ width: w, height: h, left, top }))(shotRect(d.photoSize, d.photoAt))} />
+          ) : (
+            <span>{initials(name)}</span>
+          )}
+        </div>
+      </div>
 
       <div className={s.name} style={{ fontSize: fitSize(name, 92, 18) }}>
         {name}
@@ -83,8 +120,11 @@ export function ECard({ d }: { d: ECardData }) {
   );
 }
 
-/** The card scaled to its box's width. `cardRef` gets the native-size node, for the download. */
-export function ScaledCard({ d, cardRef }: { d: ECardData; cardRef?: (el: HTMLDivElement | null) => void }) {
+/**
+ * The card scaled to its box's width. `cardRef` gets the native-size node, for the download.
+ * Dragging inside the headshot circle calls `onMoveShot` with the move in card px.
+ */
+export function ScaledCard({ d, cardRef, onMoveShot }: { d: ECardData; cardRef?: (el: HTMLDivElement | null) => void; onMoveShot?: (dx: number, dy: number) => void }) {
   const box = useRef<HTMLDivElement>(null);
   const [k, setK] = useState(0);
   useLayoutEffect(() => {
@@ -95,8 +135,25 @@ export function ScaledCard({ d, cardRef }: { d: ECardData; cardRef?: (el: HTMLDi
     setK(el.clientWidth / CARD_W);
     return () => ro.disconnect();
   }, []);
+  const drag = useRef<{ x: number; y: number } | null>(null);
   return (
-    <div ref={box} style={{ position: "relative", width: "100%", aspectRatio: `${CARD_W} / ${CARD_H}`, overflow: "hidden", borderRadius: 12 }}>
+    <div
+      ref={box}
+      style={{ position: "relative", width: "100%", aspectRatio: `${CARD_W} / ${CARD_H}`, overflow: "hidden", borderRadius: 12 }}
+      onPointerDown={(e) => {
+        if (!onMoveShot || !d.photo || !(e.target as Element).closest("[data-shot]")) return;
+        drag.current = { x: e.clientX, y: e.clientY };
+        e.currentTarget.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      }}
+      onPointerMove={(e) => {
+        if (!drag.current || !k) return;
+        onMoveShot?.((e.clientX - drag.current.x) / k, (e.clientY - drag.current.y) / k);
+        drag.current = { x: e.clientX, y: e.clientY };
+      }}
+      onPointerUp={() => (drag.current = null)}
+      onPointerCancel={() => (drag.current = null)}
+    >
       <div ref={cardRef} style={{ position: "absolute", left: 0, top: 0, width: CARD_W, height: CARD_H, transform: `scale(${k})`, transformOrigin: "0 0", visibility: k ? "visible" : "hidden" }}>
         <ECard d={d} />
       </div>

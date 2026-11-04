@@ -1,22 +1,25 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 /**
  * E-business card tab: pick the person, choose with or without the cover photo, check the name,
  * title and photo, choose what the QR opens (their contact or a link), and download a 1080 × 1920
  * PNG for WhatsApp, a story or a phone screen. Fields fill from the employee record (record.ts,
- * the same one the Business card uses) and can be edited; nothing is saved.
+ * the same one the Business card uses) and can be edited; nothing is saved. The headshot works as on
+ * Just Sold: the employee's profile photo comes in with the person, "Add / Replace headshot" swaps
+ * it, and Size + dragging inside the circle frame it.
  */
-import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Download, ImageUp, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Download, ImageUp, Loader2, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import { cn } from "@/lib/utils";
+import { PhotoDropzone } from "@/tools/_shared/ui";
+import { toDrawable } from "@/tools/_shared/use-post";
 import { cardRecord } from "../business-card/record";
 import { PersonPicker } from "../person-picker";
-import { CARD_H, CARD_W, DEFAULT_COVER, ScaledCard, type ECardData } from "./artwork";
+import { CARD_H, CARD_W, DEFAULT_COVER, PHOTO_AT_START, ScaledCard, shotRect, type ECardData, type PhotoAt } from "./artwork";
 import { cardBlob, download, photoDataUrl } from "./export";
 import { vCard } from "./qr";
 
@@ -48,15 +51,38 @@ export function ECardTab() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const node = useRef<HTMLDivElement | null>(null);
+  const [loaded, setLoaded] = useState<{ src: string; w: number; h: number } | null>(null);
+  const [photoAt, setPhotoAt] = useState<PhotoAt>(PHOTO_AT_START);
+  // the headshot's size, once read — for the framing maths
+  const photoSize = loaded && loaded.src === f.photo ? loaded : null;
+
+  useEffect(() => {
+    if (!f.photo) return;
+    let alive = true;
+    const src = f.photo;
+    toDrawable(src)
+      .then((img) => alive && setLoaded({ src, w: img.naturalWidth, h: img.naturalHeight }))
+      .catch(() => alive && setError("That headshot couldn’t be opened."));
+    return () => {
+      alive = false;
+    };
+  }, [f.photo]);
+  const frame = (at: PhotoAt) => setPhotoAt(photoSize ? shotRect(photoSize, at).clamped : at);
 
   const set = (p: Partial<Fields>) => setF((x) => ({ ...x, ...p }));
   const pick = (id: string | null) => {
     setPersonId(id);
     setF(fieldsFor(id));
+    setPhotoAt(PHOTO_AT_START);
+  };
+  /** Your own headshot replaces the profile photo. */
+  const uploadHeadshot = async (file: File) => {
+    set({ photo: await photoDataUrl(file, 1600) });
+    setPhotoAt(PHOTO_AT_START);
   };
 
   const qr = useMemo(() => (qrMode === "link" ? link.trim() : vCard(f)), [qrMode, link, f]);
-  const data: ECardData = { name: f.name, title: f.title, brn: f.brn, photo: f.photo, cover: withCover ? cover : "", qr };
+  const data: ECardData = { name: f.name, title: f.title, brn: f.brn, photo: f.photo, photoSize, photoAt, cover: withCover ? cover : "", qr };
 
   const save = async () => {
     if (!node.current) return;
@@ -99,19 +125,10 @@ export function ECardTab() {
             </Field>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="block">Photo</Label>
-            <div className="flex items-center gap-3">
-              <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-secondary">
-                {f.photo ? <img src={f.photo} alt="" className="size-full object-cover" /> : <span className="text-[10px] text-muted-foreground">None</span>}
-              </div>
-              <Upload label="Upload photo" onFile={async (file) => set({ photo: await photoDataUrl(file, 900) })} />
-              {f.photo && (
-                <Button size="sm" variant="ghost" onClick={() => set({ photo: "" })}>
-                  Remove
-                </Button>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label className="block">Headshot</Label>
+            <PhotoDropzone compact label={f.photo ? "Replace headshot" : "Add headshot"} onFile={uploadHeadshot} />
+            {f.photo && photoSize && <SizeRow zoom={photoAt.zoom} onZoom={(zoom) => frame({ ...photoAt, zoom })} onReset={() => setPhotoAt(PHOTO_AT_START)} />}
           </div>
         </div>
 
@@ -167,12 +184,12 @@ export function ECardTab() {
 
       <div className="space-y-3 md:sticky md:top-6 md:self-start">
         <div className="rounded-xl border bg-card p-3">
-          <ScaledCard d={data} cardRef={(el) => (node.current = el)} />
+          <ScaledCard d={data} cardRef={(el) => (node.current = el)} onMoveShot={(dx, dy) => frame({ ...photoAt, x: photoAt.x + dx, y: photoAt.y + dy })} />
         </div>
         <Button className="w-full" onClick={save} disabled={busy}>
           {busy ? <Loader2 className="animate-spin" /> : <Download />} Download PNG
         </Button>
-        <p className="text-center text-xs text-muted-foreground">1080 × 1920 px{error && <span className="mt-1 block text-destructive">{error}</span>}</p>
+        <p className="text-center text-xs text-muted-foreground">{f.photo ? "Drag inside the circle to move the headshot · " : ""}1080 × 1920 px{error && <span className="mt-1 block text-destructive">{error}</span>}</p>
       </div>
     </div>
   );
@@ -183,6 +200,23 @@ function Field({ id, label, children }: { id: string; label: string; children: R
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
       {children}
+    </div>
+  );
+}
+
+/** One-line size control under the headshot upload — Just Sold's. */
+function SizeRow({ zoom, onZoom, onReset }: { zoom: number; onZoom: (z: number) => void; onReset: () => void }) {
+  return (
+    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <label htmlFor="ec-shot-size" className="w-8 shrink-0">
+        Size
+      </label>
+      <Minus className="size-3" />
+      <input id="ec-shot-size" type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => onZoom(Number(e.target.value))} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-navy" />
+      <Plus className="size-3" />
+      <button type="button" onClick={onReset} className="ml-1 underline-offset-4 hover:text-foreground hover:underline">
+        Reset
+      </button>
     </div>
   );
 }
