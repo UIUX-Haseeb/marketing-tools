@@ -62,8 +62,8 @@ export const driveDownload = (id: string) => `https://drive.google.com/uc?export
 
 /** The brand logo folder on Drive (the source of the Provident files in public/tools/agent-kit/logos/; the mark's
  * files were re-rendered here without the stray dashed outline in the Drive SVG). PVH, Property Management and
- * Premier Finance come from the SVGs in Drive's "Brand Logos" folders; their white versions are those SVGs with
- * the dark ink turned white (the orange dot stays). */
+ * Premier Finance come from the design team's SVGs (PVH black, the other two navy); their white versions are those
+ * SVGs with the dark ink turned white (the orange dot stays). */
 export const LOGO_FOLDER = "https://drive.google.com/drive/folders/1a4cce_vQYlsnrhZrkTH7E97_3TIMo9Lt";
 
 export type LogoFormat = "png" | "jpg" | "pdf";
@@ -112,7 +112,7 @@ export const KIT_LOGOS: KitLogoSet[] = [
     description: "PVH — Provident’s holiday homes brand.",
     download: "PVH",
     logos: [
-      { label: "Colour", tone: "navy", file: `${L}pvh-colour`, formats: ["png", "jpg", "pdf"] },
+      { label: "Black", tone: "navy", file: `${L}pvh-colour`, formats: ["png", "jpg", "pdf"] },
       { label: "White", tone: "white", file: `${L}pvh-white`, formats: ["png", "jpg", "pdf"] },
     ],
   },
