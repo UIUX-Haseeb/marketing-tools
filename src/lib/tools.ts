@@ -108,7 +108,7 @@ export const TOOLS: ToolDef[] = [
   {
     slug: "agent-kit",
     name: "Agent Download Kit",
-    description: "Company Profile, Investment Guide, social banners, the Provident logo — and your business card, printed or digital.",
+    description: "Company Profile, Investment Guide, social banners, the Provident logo and your business card.",
     teams: ["AGENTS"],
     category: "kits",
     icon: "Briefcase",
@@ -208,6 +208,15 @@ export const TOOLS: ToolDef[] = [
     category: "posts",
     icon: "Flower2",
     component: () => import("@/tools/condolence"),
+  },
+  {
+    slug: "e-business-card",
+    name: "E-business Card",
+    description: "A colleague's digital card for the phone — photo, title and a QR that opens their contact page.",
+    teams: ["HR"],
+    category: "kits",
+    icon: "QrCode",
+    component: () => import("@/tools/e-business-card"),
   },
 
 ];

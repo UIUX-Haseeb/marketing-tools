@@ -6,7 +6,7 @@
  * real profile; here it's a demo employee.
  */
 import { EMPLOYEES } from "@/lib/demo/employees";
-import { cardRecord } from "../business-card/record";
+import { cardRecord } from "@/tools/_shared/card-record";
 
 export interface Contact {
   /** Employee id, or "card" for a card made for nobody on the list. */

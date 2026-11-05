@@ -8,8 +8,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { EMPLOYEES } from "@/lib/demo/employees";
-import { PersonPicker } from "../person-picker";
-import { cardRecord } from "./record";
+import { PersonPicker } from "@/tools/_shared/person-picker";
+import { cardRecord } from "@/tools/_shared/card-record";
 
 const STUDIO_URL = "/tools/agent-kit/business-card/index.html";
 const MSG = "provident-bcard";

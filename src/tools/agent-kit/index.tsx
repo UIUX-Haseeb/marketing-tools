@@ -4,7 +4,6 @@ import { KIT_BANNERS, KIT_DOCS, driveDownload, driveView } from "./kit";
 import { KitTabs } from "./tabs";
 import { Logos } from "./logos";
 import { BusinessCard } from "./business-card/business-card";
-import { ECardTab } from "./e-card/e-card";
 
 export default function AgentKitPage() {
   return (
@@ -13,7 +12,6 @@ export default function AgentKitPage() {
         { id: "downloads", label: "Documents & banners", content: <Downloads /> },
         { id: "logos", label: "Logos", content: <Logos /> },
         { id: "business-card", label: "Business card", content: <BusinessCard />, wide: true },
-        { id: "e-card", label: "E-business card", content: <ECardTab /> },
       ]}
     />
   );

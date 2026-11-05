@@ -45,10 +45,10 @@ export function ContactPage({ c }: { c: Contact }) {
       <main className="relative mx-auto min-h-screen max-w-md bg-paper pb-28 text-navy shadow-sm">
         {/* hero */}
         <header className="relative overflow-hidden bg-[linear-gradient(180deg,#1a2942_0,#1a2942_14rem,#131d36_100%)] text-white">
-          <img src="/tools/agent-kit/e-card/cover.jpg" alt="" className="absolute inset-x-0 top-0 h-56 w-full object-cover" />
+          <img src="/tools/e-business-card/cover.jpg" alt="" className="absolute inset-x-0 top-0 h-56 w-full object-cover" />
           <div className="absolute inset-x-0 top-0 h-56 bg-[linear-gradient(180deg,rgba(19,29,54,0.6)_0%,rgba(26,41,66,0.45)_45%,#1a2942_100%)]" />
           <div className="relative flex flex-col items-center px-6 pb-7 pt-8 text-center">
-            <img src="/tools/agent-kit/e-card/wordmark-white.svg" alt="Provident" className="h-6 w-auto" />
+            <img src="/tools/e-business-card/wordmark-white.svg" alt="Provident" className="h-6 w-auto" />
             <div className="mt-7 size-36 rounded-full border-[3px] border-[#b0905b] bg-[#1a2942] p-1.5">
               {c.photo ? (
                 <img src={c.photo} alt={c.name} className="size-full rounded-full object-cover" />

@@ -16,8 +16,8 @@ import s from "./e-card.module.css";
 export const CARD_W = 1080;
 export const CARD_H = 1920;
 
-export const DEFAULT_COVER = "/tools/agent-kit/e-card/cover.jpg";
-const A = "/tools/agent-kit/e-card/";
+export const DEFAULT_COVER = "/tools/e-business-card/cover.jpg";
+const A = "/tools/e-business-card/";
 
 export interface ECardData {
   name: string;

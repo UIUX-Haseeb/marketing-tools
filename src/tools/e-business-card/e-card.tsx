@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * E-business card tab: pick the person, choose with or without the cover photo, check the name,
+ * E-business Card (an HR tool): pick the colleague, choose with or without the cover photo, check the name,
  * title and photo, choose what the QR opens (their contact page or a link), and download a 1080 × 1920
- * PNG for WhatsApp, a story or a phone screen. Fields fill from the employee record (record.ts,
- * the same one the Business card uses) and can be edited; nothing is saved. The headshot works as on
+ * PNG for WhatsApp, a story or a phone screen. Fields fill from the employee record (_shared/card-record.ts,
+ * the same one the Agent Download Kit's Business card uses) and can be edited; nothing is saved. The headshot works as on
  * Just Sold: the employee's profile photo comes in with the person, "Add / Replace headshot" swaps
  * it, and Size + dragging inside the circle frame it. The contact page (/card/<id>, contact.ts) is
  * what a client sees after scanning, with Save to phone.
@@ -18,8 +18,8 @@ import { EMPLOYEES } from "@/lib/demo/employees";
 import { cn } from "@/lib/utils";
 import { PhotoDropzone } from "@/tools/_shared/ui";
 import { toDrawable } from "@/tools/_shared/use-post";
-import { cardRecord } from "../business-card/record";
-import { PersonPicker } from "../person-picker";
+import { cardRecord } from "@/tools/_shared/card-record";
+import { PersonPicker } from "@/tools/_shared/person-picker";
 import { CARD_H, CARD_W, DEFAULT_COVER, PHOTO_AT_START, ScaledCard, shotRect, type ECardData, type PhotoAt } from "./artwork";
 import { cardBlob, download, photoDataUrl } from "./export";
 import { contactPath } from "./contact";
@@ -44,7 +44,7 @@ function fieldsFor(id: string | null): Fields {
   return { name: r.fullName, title: r.position ?? "", brn: r.brn ?? "", phone: r.phone ?? "", email: r.email ?? "", photo: e.photoUrl ?? "" };
 }
 
-export function ECardTab() {
+export function ECardTool() {
   const [personId, setPersonId] = useState<string | null>(START.id);
   const [f, setF] = useState<Fields>(() => fieldsFor(START.id));
   const [withCover, setWithCover] = useState(true);
@@ -110,8 +110,8 @@ export function ECardTab() {
       <div className="space-y-5">
         <div>
           <p className="kicker">E-business card</p>
-          <h2 className="mt-1 text-h2">Your card for the phone</h2>
-          <p className="mt-1 max-w-xl text-sm text-muted-foreground">A digital card to send on WhatsApp or post as a story. Clients scan the code to save your number.</p>
+          <h2 className="mt-1 text-h2">A card for the phone</h2>
+          <p className="mt-1 max-w-xl text-sm text-muted-foreground">Make a colleague’s digital card to send them for WhatsApp or a story. Clients scan the code to open their contact page and save their number.</p>
         </div>
 
         <div className="space-y-4 rounded-xl border bg-card p-4">
@@ -172,20 +172,20 @@ export function ECardTab() {
               value={qrMode}
               onChange={(v) => setQrMode(v as "contact" | "link")}
               options={[
-                { id: "contact", label: "My contact page" },
+                { id: "contact", label: "Their contact page" },
                 { id: "link", label: "A link" },
               ]}
             />
             {qrMode === "contact" ? (
               <div className="space-y-2 pt-1">
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  Scanning opens your contact page: Call, WhatsApp, Email and Directions, your details, and <span className="text-foreground">Save to phone</span>, which adds you to their contacts with your photo.
-                  {ownPhoto && " The page shows your profile photo from the employee record, not the one uploaded here."}
+                  Scanning opens their contact page: Call, WhatsApp, Email and Directions, their details, and <span className="text-foreground">Save to phone</span>, which adds them to the client’s contacts with their photo.
+                  {ownPhoto && " The page shows their profile photo from the employee record, not the one uploaded here."}
                 </p>
                 {f.name.trim() && (
                   <Button asChild size="sm" variant="outline">
                     <a href={page} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink /> Open my contact page
+                      <ExternalLink /> Open their contact page
                     </a>
                   </Button>
                 )}
