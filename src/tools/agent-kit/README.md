@@ -52,7 +52,7 @@ No `_shared/`. Copy this folder plus `public/tools/agent-kit/`.
 A 1080 × 1920 PNG for WhatsApp, a story or a phone screen — the portal's "Scan me" card redrawn in
 the ProvToys look (HTML/CSS artwork like the Events flyer, `e-card.module.css`, drawn with
 html-to-image in `export.ts`): Provident wordmark, round headshot, name, job title, BRN, a QR code with
-the wordmark across its middle, "Scan me". Two looks: **with cover photo** (the Dubai canal-bridge
+the Provident mark in its middle, "Scan me". Two looks: **with cover photo** (the Dubai canal-bridge
 skyline `public/tools/agent-kit/e-card/cover.jpg` fading into the navy; the agent can upload their
 own) or **no cover** (all navy).
 
@@ -77,5 +77,5 @@ own) or **no cover** (all navy).
   so the QR stays coarse). A photo can't fit in a URL, so the page shows the record's profile photo; in
   the CRM `recordContact()` would read the agent's real profile.
 - The look follows the agent "Rented" posts: deep navy, brass (#b0905b) as the hero colour (headshot
-  ring, "Scan me", the BRN text and the QR wordmark's dot), white name, stone caps title, the BRN in
+  ring, "Scan me", the BRN text and the dot of the QR's Provident mark), white name, stone caps title, the BRN in
   a white pill (left off when empty — most non-agents have none).

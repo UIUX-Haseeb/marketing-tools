@@ -111,7 +111,7 @@ export function ECard({ d }: { d: ECardData }) {
       {brn && <div className={s.brn}>BRN {brn}</div>}
 
       <div className={s.qrCard}>
-        <QrCode text={d.qr} logo={`${A}wordmark-navy.svg`} />
+        <QrCode text={d.qr} logo={`${A}mark-navy.svg`} />
       </div>
 
       <div className={s.scan}>Scan me</div>
