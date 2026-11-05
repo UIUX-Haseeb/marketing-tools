@@ -14,9 +14,9 @@ export function Logos() {
     <div className="space-y-10">
       <div>
         <p className="kicker">Logos</p>
-        <h2 className="mt-1 text-h2">Provident logo</h2>
+        <h2 className="mt-1 text-h2">Provident logos</h2>
         <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-          Navy on light backgrounds, white on dark ones. Don&apos;t stretch, recolour or redraw it.
+          Provident and its brands. Colour on light backgrounds, white on dark ones. Don&apos;t stretch, recolour or redraw them.
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export function Logos() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {set.logos.map((logo) => (
-              <LogoTile key={logo.file} name={set.name} logo={logo} />
+              <LogoTile key={logo.file} name={set.name} download={set.download} logo={logo} />
             ))}
           </div>
         </section>
@@ -37,8 +37,8 @@ export function Logos() {
   );
 }
 
-function LogoTile({ name, logo }: { name: string; logo: KitLogo }) {
-  const stem = `Provident ${name} ${logo.label}`.replace(/[^\w -]+/g, "").replace(/\s+/g, "-");
+function LogoTile({ name, download, logo }: { name: string; download: string; logo: KitLogo }) {
+  const stem = `${download} ${logo.label}`.replace(/[^\w -]+/g, "").replace(/\s+/g, "-");
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border bg-card">
       <div className={cn("flex aspect-[16/9] items-center justify-center p-8", logo.tone === "white" ? "bg-navy" : "bg-paper")}>
