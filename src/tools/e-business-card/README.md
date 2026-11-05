@@ -10,6 +10,10 @@ html-to-image in `export.ts`): Provident wordmark, round headshot, name, job tit
 the Provident mark in its middle, "Scan me". Two looks: **with cover photo** (the Dubai canal-bridge
 skyline `public/tools/e-business-card/cover.jpg` fading into the navy; HR can upload another) or **no cover** (all navy).
 
+- **Logo** across the top: Provident (default), PVH, Property Management or Premier Finance — white SVGs in
+  `public/tools/e-business-card/` (the design team's files with the dark ink turned white, the orange dot kept).
+  `CARD_LOGOS` / `logoRect()` in `artwork.tsx` fit each into a 360 × 110 box centred where the Provident wordmark
+  sits, so nothing else on the card moves. The contact page and the QR's centre mark stay Provident.
 - Pick the colleague with the same picker as the Agent Download Kit's Business card
   (`_shared/person-picker.tsx`); name, title, BRN, mobile and email fill from `_shared/card-record.ts`
   and stay editable. Nothing is saved.

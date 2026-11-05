@@ -60,17 +60,15 @@ export const KIT_BANNERS: KitBanner[] = [
 export const driveView = (id: string) => `https://drive.google.com/file/d/${id}/view`;
 export const driveDownload = (id: string) => `https://drive.google.com/uc?export=download&id=${id}`;
 
-/** The brand logo folder on Drive (the source of the Provident files in public/tools/agent-kit/logos/; the mark's
- * files were re-rendered here without the stray dashed outline in the Drive SVG). PVH, Property Management and
- * Premier Finance come from the design team's SVGs (PVH black, the other two navy); their white versions are those
- * SVGs with the dark ink turned white (the orange dot stays). */
+/** The brand logo folder on Drive (the source of the files in public/tools/agent-kit/logos/; the mark's files were
+ * re-rendered here without the stray dashed outline in the Drive SVG). */
 export const LOGO_FOLDER = "https://drive.google.com/drive/folders/1a4cce_vQYlsnrhZrkTH7E97_3TIMo9Lt";
 
 export type LogoFormat = "png" | "jpg" | "pdf";
 
 export interface KitLogo {
   label: string;
-  /** What it sits on: navy / colour logos go on light backgrounds, white ones on dark. */
+  /** What it sits on: navy logos go on light backgrounds, white ones on dark. */
   tone: "navy" | "white";
   /** File stem under /public — each format is `${file}.${format}`. */
   file: string;
@@ -81,8 +79,6 @@ export interface KitLogo {
 export interface KitLogoSet {
   name: string;
   description: string;
-  /** Start of the downloaded file's name, before the label ("Premier Finance" → "Premier-Finance-White.png"). */
-  download: string;
   logos: KitLogo[];
 }
 
@@ -92,7 +88,6 @@ export const KIT_LOGOS: KitLogoSet[] = [
   {
     name: "Wordmark",
     description: "The main logo. Use it wherever there's room.",
-    download: "Provident Wordmark",
     logos: [
       { label: "Navy", tone: "navy", file: `${L}provident-navy`, formats: ["png", "jpg", "pdf"] },
       { label: "White", tone: "white", file: `${L}provident-white`, formats: ["png", "jpg", "pdf"] },
@@ -101,37 +96,9 @@ export const KIT_LOGOS: KitLogoSet[] = [
   {
     name: "Logo mark",
     description: "The “p.” — for small or square spaces like profile pictures and favicons.",
-    download: "Provident Logo mark",
     logos: [
       { label: "Navy", tone: "navy", file: `${L}provident-mark-navy`, formats: ["png", "jpg", "pdf"] },
       { label: "White", tone: "white", file: `${L}provident-mark-white`, formats: ["png", "jpg", "pdf"] },
-    ],
-  },
-  {
-    name: "Provident Vacation Homes",
-    description: "PVH — Provident’s holiday homes brand.",
-    download: "PVH",
-    logos: [
-      { label: "Black", tone: "navy", file: `${L}pvh-colour`, formats: ["png", "jpg", "pdf"] },
-      { label: "White", tone: "white", file: `${L}pvh-white`, formats: ["png", "jpg", "pdf"] },
-    ],
-  },
-  {
-    name: "Provident Property Management",
-    description: "Provident’s property management brand.",
-    download: "Provident Property Management",
-    logos: [
-      { label: "Colour", tone: "navy", file: `${L}property-management-colour`, formats: ["png", "jpg", "pdf"] },
-      { label: "White", tone: "white", file: `${L}property-management-white`, formats: ["png", "jpg", "pdf"] },
-    ],
-  },
-  {
-    name: "Premier Finance",
-    description: "Provident’s finance brand.",
-    download: "Premier Finance",
-    logos: [
-      { label: "Colour", tone: "navy", file: `${L}premier-finance-colour`, formats: ["png", "jpg", "pdf"] },
-      { label: "White", tone: "white", file: `${L}premier-finance-white`, formats: ["png", "jpg", "pdf"] },
     ],
   },
 ];

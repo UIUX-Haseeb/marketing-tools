@@ -20,7 +20,7 @@ import { PhotoDropzone } from "@/tools/_shared/ui";
 import { toDrawable } from "@/tools/_shared/use-post";
 import { cardRecord } from "@/tools/_shared/card-record";
 import { PersonPicker } from "@/tools/_shared/person-picker";
-import { CARD_H, CARD_W, DEFAULT_COVER, PHOTO_AT_START, ScaledCard, shotRect, type ECardData, type PhotoAt } from "./artwork";
+import { CARD_H, CARD_LOGOS, CARD_W, DEFAULT_COVER, PHOTO_AT_START, ScaledCard, shotRect, type CardLogo, type ECardData, type PhotoAt } from "./artwork";
 import { cardBlob, download, photoDataUrl } from "./export";
 import { contactPath } from "./contact";
 
@@ -47,6 +47,7 @@ function fieldsFor(id: string | null): Fields {
 export function ECardTool() {
   const [personId, setPersonId] = useState<string | null>(START.id);
   const [f, setF] = useState<Fields>(() => fieldsFor(START.id));
+  const [logo, setLogo] = useState<CardLogo>("provident");
   const [withCover, setWithCover] = useState(true);
   const [cover, setCover] = useState(DEFAULT_COVER);
   const [qrMode, setQrMode] = useState<"contact" | "link">("contact");
@@ -89,7 +90,7 @@ export function ECardTool() {
   const page = contactPath({ id: personId ?? "card", ...f });
   const qr = qrMode === "link" ? link.trim() : origin + page;
   const ownPhoto = !!f.photo && f.photo !== (EMPLOYEES.find((e) => e.id === personId)?.photoUrl ?? "");
-  const data: ECardData = { name: f.name, title: f.title, brn: f.brn, photo: f.photo, photoSize, photoAt, cover: withCover ? cover : "", qr };
+  const data: ECardData = { logo, name: f.name, title: f.title, brn: f.brn, photo: f.photo, photoSize, photoAt, cover: withCover ? cover : "", qr };
 
   const save = async () => {
     if (!node.current) return;
@@ -146,6 +147,11 @@ export function ECardTool() {
         </div>
 
         <div className="space-y-4 rounded-xl border bg-card p-4">
+          <div className="space-y-1.5">
+            <Label className="block">Logo</Label>
+            <Segmented value={logo} onChange={(v) => setLogo(v as CardLogo)} options={CARD_LOGOS.map((l) => ({ id: l.id, label: l.label }))} />
+          </div>
+
           <div className="space-y-1.5">
             <Label className="block">Cover</Label>
             <div className="flex flex-wrap items-center gap-3">
@@ -240,7 +246,7 @@ function SizeRow({ zoom, onZoom, onReset }: { zoom: number; onZoom: (z: number) 
 
 function Segmented({ value, onChange, options }: { value: string; onChange: (id: string) => void; options: { id: string; label: string }[] }) {
   return (
-    <div role="radiogroup" className="inline-flex gap-0.5 rounded-lg bg-secondary p-1">
+    <div role="radiogroup" className="inline-flex flex-wrap gap-0.5 rounded-lg bg-secondary p-1">
       {options.map((o) => (
         <button
           key={o.id}

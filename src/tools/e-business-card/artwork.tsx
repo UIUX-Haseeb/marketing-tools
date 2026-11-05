@@ -19,7 +19,30 @@ export const CARD_H = 1920;
 export const DEFAULT_COVER = "/tools/e-business-card/cover.jpg";
 const A = "/tools/e-business-card/";
 
+/**
+ * The logo across the top: Provident or one of the group brands, all white. Each fits a 360 × 110 box,
+ * centred on the line the Provident wordmark has always sat on (y 190), so the layout below never moves.
+ */
+export const CARD_LOGOS = [
+  { id: "provident", label: "Provident", src: "wordmark-white.svg", ratio: 184 / 37 },
+  { id: "pvh", label: "PVH", src: "pvh-white.svg", ratio: 876.5 / 415 },
+  { id: "property-management", label: "Property Management", src: "property-management-white.svg", ratio: 121 / 38 },
+  { id: "premier-finance", label: "Premier Finance", src: "premier-finance-white.svg", ratio: 119 / 40 },
+] as const;
+export type CardLogo = (typeof CARD_LOGOS)[number]["id"];
+
+const LOGO_BOX = { w: 360, h: 110, cy: 190 };
+
+function logoRect(id: CardLogo) {
+  const logo = CARD_LOGOS.find((l) => l.id === id) ?? CARD_LOGOS[0];
+  const w = Math.min(LOGO_BOX.w, LOGO_BOX.h * logo.ratio);
+  const h = w / logo.ratio;
+  return { logo, style: { left: (CARD_W - w) / 2, top: LOGO_BOX.cy - h / 2, width: w, height: h } };
+}
+
 export interface ECardData {
+  /** The logo across the top. */
+  logo: CardLogo;
   name: string;
   title: string;
   /** Data URL or path; "" = initials. */
@@ -88,7 +111,7 @@ export function ECard({ d }: { d: ECardData }) {
       )}
       <div className={s.sweep} />
       <div className={s.line} />
-      <img className={s.wordmark} src={`${A}wordmark-white.svg`} alt="Provident" />
+      {(({ logo, style }) => <img className={s.wordmark} src={`${A}${logo.src}`} alt={logo.label} style={style} />)(logoRect(d.logo))}
 
       <div className={s.shot} data-shot>
         <div className={s.shotIn}>

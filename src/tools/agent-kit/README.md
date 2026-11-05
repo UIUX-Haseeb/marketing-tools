@@ -21,11 +21,8 @@ The Provident logo from the brand folder on Drive (`LOGO_FOLDER` in `kit.ts`), c
 wordmark and logo mark ("p."), each navy and white, as PNG (transparent), JPG (logo on an
 800 × 800 white or navy square) and PDF (the same square, in vector — printed
 from the Drive SVG with headless Chrome). Each tile previews the PNG on the background it's meant for. The
-mark's files were re-rendered from the Drive SVG with its stray dashed outline removed. Below them,
-the group brands — **Provident Vacation Homes (PVH)**, **Provident Property Management** and **Premier Finance**
-— from the design team's SVGs, each in colour (PVH in black) and white (the SVG with its dark ink turned
-white, any orange dot kept), as the same PNG / JPG / PDF trio. To change a logo, replace the files — names are
-`<stem>.<png|jpg|pdf>` — and keep `KIT_LOGOS` in step.
+mark's files were re-rendered from the Drive SVG with its stray dashed outline removed. To change a
+logo, replace the files — names are `<stem>.<png|jpg|pdf>` — and keep `KIT_LOGOS` in step.
 
 ## Business card (`business-card/`)
 
