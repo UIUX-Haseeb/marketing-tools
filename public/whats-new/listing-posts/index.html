@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's New · Listing Posts</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#faf8f4; --card:#fff; --ink:rgba(20,28,48,.9); --mute:rgba(20,28,48,.7); --soft:rgba(20,28,48,.5);
+    --line:rgba(20,28,48,.1); --navy:#1b2c48; --navy2:#2f4960; --chip:rgba(47,73,96,.16); --orange:#f3793c; --panel:#f1ede6;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--ink); font-family:"Google Sans Flex",system-ui,sans-serif; font-size:15px; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  svg.i { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+
+  .shell { display:flex; min-height:100vh; }
+  aside { width:260px; flex-shrink:0; padding:14px 6px; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+  aside .logo { display:flex; align-items:center; justify-content:space-between; padding:0 10px 18px; }
+  aside .logo img { height:22px; }
+  .nav { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; font-size:14px; color:var(--ink); cursor:pointer; text-decoration:none; }
+  .nav:hover { background:rgba(20,28,48,.05); }
+  .nav.on { background:var(--navy2); color:#fff; }
+  .nav .chev { margin-left:auto; opacity:.6; }
+  aside .bottom { margin-top:auto; }
+
+  .main { flex:1; min-width:0; padding:16px 24px 60px 16px; }
+  .top { height:54px; background:#fff; border-radius:12px; box-shadow:0 1px 2px rgba(20,28,48,.06); display:flex; align-items:center; padding:0 16px; gap:8px; font-size:13px; }
+  .crumbs { display:flex; gap:8px; align-items:center; color:var(--mute); }
+  .crumbs b { color:var(--ink); font-weight:600; }
+  .crumbs a { text-decoration:none; cursor:pointer; }
+  .search { margin-left:auto; display:flex; align-items:center; gap:8px; border-left:1px solid var(--line); padding-left:16px; width:220px; color:var(--soft); }
+  .kbd { margin-left:auto; font-size:10px; border:1px solid var(--line); border-radius:4px; padding:1px 5px; }
+  .icons { display:flex; gap:18px; align-items:center; margin-left:24px; color:var(--ink); }
+  .avatar { width:32px; height:32px; border-radius:50%; background:#7e93ad; color:#fff; display:grid; place-items:center; font-size:12px; font-weight:600; }
+
+  .content { max-width:900px; padding:18px 0 0; }
+  .back { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--mute); text-decoration:underline; cursor:pointer; }
+  .meta { display:flex; align-items:center; gap:10px; margin-top:14px; }
+  .badge { display:inline-flex; align-items:center; gap:4px; background:var(--chip); color:var(--navy2); border-radius:8px; padding:2px 8px; font-size:13px; font-weight:500; }
+  .date { font-size:13px; color:var(--mute); }
+  h1 { font-size:24px; font-weight:700; margin-top:10px; color:var(--ink); }
+  .lede { font-size:15px; line-height:1.65; color:var(--mute); margin-top:10px; }
+  .where { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:14px; font-size:13px; }
+  .where > span { font-weight:600; color:var(--mute); }
+  .where a { display:inline-flex; align-items:center; gap:6px; background:var(--panel); border-radius:6px; padding:6px 10px; color:var(--ink); text-decoration:none; }
+
+  .cover { margin-top:18px; border-radius:14px; overflow:hidden; height:320px; background:#e9e4dc; }
+  .cover img { width:100%; height:100%; object-fit:cover; object-position:50% 12%; display:block; }
+
+  article { background:var(--card); border-radius:14px; margin-top:16px; padding:26px 26px 28px; font-size:14.5px; line-height:1.7; }
+  article p { margin:10px 0; }
+  article p:first-child { margin-top:0; }
+  figure { margin:16px 0 20px; }
+  video { width:100%; border-radius:12px; display:block; background:#1b2c48; }
+  figcaption { font-size:12px; color:var(--soft); margin-top:6px; }
+  article h2 { font-size:17px; font-weight:600; margin:26px 0 6px; color:var(--ink); }
+  article ol { padding-left:22px; }
+  article li { margin:4px 0; }
+  article li::marker { color:var(--mute); }
+  .shot { margin:14px 0 6px; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--bg); }
+  .shot img { display:block; width:100%; }
+  .shot.narrow { max-width:520px; }
+  .flyers { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0 4px; }
+  .flyers figure { margin:0; }
+  .flyers img { width:100%; border-radius:10px; display:block; box-shadow:0 8px 20px -12px rgba(27,44,72,.5); }
+  .flyers figcaption { text-align:center; }
+  .types { width:100%; border-collapse:collapse; margin:12px 0 6px; font-size:14px; }
+  .types th { text-align:left; font-weight:600; font-size:12.5px; color:var(--mute); padding:8px 10px; border-bottom:1px solid var(--line); }
+  .types td { padding:10px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5; }
+  .types td:first-child { font-weight:600; white-space:nowrap; }
+  .flyers.four { grid-template-columns:repeat(4,1fr); }
+  .tip { margin-top:24px; background:#fdf3ec; border-radius:12px; padding:16px 18px; }
+  .tip b.h { display:flex; align-items:center; gap:8px; color:#b4561f; font-size:14px; }
+  .tip ul { margin:8px 0 0 20px; }
+  .tip li { margin:5px 0; }
+
+  .tags { display:flex; gap:8px; margin-top:18px; }
+  .tag { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:8px; padding:3px 9px; font-size:12.5px; color:var(--mute); }
+  .help { margin-top:16px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  .help b { font-size:14px; }
+  .help .links { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+  .help .links a { display:flex; gap:8px; align-items:center; background:#fff; border-radius:8px; padding:10px 12px; font-size:13px; text-decoration:none; }
+  .help .btns { display:flex; gap:8px; margin-top:12px; }
+  .help .btns a { display:inline-flex; gap:6px; align-items:center; background:rgba(20,28,48,.08); color:var(--mute); border-radius:8px; padding:8px 12px; font-size:13px; text-decoration:none; }
+
+  /* list view */
+  .list h1 { margin-top:18px; }
+  .filters { display:flex; gap:8px; margin-top:14px; }
+  .filters span { border:1px solid var(--line); background:#fff; border-radius:20px; padding:5px 12px; font-size:13px; color:var(--mute); }
+  .filters span.on { background:var(--navy2); color:#fff; border-color:var(--navy2); }
+  .items { margin-top:16px; display:grid; gap:12px; }
+  .item { display:grid; grid-template-columns:220px 1fr; gap:18px; background:#fff; border-radius:14px; padding:12px; cursor:pointer; border:1px solid transparent; text-decoration:none; color:inherit; }
+  .item:hover { border-color:var(--line); box-shadow:0 6px 20px -14px rgba(27,44,72,.4); }
+  .item .th { border-radius:10px; overflow:hidden; height:130px; background:#e9e4dc; }
+  .item .th img { width:100%; height:100%; object-fit:cover; display:block; }
+  .item h3 { font-size:16px; font-weight:600; margin-top:8px; }
+  .item p { font-size:13.5px; color:var(--mute); line-height:1.55; margin-top:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--orange); display:inline-block; }
+  [hidden] { display:none !important; }
+
+  @media (max-width: 860px) {
+    aside { display:none; }
+    .main { padding:12px 16px 40px; }
+    .search, .icons .hide-sm { display:none; }
+    .cover { height:200px; }
+    article { padding:18px; }
+    .flyers, .flyers.four { grid-template-columns:1fr 1fr; }
+    .types td:first-child { white-space:normal; }
+    .item { grid-template-columns:1fr; }
+    .help .links { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <div class="logo"><img src="assets/provident-logo-navy.svg" alt="provident."><svg class="i" viewBox="0 0 24 24" style="color:var(--mute)"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg></div>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21h16M8 17h8"/></svg>Daily Briefing</a>
+    <a class="nav on" data-go="list"><svg class="i" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>What's New</a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat</a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 10h.01M15 10h.01M9 15h6"/></svg>AI Assistant</a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Forms</a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Drive</a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Listings<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>CRM<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6"/></svg>Requests<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Applications<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Marketing<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M22 21a6 6 0 0 0-4-5.6"/></svg>HR<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>Admin<svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+    <div class="bottom">
+      <a class="nav"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>Help Center</a>
+      <a class="nav"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Logout</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="top">
+      <div class="crumbs"><a data-go="list">What's New</a><span id="crumb-detail"><svg class="i" viewBox="0 0 24 24" style="width:12px;height:12px"><path d="m9 18 6-6-6-6"/></svg> <b>Details</b></span></div>
+      <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search<span class="kbd">⌘ K</span></div>
+      <div class="icons"><svg class="i hide-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i hide-sm" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg><svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><div class="avatar">FA</div></div>
+    </div>
+
+    <!-- LIST -->
+    <section class="content list" id="view-list" hidden>
+      <h1>What's New</h1>
+      <p class="lede">New features and changes in the portal, newest first.</p>
+      <div class="filters"><span class="on">All</span><span>New features</span><span>Improvements</span><span>Fixes</span></div>
+      <div class="items">
+        <a class="item" data-go="detail">
+          <div class="th"><img src="assets/poster.jpg" alt=""></div>
+          <div>
+            <div class="meta" style="margin-top:2px"><span class="badge"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>New feature</span><span class="date">9 November 2026</span><span class="dot" title="Unread"></span></div>
+            <h3>Make Just Listed, For Sale, Just Sold and Just Rented posts in minutes</h3>
+            <p>Add the property photo, fill in a few lines and download a polished post. Your name and photo are already on it, and the DLD permit QR is added for you.</p>
+          </div>
+        </a>
+        <a class="item" href="../event-flyers/index.html">
+          <div class="th"><img src="../event-flyers/assets/poster.jpg" alt=""></div>
+          <div>
+            <div class="meta" style="margin-top:2px"><span class="badge"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>New feature</span><span class="date">6 November 2026</span><span class="dot" title="Unread"></span></div>
+            <h3>Turn any event into a flyer with your contact card on it</h3>
+            <p>Pick an event, choose a story or a post, and download it with your own photo, name and number at the bottom. All the event details are filled in for you.</p>
+          </div>
+        </a>
+        <a class="item">
+          <div class="th" style="background:linear-gradient(135deg,#e9e4dc,#d9d1c4)"></div>
+          <div>
+            <div class="meta" style="margin-top:2px"><span class="badge"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>New feature</span><span class="date">22 October 2026</span></div>
+            <h3>Book a listing photoshoot from the portal</h3>
+            <p>You can now book a photographer for a listing right in the portal. Pick a date and time, add the access and parking details, attach the NOC and Form A, and send it.</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- DETAIL -->
+    <section class="content" id="view-detail">
+      <a class="back" data-go="list"><svg class="i" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>What's New</a>
+      <div class="meta"><span class="badge"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>New feature</span><span class="date">9 November 2026</span></div>
+      <h1>Make Just Listed, For Sale, Just Sold and Just Rented posts in minutes</h1>
+      <p class="lede">New listing, a property on the market, a closed deal or a fresh lease? Share it with a polished post in a few minutes. Add the property photo, fill in a few lines and download. Your name and photo are already on it, and so is the DLD permit QR.</p>
+      <div class="where"><span>Where to find it</span><a><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M7 17 17 7M7 7h10v10"/></svg>Marketing → Tools → Just Listed</a><a><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M7 17 17 7M7 7h10v10"/></svg>For Sale</a><a><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M7 17 17 7M7 7h10v10"/></svg>Just Sold</a><a><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><path d="M7 17 17 7M7 7h10v10"/></svg>Just Rented</a></div>
+
+      <div class="cover"><img src="assets/overview.png" alt="The Just Listed editor, with the form on the left and the finished post on the right" style="object-position:50% 0"></div>
+
+      <article>
+        <p>All four posts are made in the same editor, so once you've made one, you can make them all. No design files, no waiting: pick a look, type the details, and the post updates as you go. When it looks right, download it and share it.</p>
+
+        <figure>
+          <video controls preload="metadata" poster="assets/poster.jpg" src="assets/listing-posts-tour.mp4"></video>
+          <figcaption>A 35-second tour: making a Just Listed post. For Sale, Just Sold and Just Rented work the same way.</figcaption>
+        </figure>
+
+        <h2>1. Pick the post you need</h2>
+        <p>Go to <strong>Marketing → Tools</strong> and click the one that fits:</p>
+        <table class="types">
+          <tr><th>Post</th><th>Use it for</th><th>What's on it</th></tr>
+          <tr><td>Just Listed</td><td>A property you've just listed</td><td>Bed, bath and sq ft tags, an optional listing line, type, location and price</td></tr>
+          <tr><td>For Sale</td><td>A property on the market</td><td>The same layout as Just Listed, headed "For Sale"</td></tr>
+          <tr><td>Just Sold</td><td>A deal you've closed</td><td>Bedrooms, type, location and price. Off-plan units can fill in from the project</td></tr>
+          <tr><td>Just Rented</td><td>A property you've leased</td><td>Bedrooms, type, location and the yearly rent, with "/year" added for you</td></tr>
+        </table>
+        <div class="flyers four">
+          <figure><img src="assets/just-listed-classic-post.jpg" alt="Just Listed post"><figcaption>Just Listed</figcaption></figure>
+          <figure><img src="assets/for-sale-minimal-post.jpg" alt="For Sale post"><figcaption>For Sale</figcaption></figure>
+          <figure><img src="assets/just-sold-classic-post.jpg" alt="Just Sold post"><figcaption>Just Sold</figcaption></figure>
+          <figure><img src="assets/just-rented-minimal-post.jpg" alt="Just Rented post"><figcaption>Just Rented</figcaption></figure>
+        </div>
+
+        <h2>2. Choose the design and the format</h2>
+        <ol>
+          <li>Under <strong>Design</strong>, pick <strong>Classic</strong> (everything centred on a frosted card) or <strong>Minimal</strong> (no card, so more of the photo shows).</li>
+          <li>Under <strong>Format</strong>, pick <strong>Post</strong> for your Instagram and LinkedIn feed (1080 × 1440) or <strong>Story</strong> for Stories and WhatsApp Status (1080 × 1920). Switch as often as you like; your details stay put.</li>
+        </ol>
+        <div class="shot narrow"><img src="assets/design-format.png" alt="Design and Format options"></div>
+        <div class="flyers four">
+          <figure><img src="assets/just-listed-classic-post.jpg" alt="Classic post"><figcaption>Classic · Post</figcaption></figure>
+          <figure><img src="assets/just-listed-minimal-post.jpg" alt="Minimal post"><figcaption>Minimal · Post</figcaption></figure>
+          <figure><img src="assets/just-listed-classic-story.jpg" alt="Classic story"><figcaption>Classic · Story</figcaption></figure>
+          <figure><img src="assets/just-listed-minimal-story.jpg" alt="Minimal story"><figcaption>Minimal · Story</figcaption></figure>
+        </div>
+
+        <h2>3. Add the property photo</h2>
+        <ol start="3">
+          <li>Click <strong>Choose a photo</strong> or drag one in (JPG or PNG, up to 10 MB).</li>
+          <li>Drag the photo in the preview to frame it, and use the <strong>Size</strong> slider to zoom in. <strong>Reset</strong> puts it back.</li>
+        </ol>
+        <div class="shot narrow"><img src="assets/photo.png" alt="Property photo with the Size slider"></div>
+
+        <h2>4. Fill in the details</h2>
+        <ol start="5">
+          <li>Add the bedrooms, property type, location and price. On Just Listed and For Sale, add the bathrooms and sq ft too, plus a short <strong>Listing line</strong> if you like (for example "Corner Unit | Park View | Vacant").</li>
+          <li>On Just Rented, just type the yearly rent. "/year" is added for you.</li>
+        </ol>
+        <div class="shot narrow"><img src="assets/details.png" alt="Bedrooms, bathrooms, sq ft, property type, location, price and listing line"></div>
+        <p><strong>Sold an off-plan unit?</strong> On Just Sold, set <strong>Source</strong> to <strong>Primary</strong>, then pick the project and the unit type. The details and the project's photos fill in for you, and you can still change anything.</p>
+        <div class="shot narrow"><img src="assets/primary.png" alt="Just Sold with Source set to Primary, a project picked and its photos"></div>
+
+        <h2>5. Check your agent details</h2>
+        <ol start="7">
+          <li>Your name, designation and headshot are already filled in. Change anything you like, or replace the headshot. To move your photo, drag inside the circle in the preview.</li>
+        </ol>
+        <div class="shot narrow"><img src="assets/agent.png" alt="Agent, name, designation and headshot"></div>
+
+        <h2>6. Generate and share</h2>
+        <ol start="8">
+          <li>Click <strong>Generate … Post</strong> (for example <strong>Generate Just Listed Post</strong>). It downloads straight away, ready to post.</li>
+        </ol>
+        <div class="shot narrow"><img src="assets/generate.png" alt="The Generate Just Listed Post button"></div>
+
+        <div class="tip">
+          <b class="h"><svg class="i" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>Good to know</b>
+          <ul>
+            <li>The <strong>DLD permit QR</strong> is already on every post, so there's nothing to upload.</li>
+            <li>The little counters next to each field show how much room is left. Keep it short and it'll always fit nicely.</li>
+            <li>If the button is greyed out, the hint above it tells you what's missing, usually the property photo.</li>
+          </ul>
+        </div>
+      </article>
+
+      <div class="tags"><span class="tag">listings</span><span class="tag">marketing</span></div>
+
+      <div class="help">
+        <b>Need help?</b>
+        <div class="links">
+          <a><svg class="i" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>Creating and managing listings</a>
+          <a><svg class="i" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>Sharing marketing posts</a>
+        </div>
+        <div class="btns"><a><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>Help Center</a><a><svg class="i" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>Raise a support ticket</a></div>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+  const show = (v) => {
+    document.getElementById('view-list').hidden = v !== 'list';
+    document.getElementById('view-detail').hidden = v !== 'detail';
+    document.getElementById('crumb-detail').hidden = v !== 'detail';
+    if (v === 'list') document.querySelectorAll('video').forEach(x => x.pause());
+    window.scrollTo(0, 0);
+    history.replaceState(null, '', v === 'list' ? '#' : '#listing-posts');
+  };
+  document.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); show(el.dataset.go); }));
+  show(location.hash === '#list' ? 'list' : 'detail');
+</script>
+</body>
+</html>
