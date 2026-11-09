@@ -25,6 +25,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // What's New (public/whats-new): static walkthrough pages with videos, served at clean URLs.
+  async rewrites() {
+    return [
+      { source: "/whats-new", destination: "/whats-new/index.html" },
+      { source: "/whats-new/:slug", destination: "/whats-new/:slug/index.html" },
+    ];
+  },
 };
 
 export default nextConfig;
