@@ -1,276 +1,145 @@
 "use client";
 
 /**
- * The requests board, laid out like the portal's Support Tickets page: a column per status,
- * cards with the request's pills and people, and a pop-out with the request and its actions.
- * "Viewing as" switches between the requester (own requests, edit / cancel / revisions) and
- * Marketing (every request, return / confirm / start / deliver / close, urgent approvals).
+ * The requests board, laid out like the portal's Photoshoot Requests page: a toolbar (search,
+ * order, Calendar, Refresh, Columns, Settings), the "How it works" steps, the designers with
+ * what they're booked on, then a column per status. Drag a card to the next column to take the
+ * next step; click it for the pop-out with everything and all its buttons. "Viewing as" switches
+ * between the requester (own requests) and Marketing (every request and the admin moves).
  */
-import { useEffect, useState, type ReactNode } from "react";
-import { Ban, CalendarDays, Flag, FolderOpen, Lock, Mail, PauseCircle, Plus, RotateCcw, Search, Zap } from "lucide-react";
+import { useEffect, useState, type CSSProperties } from "react";
+import {
+  Ban, CalendarDays, ChevronRight, Columns3, Eye, EyeOff, FileText, Flag, Layers, Palette, PauseCircle, Plus, RefreshCw, RotateCcw, Search, Settings, Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { categoryLabel, typeById } from "./catalog";
+import { DesignCalendar } from "./calendar";
+import { colorOf, COLUMNS, columnOf, HOW_IT_WORKS, moveTo, type Column, type Move, type Role } from "./columns";
+import { ActionDialog, allFiles, Avatar, longDay, RequestSheet, type Intent } from "./detail";
 import { RequestForm } from "./request-form";
-import { FLAG_LIMIT, fmtDay, fmtStamp, needs, REVISION_ROUNDS } from "./rules";
-import {
-  cancelRequest, decideUrgent, DIRECTOR, expireReply, flagsOf, isPaused, MARKETING, move, PEOPLE, reinstate, requesterFrom, requestRevision,
-  resetDemo, returnRequest, revisionWindow, runTimers, sendReminder, useDesignState,
-} from "./store";
-import { STATUSES, type Attachment, type DesignRequest, type Status } from "./types";
-import { Check, Drawer, DropZone, FileRow, Pill, type Tone } from "./ui";
+import { FLAG_LIMIT, fmtDay, isoDay, REVISION_ROUNDS } from "./rules";
+import { DESIGNERS, DIRECTOR, flagsOf, isPaused, MARKETING, move, PEOPLE, reinstate, requesterFrom, resetDemo, runTimers, useDesignState } from "./store";
+import type { DesignRequest } from "./types";
+import { Modal } from "./ui";
 
-type Role = "requester" | "marketing";
+const ORDERS = {
+  default: "Default order",
+  deadline: "Deadline, soonest first",
+  newest: "Newest first",
+  oldest: "Oldest first",
+} as const;
+type Order = keyof typeof ORDERS;
+const PAGE = 6;
 
-const COLUMN: Record<Status, string> = {
-  Submitted: "bg-secondary text-foreground",
-  Returned: "bg-warning/20 text-warning",
-  Confirmed: "bg-info/15 text-info",
-  "In progress": "bg-navy-2/15 text-navy-2 dark:text-paper",
-  Delivered: "bg-success/15 text-success",
-  "Revision requested": "bg-brand/15 text-brand",
-  Closed: "bg-muted text-muted-foreground",
-};
-const TONE: Record<Status, Tone> = { Submitted: "grey", Returned: "warn", Confirmed: "info", "In progress": "info", Delivered: "success", "Revision requested": "warn", Closed: "outline" };
-
-function RequestCard({ r, onOpen, showRequester }: { r: DesignRequest; onOpen: () => void; showRequester: boolean }) {
-  const t = typeById(r.typeId);
-  return (
-    <button type="button" onClick={onOpen} className="w-full space-y-2 rounded-xl border bg-card p-3.5 text-left transition-colors hover:border-navy-2/60">
-      <p className="text-[11px] font-medium tracking-[0.06em] text-muted-foreground uppercase">{r.ref}</p>
-      <p className="text-sm leading-snug font-normal">{r.title}</p>
-      <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
-        <FolderOpen className="mt-px size-3.5 shrink-0" />
-        <span className="line-clamp-2">
-          {categoryLabel(r.category as never)} › {t?.label}
-        </span>
-      </p>
-      <div className="flex flex-wrap gap-1">
-        {r.urgent && (
-          <Pill tone={r.urgentApproval === "pending" ? "warn" : "danger"}>
-            <Zap /> {r.urgentApproval === "pending" ? "Urgent · awaiting approval" : "Urgent"}
-          </Pill>
-        )}
-        {r.closeReason && r.closeReason !== "Completed" && <Pill tone="danger">{r.closeReason}</Pill>}
-        <Pill tone="outline">
-          <CalendarDays /> {fmtDay(r.deadline)}
-        </Pill>
-        {r.status === "Returned" && r.replyDue && <Pill tone="warn">Reply by {fmtDay(r.replyDue)}</Pill>}
-      </div>
-      {showRequester && (
-        <p className="border-t pt-2 text-xs text-muted-foreground">
-          <span className="kicker mr-2 text-[10px]">Requester</span>
-          {r.requester.name}
-        </p>
-      )}
-      <p className="text-[11px] text-muted-foreground">Created {fmtStamp(r.created)}</p>
-    </button>
-  );
-}
-
-function Rows({ rows }: { rows: [string, ReactNode][] }) {
-  return (
-    <dl className="divide-y rounded-xl border bg-card">
-      {rows.map(([k, v]) => (
-        <div key={k} className="grid grid-cols-[10rem_1fr] gap-4 px-4 py-2.5 text-sm">
-          <dt className="text-muted-foreground">{k}</dt>
-          <dd className="min-w-0 break-words whitespace-pre-line">{v}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-function Files({ files, checkRes }: { files: Attachment[]; checkRes?: boolean }) {
-  return files.length ? (
-    <ul className="space-y-1.5">
-      {files.map((f, i) => (
-        <FileRow key={i} file={f} checkRes={checkRes} />
-      ))}
-    </ul>
-  ) : null;
-}
-
-type Panel = null | "return" | "revision" | "deliver" | "cancel";
-
-function Detail({ r, role, viewerName, onEdit }: { r: DesignRequest; role: Role; viewerName: string; onEdit: () => void }) {
-  const [panel, setPanel] = useState<Panel>(null);
-  const [note, setNote] = useState("");
-  const [flag, setFlag] = useState(false);
-  const [files, setFiles] = useState<Attachment[]>([]);
-  const t = typeById(r.typeId);
-  const n = needs(r);
-  const win = revisionWindow(r);
-  const locked = !["Submitted", "Returned"].includes(r.status);
-  const open = (p: Panel) => {
-    setPanel(p);
-    setNote("");
-    setFlag(false);
-    setFiles([]);
+function sortBy(order: Order) {
+  return (a: DesignRequest, b: DesignRequest) => {
+    if (order === "newest") return b.created.localeCompare(a.created);
+    if (order === "oldest") return a.created.localeCompare(b.created);
+    if (order === "default" && !!a.urgent !== !!b.urgent) return a.urgent ? -1 : 1;
+    return a.deadline.localeCompare(b.deadline);
   };
-  const done = () => setPanel(null);
+}
 
-  const actions: ReactNode[] = [];
-  if (role === "requester") {
-    if (r.status === "Returned") actions.push(<Button key="edit" onClick={onEdit}>Edit and resubmit</Button>);
-    if (r.status === "Delivered" && win?.open) actions.push(<Button key="rev" variant="outline" onClick={() => open("revision")}>Request a revision</Button>);
-    if (r.status === "Delivered") actions.push(<Button key="close" onClick={() => move(r.id, "Closed")}>Accept and close</Button>);
-    if (["Submitted", "Returned", "Confirmed", "In progress"].includes(r.status)) actions.push(<Button key="cancel" variant="ghost" onClick={() => open("cancel")}>Cancel request</Button>);
-  } else {
-    if (r.status === "Submitted" && r.urgentApproval === "pending") {
-      actions.push(<Button key="ua" onClick={() => decideUrgent(r.id, true)}><Zap /> Approve urgent</Button>);
-      actions.push(<Button key="ud" variant="outline" onClick={() => decideUrgent(r.id, false)}>Decline urgent</Button>);
-    }
-    if (r.status === "Submitted") {
-      actions.push(<Button key="confirm" disabled={r.urgentApproval === "pending"} title={r.urgentApproval === "pending" ? "Waiting for the Marketing Director" : undefined} onClick={() => move(r.id, "Confirmed")}>Confirm</Button>);
-      actions.push(<Button key="return" variant="outline" onClick={() => open("return")}>Return with a note</Button>);
-    }
-    if (r.status === "Confirmed") actions.push(<Button key="start" onClick={() => move(r.id, "In progress")}>Start design work</Button>);
-    if (r.status === "In progress" || r.status === "Revision requested") actions.push(<Button key="deliver" onClick={() => open("deliver")}>Deliver</Button>);
-    if (r.status === "Returned") {
-      actions.push(<Button key="remind" variant="outline" disabled={r.reminderSent} onClick={() => sendReminder(r.id)}><Mail /> {r.reminderSent ? "Reminder sent" : "Send reminder"}</Button>);
-      actions.push(<Button key="expire" variant="ghost" onClick={() => expireReply(r.id)}>Skip 2 working days (demo)</Button>);
-    }
-    if (r.status === "Delivered") actions.push(<Button key="close" variant="outline" onClick={() => move(r.id, "Closed")}>Close</Button>);
-  }
+/** The coloured line under the date on a card — what the request is waiting for. */
+function statusLine(r: DesignRequest, role: Role): { text: string; tone: string } | null {
+  if (r.urgentApproval === "pending") return { text: "Urgent — waiting for the Marketing Director", tone: "text-warning" };
+  if (r.status === "Returned") return { text: `Waiting for ${role === "requester" ? "your" : `${r.requester.name.split(" ")[0]}’s`} reply${r.replyDue ? ` · by ${fmtDay(r.replyDue)}` : ""}`, tone: "text-warning" };
+  if (r.status === "Revision requested") return { text: `Revision ${r.revisionRounds} of ${REVISION_ROUNDS} requested`, tone: "text-warning" };
+  if (r.status === "Delivered") return { text: `Delivered · ${r.delivered?.length ?? 0} file${r.delivered?.length === 1 ? "" : "s"}`, tone: "text-success" };
+  if (r.closeReason === "Completed") return { text: "Completed", tone: "text-success" };
+  if (r.closeReason === "Auto-closed") return { text: "Auto-closed — no reply", tone: "text-destructive" };
+  if (r.closeReason === "Cancelled") return { text: "Cancelled", tone: "text-muted-foreground" };
+  return null;
+}
 
+function Card({ r, role, onOpen, onDrag, dragging }: { r: DesignRequest; role: Role; onOpen: () => void; onDrag: (id: string | null) => void; dragging: boolean }) {
+  const col = columnOf(r);
+  const line = statusLine(r, role);
+  const docs = allFiles(r).reduce((n, [, f]) => n + f.length, 0);
+  const past = r.status !== "Closed" && r.status !== "Delivered" && r.deadline < isoDay(new Date());
   return (
-    <div className="space-y-6 p-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <Pill tone={TONE[r.status]} className="text-xs">{r.status}</Pill>
-        {r.closeReason && <Pill tone={r.closeReason === "Completed" ? "success" : "danger"}>{r.closeReason}</Pill>}
-        {r.urgent && <Pill tone="danger"><Zap /> Urgent{r.urgentApproval === "pending" ? " · awaiting the Marketing Director" : ""}</Pill>}
-        {locked && r.status !== "Closed" && (
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <Lock className="size-3.5" /> Locked — changes need a new request
+    <div
+      role="button"
+      tabIndex={0}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", r.id);
+        e.dataTransfer.effectAllowed = "move";
+        onDrag(r.id);
+      }}
+      onDragEnd={() => onDrag(null)}
+      onClick={onOpen}
+      onKeyDown={(e) => e.key === "Enter" && onOpen()}
+      className={cn(
+        "cursor-grab space-y-2 rounded-xl border border-l-[3px] bg-card p-3 text-left shadow-[0_1px_2px_rgb(0_0_0/0.04)] transition-[box-shadow,opacity] outline-none hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring/40 active:cursor-grabbing",
+        dragging && "opacity-40",
+      )}
+      style={{ borderLeftColor: colorOf(col) }}
+    >
+      <div className="space-y-0.5">
+        <p className="flex items-center gap-1.5 text-sm font-normal">
+          <CalendarDays className="size-4 text-muted-foreground" /> {longDay(r.deadline)}
+        </p>
+        <p className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+          <Layers className="size-3.5 shrink-0" /> {r.formats.join(", ") || "—"}
+        </p>
+        {line && <p className={cn("flex items-center gap-1.5 text-xs", line.tone)}>{r.urgentApproval === "pending" ? <Zap className="size-3.5" /> : <span className="size-1.5 rounded-full bg-current" />} {line.text}</p>}
+      </div>
+      <p className="truncate text-xs">
+        <Palette className="mr-1 inline size-3.5 align-[-2px] text-muted-foreground" />
+        <span className="text-muted-foreground">{r.ref} ·</span> {r.title}
+      </p>
+      <p className="line-clamp-2 text-xs text-muted-foreground">{r.brief}</p>
+      <div className="flex flex-wrap gap-1">
+        {past && <span className="rounded-md bg-destructive/12 px-1.5 py-0.5 text-[11px] text-destructive">Past deadline</span>}
+        {r.urgent && r.urgentApproval !== "pending" && <span className="rounded-md bg-destructive/12 px-1.5 py-0.5 text-[11px] text-destructive">Urgent</span>}
+        {docs > 0 && (
+          <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-1.5 py-0.5 text-[11px]">
+            <FileText className="size-3" /> {docs} document{docs === 1 ? "" : "s"}
           </span>
         )}
+        {r.usages.includes("Print") && <span className="rounded-md bg-secondary px-1.5 py-0.5 text-[11px]">Print</span>}
       </div>
-
-      {r.status === "Returned" && r.replyDue && (
-        <p className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm">
-          Waiting for {role === "requester" ? "your" : `${r.requester.name}'s`} reply — due {fmtStamp(r.replyDue)}. After that the request closes and adds a flag.
-        </p>
-      )}
-      {r.status === "Delivered" && win && (
-        <p className="rounded-xl border bg-secondary/60 p-3 text-sm text-muted-foreground">
-          {win.open
-            ? `Send changes as one list by ${fmtStamp(win.until.toISOString())}. Revision ${r.revisionRounds + 1} of ${REVISION_ROUNDS}.`
-            : r.revisionRounds >= REVISION_ROUNDS
-              ? `All ${REVISION_ROUNDS} revision rounds used — more changes need a new request.`
-              : "The 2-working-day revision window has closed."}
-        </p>
-      )}
-
-      {actions.length > 0 && <div className="flex flex-wrap gap-2">{actions}</div>}
-
-      {panel && (
-        <div className="space-y-3 rounded-xl border bg-card p-4">
-          {panel === "return" && (
-            <>
-              <p className="text-sm font-normal">What should {r.requester.name.split(" ")[0]} fix?</p>
-              <Textarea rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. The price says TBC — send the final price." />
-              <Check id="flag" checked={flag} onChange={setFlag}>Flag it as a placeholder or incomplete submission</Check>
-              <p className="text-xs text-muted-foreground">They have 2 working days to reply, then it auto-closes with a flag.</p>
-            </>
-          )}
-          {panel === "revision" && (
-            <>
-              <p className="text-sm font-normal">All your changes, in one list</p>
-              <Textarea rows={5} value={note} onChange={(e) => setNote(e.target.value)} placeholder={"1. Move the logo to the top right\n2. The price should read AED 3,400,000"} />
-              <p className="text-xs text-muted-foreground">Covered: layout, brand errors, crops, a missed format, our typos, colours. Not covered: new copy, a new concept, extra sizes.</p>
-            </>
-          )}
-          {panel === "deliver" && (
-            <>
-              <p className="text-sm font-normal">Upload the finished files</p>
-              <DropZone id="delivered" compact files={files} onChange={setFiles} hint={`Formats booked: ${r.formats.join(", ")}${r.sourceFiles === "yes" ? " + editable source files" : ""}`} />
-            </>
-          )}
-          {panel === "cancel" && (
-            <p className={cn("text-sm", r.workStarted && "text-destructive")}>
-              {r.workStarted ? "Design work has started — cancelling now adds a flag to your profile." : "Design work hasn't started, so cancelling adds no flag."}
-            </p>
-          )}
-          <div className="flex gap-2">
-            <Button
-              variant={panel === "cancel" ? "destructive" : "default"}
-              disabled={(panel === "return" || panel === "revision") && !note.trim()}
-              onClick={() => {
-                if (panel === "return") returnRequest(r.id, note.trim(), flag);
-                if (panel === "revision") requestRevision(r.id, note.trim());
-                if (panel === "deliver") move(r.id, "Delivered", { delivered: files });
-                if (panel === "cancel") cancelRequest(r.id, viewerName);
-                done();
-              }}
-            >
-              {{ return: "Send it back", revision: "Send revisions", deliver: "Deliver", cancel: "Cancel request" }[panel]}
-            </Button>
-            <Button variant="ghost" onClick={done}>
-              Keep it
-            </Button>
+      <dl className="space-y-1 border-t pt-2 text-xs">
+        {(
+          [
+            ["Designer", r.designer, true],
+            ["Requester", r.requester.name, false],
+            ["Department", r.requester.department, false],
+          ] as const
+        ).map(([k, v, avatar]) => (
+          <div key={k} className="grid grid-cols-[5.5rem_1fr] items-center gap-2">
+            <dt className="text-[10px] font-medium tracking-[0.08em] text-muted-foreground uppercase">{k}</dt>
+            <dd className="flex min-w-0 items-center gap-1.5">
+              {avatar && <Avatar name={v} />}
+              <span className="truncate">{v ?? "Unassigned"}</span>
+            </dd>
           </div>
-        </div>
-      )}
-
-      <Rows
-        rows={[
-          ["Requester", `${r.requester.name} · ${r.requester.department}\n${r.requester.email}`],
-          ["Request", `${categoryLabel(r.category as never)} › ${t?.label ?? "—"}`],
-          ["Brief", r.brief],
-          ["Formats", [...r.formats, r.customSize && `(${r.customSize})`].filter(Boolean).join(", ")],
-          ["Used on", r.usages.join(", ")],
-          ...(n.print ? ([["Print", `${r.printQuantity} copies${r.bleed ? " · with bleed" : ""}`]] as [string, ReactNode][]) : []),
-          ["Language", r.language === "Both" ? "English and Arabic" : r.language],
-          ["Source files", r.sourceFiles === "yes" ? "Yes" : "No"],
-          ["Deadline", fmtDay(r.deadline)],
-          ...(r.urgent || r.urgentReason ? ([["Urgent because", r.urgentReason]] as [string, ReactNode][]) : []),
-          ...(n.permit ? ([["Permit number", r.permitNumber]] as [string, ReactNode][]) : []),
-          ["Final copy", r.copy || "Attached"],
-          ...(r.assetsLink ? ([["Drive link", <a key="l" href={r.assetsLink} target="_blank" rel="noreferrer" className="underline underline-offset-4">{r.assetsLink}</a>]] as [string, ReactNode][]) : []),
-          ...(r.reference ? ([["Reference", r.reference]] as [string, ReactNode][]) : []),
-        ]}
-      />
-
-      {[
-        ["Copy", r.copyFiles],
-        ["Assets", r.assets],
-        ["Reference", r.referenceFiles],
-        ["Permit QR", r.permitQr],
-        ["Developer approval", r.developerApproval],
-        ["HR / department head approval", r.personApproval],
-        ["Delivered", r.delivered ?? []],
-      ]
-        .filter(([, f]) => (f as Attachment[]).length)
-        .map(([k, f]) => (
-          <section key={k as string} className="space-y-2">
-            <p className="kicker text-muted-foreground">{k as string}</p>
-            <Files files={f as Attachment[]} checkRes={k === "Assets"} />
-          </section>
         ))}
+      </dl>
+      <p className="text-[11px] text-muted-foreground">Raised {fmtDay(r.created)}</p>
+    </div>
+  );
+}
 
-      <section className="space-y-3">
-        <p className="kicker text-muted-foreground">History and emails</p>
-        <ol className="space-y-3 border-l pl-4">
-          {[...r.history].reverse().map((h, i) => (
-            <li key={i} className="relative text-sm">
-              <span className="absolute top-1.5 -left-[21px] size-2 rounded-full bg-navy-2 dark:bg-paper" />
-              <p>
-                <span className="font-normal">{h.action}</span> <span className="text-muted-foreground">· {h.by} · {fmtStamp(h.at)}</span>
-              </p>
-              {h.note && <p className="mt-1 rounded-lg bg-secondary/60 px-3 py-2 whitespace-pre-line">{h.note}</p>}
-              {h.emailed?.length ? (
-                <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Mail className="size-3.5" /> Emailed {h.emailed.join(", ")}
-                </p>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      </section>
+function HowItWorks({ onHide }: { onHide: () => void }) {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-sm font-normal">How it works</p>
+        <button type="button" onClick={onHide} className="text-xs text-muted-foreground hover:text-foreground">
+          Hide
+        </button>
+      </div>
+      <ol className="list-decimal space-y-1 pl-5 text-xs text-muted-foreground marker:text-foreground">
+        {HOW_IT_WORKS.map(([c, text]) => (
+          <li key={c}>
+            <span className="font-normal text-foreground">{c}.</span> {text}
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
@@ -278,70 +147,103 @@ function Detail({ r, role, viewerName, onEdit }: { r: DesignRequest; role: Role;
 export function Board() {
   const state = useDesignState();
   const [viewerId, setViewerId] = useState(PEOPLE[0].id);
-  const [role, setRole] = useState<Role>("requester");
+  const [role, setRole] = useState<Role>("marketing");
   const [q, setQ] = useState("");
+  const [order, setOrder] = useState<Order>("default");
+  const [howTo, setHowTo] = useState(true);
+  const [hidden, setHidden] = useState<Column[]>([]);
+  const [shown, setShown] = useState<Partial<Record<Column, number>>>({});
+  const [dialog, setDialog] = useState<null | "calendar" | "columns" | "settings">(null);
+  const [calFocus, setCalFocus] = useState<string>();
   const [form, setForm] = useState<null | { editId?: string }>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [intent, setIntent] = useState<Intent | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overCol, setOverCol] = useState<Column | null>(null);
   const [sent, setSent] = useState<string | null>(null);
 
   useEffect(() => runTimers(), []);
 
   const viewer = requesterFrom(PEOPLE.find((p) => p.id === viewerId) ?? PEOPLE[0]);
+  const viewerName = role === "marketing" ? MARKETING : viewer.name;
   const flags = flagsOf(state, viewer.id);
   const paused = isPaused(state, viewer.id);
   const pausedPeople = PEOPLE.filter((p) => isPaused(state, p.id));
 
   const needle = q.trim().toLowerCase();
-  const visible = state.requests
-    .filter((r) => role === "marketing" || r.requester.id === viewer.id)
-    .filter((r) => !needle || [r.ref, r.title, r.requester.name, typeById(r.typeId)?.label ?? ""].some((x) => x.toLowerCase().includes(needle)));
+  const mine = state.requests.filter((r) => role === "marketing" || r.requester.id === viewer.id);
+  const visible = mine
+    .filter((r) => !needle || [r.ref, r.title, r.brief, r.requester.name, r.designer ?? ""].some((x) => x.toLowerCase().includes(needle)))
+    .sort(sortBy(order));
+  const booked = (name: string) => mine.filter((r) => r.designer === name && ["Confirmed", "In progress", "Revision requested"].includes(r.status)).length;
 
   const current = state.requests.find((r) => r.id === openId);
   const editing = form?.editId ? state.requests.find((r) => r.id === form.editId) : undefined;
+  const acting = intent ? state.requests.find((r) => r.id === intent.id) : undefined;
+  const dragged = dragId ? state.requests.find((r) => r.id === dragId) : undefined;
+
+  /** Run a move: plain ones happen at once, the rest open their dialog. */
+  const act = (r: DesignRequest, m: Move) => {
+    if (m === "edit") return setForm({ editId: r.id });
+    if (m === "start") return move(r.id, "In progress");
+    if (m === "complete" && role === "marketing") return move(r.id, "Closed");
+    setIntent({ id: r.id, move: m });
+  };
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-end gap-3 rounded-xl border bg-card p-4">
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Signed in as</p>
-          <Select value={viewerId} onChange={(e) => setViewerId(e.target.value)} className="w-56">
-            {PEOPLE.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.fullName}
-                {flagsOf(state, p.id).length ? ` · ${flagsOf(state, p.id).length} flag${flagsOf(state, p.id).length > 1 ? "s" : ""}` : ""}
-              </option>
-            ))}
-          </Select>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative w-full sm:w-72">
+          <Search className="pointer-events-none absolute top-2.5 left-3 size-4 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title, requester or brief" className="pl-9" />
         </div>
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Viewing as</p>
-          <div className="flex h-9 rounded-lg border p-0.5">
-            {(["requester", "marketing"] as Role[]).map((r) => (
-              <button key={r} type="button" onClick={() => setRole(r)} className={cn("rounded-md px-3 text-sm", role === r ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                {r === "requester" ? "Requester" : "Marketing"}
+        <Select value={order} onChange={(e) => setOrder(e.target.value as Order)} className="w-52" aria-label="Order">
+          {Object.entries(ORDERS).map(([k, v]) => (
+            <option key={k} value={k}>
+              {v}
+            </option>
+          ))}
+        </Select>
+        <Button variant="secondary" onClick={() => (setCalFocus(undefined), setDialog("calendar"))}>
+          <CalendarDays /> Calendar
+        </Button>
+        <Button variant="outline" onClick={() => runTimers()} title="Check reply deadlines and reload">
+          <RefreshCw /> Refresh
+        </Button>
+        <Button variant="outline" onClick={() => setDialog("columns")}>
+          <Columns3 /> Columns
+        </Button>
+        <Button variant="outline" onClick={() => setDialog("settings")}>
+          <Settings /> Settings
+        </Button>
+        <div className="ml-auto flex items-center gap-2">
+          <div className="flex h-9 rounded-lg border bg-card p-0.5 text-sm" role="group" aria-label="Viewing as">
+            {(["requester", "marketing"] as Role[]).map((x) => (
+              <button key={x} type="button" onClick={() => setRole(x)} className={cn("rounded-md px-3", role === x ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+                {x === "requester" ? "Requester" : "Marketing"}
               </button>
             ))}
           </div>
-        </div>
-        <div className="relative min-w-48 flex-1 space-y-1.5">
-          <p className="text-xs text-muted-foreground">Search</p>
-          <Search className="pointer-events-none absolute bottom-2.5 left-3 size-4 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="e.g. Just Listed, DR-0003" className="pl-9" />
-        </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" onClick={resetDemo} title="Put the demo requests and flags back">
-            <RotateCcw /> Reset
-          </Button>
           <Button onClick={() => setForm({})} disabled={paused} title={paused ? "Requests are paused at 3 flags" : undefined}>
             <Plus /> New request
           </Button>
         </div>
       </div>
 
+      {howTo ? (
+        <HowItWorks onHide={() => setHowTo(false)} />
+      ) : (
+        <button type="button" onClick={() => setHowTo(true)} className="text-xs text-muted-foreground hover:text-foreground">
+          Show how it works
+        </button>
+      )}
+
       {sent && (
         <p className="rounded-xl border border-success/40 bg-success/10 p-3 text-sm">
           {sent} sent. You’ll get an email at each step — it’s only scheduled once it shows <span className="font-normal">Confirmed</span>.
-          <button type="button" onClick={() => setSent(null)} className="ml-2 text-muted-foreground underline-offset-4 hover:underline">Dismiss</button>
+          <button type="button" onClick={() => setSent(null)} className="ml-2 text-muted-foreground underline-offset-4 hover:underline">
+            Dismiss
+          </button>
         </p>
       )}
 
@@ -349,9 +251,7 @@ export function Board() {
         <div className={cn("flex gap-3 rounded-xl border p-4 text-sm", paused ? "border-destructive/40 bg-destructive/10" : "border-warning/40 bg-warning/10")}>
           {paused ? <PauseCircle className="mt-0.5 size-4 shrink-0 text-destructive" /> : <Flag className="mt-0.5 size-4 shrink-0 text-warning" />}
           <div className="space-y-1">
-            <p className="font-normal">
-              {paused ? `Your requests are paused — ${flags.length} flags.` : `${flags.length} of ${FLAG_LIMIT} flags on your profile.`}
-            </p>
+            <p className="font-normal">{paused ? `Your requests are paused — ${flags.length} flags.` : `${flags.length} of ${FLAG_LIMIT} flags on your profile.`}</p>
             {paused && <p className="text-muted-foreground">The {DIRECTOR} and your Head of Department need to review and reinstate your account.</p>}
             <ul className="list-disc pl-4 text-muted-foreground">
               {flags.map((f, i) => (
@@ -372,58 +272,184 @@ export function Board() {
           {pausedPeople.map((p) => (
             <div key={p.id} className="flex items-center justify-between gap-3">
               <span>{p.fullName}</span>
-              <Button size="sm" variant="outline" onClick={() => reinstate(p.id)}>Reinstate (Marketing Director + Head of Department)</Button>
+              <Button size="sm" variant="outline" onClick={() => reinstate(p.id)}>
+                Reinstate (Marketing Director + Head of Department)
+              </Button>
             </div>
           ))}
         </div>
       )}
 
-      <p className="text-sm text-muted-foreground">
-        {visible.length} request{visible.length === 1 ? "" : "s"} · {role === "requester" ? "Everything you've asked Marketing & Design for." : `Everything sent to ${MARKETING}.`}
+      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        Booked
+        {DESIGNERS.map((d) => (
+          <span key={d.name} className="inline-flex items-center gap-1.5 text-foreground">
+            <span className="size-2.5 rounded-full" style={{ background: d.color }} /> {d.name} <span className="text-muted-foreground tabular-nums">{booked(d.name)}</span>
+          </span>
+        ))}
+        {role === "requester" && <span>· Showing your requests, signed in as {viewer.name}</span>}
       </p>
 
-      <div className="-mx-1 overflow-x-auto pb-2">
-        <div className="flex min-w-max gap-3 px-1">
-          {STATUSES.map((s) => {
-            const list = visible.filter((r) => r.status === s);
+      <div className="-mx-1 overflow-x-auto pb-3">
+        <div className="flex min-w-max items-start gap-3 px-1">
+          {COLUMNS.filter((c) => !hidden.includes(c.id)).map(({ id: c, color }) => {
+            const list = visible.filter((r) => columnOf(r) === c);
+            const limit = shown[c] ?? PAGE;
+            const target = dragged ? moveTo(dragged, c, role) : null;
             return (
-              <section key={s} className="flex w-72 shrink-0 flex-col gap-2 rounded-xl bg-secondary/40 p-2">
-                <header className={cn("flex items-center justify-between rounded-lg px-3 py-2 text-sm font-normal", COLUMN[s])}>
-                  {s}
-                  <span className="rounded-full bg-card/70 px-2 text-xs tabular-nums">{list.length}</span>
-                </header>
-                {list.length ? (
-                  list.map((r) => <RequestCard key={r.id} r={r} onOpen={() => setOpenId(r.id)} showRequester={role === "marketing"} />)
-                ) : (
-                  <p className="py-10 text-center text-xs text-muted-foreground">No requests.</p>
+              <section
+                key={c}
+                onDragOver={(e) => {
+                  if (!target) return;
+                  e.preventDefault();
+                  setOverCol(c);
+                }}
+                onDragLeave={() => setOverCol((o) => (o === c ? null : o))}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setOverCol(null);
+                  setDragId(null);
+                  if (dragged && target) act(dragged, target);
+                }}
+                className={cn(
+                  "flex w-[290px] shrink-0 flex-col gap-2 rounded-xl p-1.5 transition-colors",
+                  dragged && !target && columnOf(dragged) !== c && "opacity-40",
+                  target && "bg-secondary/60 ring-1 ring-dashed",
+                  overCol === c && "bg-secondary ring-2",
                 )}
+                style={target ? ({ "--tw-ring-color": color } as CSSProperties) : undefined}
+              >
+                <header className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-white" style={{ background: color }}>
+                  {c}
+                  <span className="grid min-w-6 place-items-center rounded-full bg-white/25 px-1.5 text-xs tabular-nums">{list.length}</span>
+                </header>
+                {list.slice(0, limit).map((r) => (
+                  <Card key={r.id} r={r} role={role} onOpen={() => setOpenId(r.id)} onDrag={setDragId} dragging={dragId === r.id} />
+                ))}
+                {list.length > limit && (
+                  <Button variant="ghost" size="sm" onClick={() => setShown((s) => ({ ...s, [c]: limit + PAGE }))}>
+                    Load more
+                  </Button>
+                )}
+                {!list.length && <p className="py-8 text-center text-xs text-muted-foreground">{target ? "Drop here" : "Nothing here."}</p>}
               </section>
             );
           })}
         </div>
       </div>
 
-      {current && (
-        <Drawer
-          title={
-            <span>
-              <span className="mr-2 text-muted-foreground">{current.ref}</span>
-              {current.title}
-            </span>
-          }
+      {current && !intent && (
+        <RequestSheet
+          key={current.id + current.status}
+          r={current}
+          role={role}
           onClose={() => setOpenId(null)}
-        >
-          <Detail
-            key={current.id + current.status}
-            r={current}
-            role={role}
-            viewerName={role === "marketing" ? MARKETING : viewer.name}
-            onEdit={() => {
-              setOpenId(null);
-              setForm({ editId: current.id });
-            }}
-          />
-        </Drawer>
+          onEdit={() => {
+            setOpenId(null);
+            setForm({ editId: current.id });
+          }}
+          onAct={(m) => act(current, m)}
+          onCalendar={() => {
+            setCalFocus(current.deadline);
+            setOpenId(null);
+            setDialog("calendar");
+          }}
+        />
+      )}
+
+      {acting && intent && intent.move !== "edit" && <ActionDialog r={acting} move={intent.move} viewerName={viewerName} onClose={() => setIntent(null)} />}
+
+      {dialog === "calendar" && (
+        <DesignCalendar
+          requests={mine}
+          focus={calFocus}
+          onOpen={(id) => {
+            setDialog(null);
+            setOpenId(id);
+          }}
+          onClose={() => setDialog(null)}
+        />
+      )}
+
+      {dialog === "columns" && (
+        <Modal label="Board columns" onClose={() => setDialog(null)} className="mt-[8vh] max-w-[560px]">
+          <div className="space-y-3 p-6">
+            <div>
+              <p className="text-base font-normal">Board columns</p>
+              <p className="text-sm text-muted-foreground">The order here is the order on the board.</p>
+            </div>
+            <ul className="divide-y rounded-xl border">
+              {COLUMNS.map(({ id: c, color }) => {
+                const off = hidden.includes(c);
+                return (
+                  <li key={c} className={cn("flex items-center gap-3 px-4 py-2.5", off && "opacity-50")}>
+                    <span className="size-3 rounded-full" style={{ background: color }} />
+                    <span className="flex-1 text-sm">
+                      {c}
+                      <span className="block text-xs text-muted-foreground">
+                        {visible.filter((r) => columnOf(r) === c).length} request{visible.filter((r) => columnOf(r) === c).length === 1 ? "" : "s"}
+                      </span>
+                    </span>
+                    <span className="rounded-md bg-secondary px-2 py-0.5 text-[11px] text-muted-foreground">System</span>
+                    <Button variant="ghost" size="icon" aria-label={off ? `Show ${c}` : `Hide ${c}`} onClick={() => setHidden((h) => (off ? h.filter((x) => x !== c) : [...h, c]))}>
+                      {off ? <EyeOff /> : <Eye />}
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <footer className="flex justify-end border-t px-6 py-3">
+            <Button variant="secondary" onClick={() => setDialog(null)}>
+              Done
+            </Button>
+          </footer>
+        </Modal>
+      )}
+
+      {dialog === "settings" && (
+        <Modal label="Settings" onClose={() => setDialog(null)} className="mt-[8vh] max-w-[480px]">
+          <div className="space-y-5 p-6">
+            <div>
+              <p className="text-base font-normal">Settings</p>
+              <p className="text-sm text-muted-foreground">Demo only — in the CRM this comes from your login and role.</p>
+            </div>
+            <label className="block space-y-1.5">
+              <span className="text-xs text-muted-foreground">Signed in as</span>
+              <Select value={viewerId} onChange={(e) => setViewerId(e.target.value)}>
+                {PEOPLE.map((p) => {
+                  const n = flagsOf(state, p.id).length;
+                  return (
+                    <option key={p.id} value={p.id}>
+                      {p.fullName}
+                      {n ? ` · ${n} flag${n > 1 ? "s" : ""}` : ""}
+                    </option>
+                  );
+                })}
+              </Select>
+            </label>
+            <div className="flex items-center justify-between gap-4 rounded-xl border p-3 text-sm">
+              <span>
+                Reset the demo
+                <span className="block text-xs text-muted-foreground">Puts the demo requests and flags back.</span>
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  resetDemo();
+                  setDialog(null);
+                }}
+              >
+                <RotateCcw /> Reset
+              </Button>
+            </div>
+          </div>
+          <footer className="flex justify-end border-t px-6 py-3">
+            <Button variant="secondary" onClick={() => setDialog(null)}>
+              Done <ChevronRight />
+            </Button>
+          </footer>
+        </Modal>
       )}
 
       {form && (

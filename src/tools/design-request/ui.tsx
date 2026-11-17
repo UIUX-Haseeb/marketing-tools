@@ -2,7 +2,7 @@
 
 /**
  * Small pieces in the portal's support-ticket style: choice cards, toggle chips, the file drop
- * zone, pills, the centred dialog and the right-hand pop-out. Modal / Drawer are copied from
+ * zone, pills, the centred dialog, the right-hand sheet and the "More" menu. Modal is copied from
  * events/ui.tsx.
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -209,20 +209,58 @@ export function Modal({ label, onClose, children, className }: { label: string; 
   );
 }
 
-export function Drawer({ title, onClose, children }: { title: ReactNode; onClose: () => void; children: ReactNode }) {
+/** The portal's request pop-out: a wide right-hand sheet; the board builds its header, body and footer. */
+export function Sheet({ label, onClose, children }: { label: string; onClose: () => void; children: ReactNode }) {
   useEscape(onClose);
   return (
     <div className="fixed inset-0 z-40">
       <div className="absolute inset-0 bg-navy/40" onClick={onClose} />
-      <aside role="dialog" className="absolute inset-y-0 right-0 flex w-full max-w-[760px] flex-col bg-background shadow-2xl">
-        <header className="flex items-center justify-between gap-4 border-b bg-card px-5 py-3.5">
-          <div className="min-w-0 text-base font-normal">{title}</div>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-muted-foreground hover:text-foreground">
-            <X className="size-5" />
-          </button>
-        </header>
-        <div className="flex-1 overflow-y-auto">{children}</div>
+      <aside role="dialog" aria-label={label} className="absolute inset-y-0 right-0 flex w-full max-w-[1040px] flex-col bg-card shadow-2xl">
+        {children}
       </aside>
+    </div>
+  );
+}
+
+/** "··· More" — a small menu that opens upwards from the sheet's footer. */
+export function Menu({ trigger, items }: { trigger: ReactNode; items: ({ label: string; icon?: ReactNode; danger?: boolean; disabled?: boolean; onClick: () => void } | "divider")[] }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: MouseEvent) => !box.current?.contains(e.target as Node) && setOpen(false);
+    window.addEventListener("mousedown", away);
+    return () => window.removeEventListener("mousedown", away);
+  }, [open]);
+  if (!items.length) return null;
+  return (
+    <div ref={box} className="relative">
+      <button type="button" onClick={() => setOpen((o) => !o)} className="inline-flex h-9 items-center gap-2 rounded-lg px-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground">
+        {trigger}
+      </button>
+      {open && (
+        <div className="absolute bottom-full left-0 z-10 mb-2 w-60 rounded-xl border bg-popover p-1 shadow-xl">
+          {items.map((it, i) =>
+            it === "divider" ? (
+              <div key={i} className="my-1 border-t" />
+            ) : (
+              <button
+                key={it.label}
+                type="button"
+                disabled={it.disabled}
+                onClick={() => {
+                  setOpen(false);
+                  it.onClick();
+                }}
+                className={cn("flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm hover:bg-secondary disabled:opacity-40 [&_svg]:size-4", it.danger && "text-destructive")}
+              >
+                {it.icon}
+                {it.label}
+              </button>
+            ),
+          )}
+        </div>
+      )}
     </div>
   );
 }

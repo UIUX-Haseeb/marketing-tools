@@ -17,7 +17,7 @@ export const MARKETING_EMAIL = "design-requests@provident.demo";
 export const DIRECTOR = "Marketing Director";
 export const DIRECTOR_EMAIL = "marketing.director@provident.demo";
 
-const KEY = "provtoys-design-requests:v1";
+const KEY = "provtoys-design-requests:v2";
 
 type State = { requests: DesignRequest[]; flags: Record<string, Flag[]>; seq: number };
 
@@ -80,6 +80,15 @@ export function requesterFrom(e: Employee): Requester {
 }
 
 export const PEOPLE = EMPLOYEES.filter((e) => e.active);
+
+/** The design team (demo names) and the colour each one has on the board and the calendar. */
+export const DESIGNERS = [
+  { name: "Joanna Cruz", color: "#3b82f6" },
+  { name: "Rami Aziz", color: "#db2777" },
+  { name: "Lina Farouk", color: "#16a34a" },
+  { name: "Noor Al Sayegh", color: "#ea580c" },
+] as const;
+export const designerColor = (name?: string) => DESIGNERS.find((d) => d.name === name)?.color ?? "#9ca3af";
 
 // ── Flags ──────────────────────────────────────────────────────────────
 
@@ -169,7 +178,22 @@ export function decideUrgent(id: string, approve: boolean, note?: string) {
   }));
 }
 
-/** Plain status moves: Confirm, Start, Deliver, Close. */
+/** Confirm it by picking the designer — that schedules the work and locks the request. */
+export function assignDesigner(id: string, designer: string, note?: string) {
+  update(id, (r) => {
+    const changing = r.status !== "Submitted";
+    return {
+      r: {
+        ...r,
+        designer,
+        status: changing ? r.status : "Confirmed",
+        history: [...r.history, entry(changing ? `Designer changed to ${designer}` : `Confirmed — assigned to ${designer}`, MARKETING, requesterAnd(r), note)],
+      },
+    };
+  });
+}
+
+/** Plain status moves: Start, Deliver, Close. */
 export function move(id: string, status: Status, opts: { note?: string; delivered?: Attachment[] } = {}) {
   update(id, (r) => {
     const label: Record<string, string> = { Confirmed: "Confirmed — scheduled", "In progress": "Design work started", Delivered: "Delivered", Closed: "Closed — completed" };

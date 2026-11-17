@@ -73,6 +73,8 @@ export type DesignRequest = RequestDraft & {
   ref: string;
   requester: Requester;
   status: Status;
+  /** The designer Marketing picked when confirming it. */
+  designer?: string;
   created: string;
   updated: string;
   /** Urgent requests wait for the Marketing Director. */
