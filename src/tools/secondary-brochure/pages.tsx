@@ -15,8 +15,8 @@
  *   every page — the cells are about 1.42 : 1, between the portal's 3:2 and 4:3 pictures, so at
  *   most ~6% is trimmed off two edges and the portal's watermark stays. Pages of different property types sit in one
  *   brochure side by side: each page reads its own listing, the layout is the same.
- *   one closing page — the booklet's closing: "Ask Us About…" (the upsell: second
- *   citizenship, conveyancing, currency), the agent, the company line
+ *   one closing page — the booklet's closing: "Ask Us About…" (the upsell:
+ *   secondary, conveyancing, currency), the agent, the company line
  *
  * One listing gives two pages; selecting several gives one page each plus the closing page.
  * Design A is navy, B white (the booklet's B). `buildBrochure()` also returns layout notes.
@@ -139,7 +139,7 @@ function PropertyPage({ item, n, design }: { item: Item; n: string; design: Desi
 /** Material Symbols (Light), 960 × 960 on a -960 baseline; drawn in currentColor. */
 const SERVICES = [
   {
-    name: "Second Citizenship",
+    name: "Secondary",
     text: "Residency and citizenship options.",
     icon: "M340-236h280v-28H340v28Zm140-128q72 0 123.5-51.5T655-540q0-72-51.5-123.5T480-715q-73 0-124.5 51.5T304-540q0 73 51.5 124.5T480-364Zm0-32q-19-28-30-61t-13-69h85q-2 36-13 69t-29 61Zm-37 0q-44-12-74-47t-37-83h77q1 30 9 62.5t25 67.5Zm67 0q18-32 28-65t12-65h77q-8 48-39.5 83T510-396ZM332-554q8-51 40.5-87t77.5-45q-19 26-29 59.5T409-554h-77Zm105 0q2-38 13-71.5t30-60.5q18 27 29 60.5t13 71.5h-85Zm113 0q-1-36-11-69.5T509-686q48 9 80.5 45.5T627-554h-77ZM212-132v-696h482q21.75 0 37.88 16.12Q748-795.75 748-774v588q0 21.75-16.12 37.87Q715.75-132 694-132H212Zm22-22h460q12 0 22-10t10-22v-588q0-12-10-22t-22-10H234v652Zm0 0v-652 652Z",
   },
