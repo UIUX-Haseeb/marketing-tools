@@ -9,7 +9,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AlertTriangle, CloudUpload, FileText, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { isLowRes, LOW_RES_PX } from "./rules";
+import { isLowRes } from "./rules";
+import { settings } from "./settings";
 import type { Attachment } from "./types";
 
 export function Field({ label, htmlFor, required, help, error, children, className }: { label: string; htmlFor?: string; required?: boolean; help?: ReactNode; error?: string; children: ReactNode; className?: string }) {
@@ -101,9 +102,14 @@ async function describe(f: File): Promise<Attachment> {
 export function DropZone({ id, files, onChange, accept, hint, compact, error, checkRes }: { id: string; files: Attachment[]; onChange: (f: Attachment[]) => void; accept?: string; hint?: string; compact?: boolean; error?: boolean; checkRes?: boolean }) {
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
+  const [refused, setRefused] = useState<string[]>([]);
   const take = async (list: FileList | null) => {
     if (!list?.length) return;
-    const added = await Promise.all(Array.from(list).map(describe));
+    let added = await Promise.all(Array.from(list).map(describe));
+    // Settings › Files › "Refuse the picture": small pictures aren't accepted at all.
+    const refuse = checkRes && settings().files.mode === "refuse" ? added.filter(isLowRes) : [];
+    setRefused(refuse.map((a) => a.name));
+    added = added.filter((a) => !refuse.includes(a));
     onChange([...files, ...added.filter((a) => !files.some((x) => x.name === a.name && x.size === a.size))]);
   };
   return (
@@ -135,6 +141,11 @@ export function DropZone({ id, files, onChange, accept, hint, compact, error, ch
         <p className="text-sm font-normal">Drag files here, or click to choose</p>
         {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
       </div>
+      {refused.length > 0 && (
+        <p className="flex items-center gap-1.5 text-xs text-destructive">
+          <AlertTriangle className="size-3.5 shrink-0" /> Not added — under {settings().files.minPx} px on the long side: {refused.join(", ")}
+        </p>
+      )}
       <input id={id} ref={input} type="file" multiple accept={accept} className="sr-only" onChange={(e) => (take(e.target.files), (e.target.value = ""))} />
       {files.length > 0 && (
         <ul className="space-y-1.5">
@@ -156,7 +167,7 @@ export function FileRow({ file, onRemove, checkRes }: { file: Attachment; onRemo
       {file.width && <span className="shrink-0 text-xs text-muted-foreground tabular-nums">{file.width} × {file.height}</span>}
       <span className="shrink-0 text-xs text-muted-foreground tabular-nums">{fmtSize(file.size)}</span>
       {low && (
-        <span title={`Under ${LOW_RES_PX} px on the long side — fine for a small post, too soft for print or a big screen.`} className="inline-flex shrink-0 items-center gap-1 text-xs text-warning">
+        <span title={`Under ${settings().files.minPx} px on the long side — fine for a small post, too soft for print or a big screen.`} className="inline-flex shrink-0 items-center gap-1 text-xs text-warning">
           <AlertTriangle className="size-3.5" /> Low resolution
         </span>
       )}
@@ -210,12 +221,12 @@ export function Modal({ label, onClose, children, className }: { label: string; 
 }
 
 /** The portal's request pop-out: a wide right-hand sheet; the board builds its header, body and footer. */
-export function Sheet({ label, onClose, children }: { label: string; onClose: () => void; children: ReactNode }) {
+export function Sheet({ label, onClose, children, width = "max-w-[1040px]" }: { label: string; onClose: () => void; children: ReactNode; width?: string }) {
   useEscape(onClose);
   return (
     <div className="fixed inset-0 z-40">
       <div className="absolute inset-0 bg-navy/40" onClick={onClose} />
-      <aside role="dialog" aria-label={label} className="absolute inset-y-0 right-0 flex w-full max-w-[1040px] flex-col bg-card shadow-2xl">
+      <aside role="dialog" aria-label={label} className={cn("absolute inset-y-0 right-0 flex w-full flex-col bg-card shadow-2xl", width)}>
         {children}
       </aside>
     </div>

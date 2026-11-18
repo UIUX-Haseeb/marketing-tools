@@ -1,10 +1,13 @@
 /**
- * Design Request: Terms & Conditions — handover Appendix A, verbatim. Items in [brackets]
- * are placeholders still to confirm; they stay in brackets until they are.
+ * Design Request: Terms & Conditions — handover Appendix A, verbatim, as the default wording of
+ * Settings › Terms & Conditions. The wording is stored as light markdown (DEFAULT_TERMS) so
+ * Marketing can edit it; <Terms> renders it. Items in [brackets] are placeholders still to
+ * confirm; they stay in brackets until they are.
+ *
+ * Markdown used: "## " a section heading, "> **Title** text" a rule card, "1.1 " a numbered
+ * clause, "- " a bullet, **bold**, and blank lines between paragraphs.
  */
-import type { ReactNode } from "react";
-
-type Clause = [string, ReactNode];
+import { Fragment, type ReactNode } from "react";
 
 const RULES: [string, string][] = [
   [
@@ -21,7 +24,7 @@ const RULES: [string, string][] = [
   ],
 ];
 
-const SECTIONS: [string, Clause[]][] = [
+const SECTIONS: [string, [string, string][]][] = [
   [
     "1. Get the brief right",
     [
@@ -93,37 +96,89 @@ const SECTIONS: [string, Clause[]][] = [
   ],
 ];
 
-export function Terms() {
-  return (
-    <article className="space-y-5 text-sm leading-relaxed">
-      <header className="space-y-1.5">
-        <h3 className="text-h2">Design Request: Terms &amp; Conditions</h3>
-        <p className="text-muted-foreground">Version 1.0 · November 2026. Please read before you submit.</p>
-        <p className="kicker text-muted-foreground">Provident Real Estate · Marketing &amp; Design Team · For every design request made through the portal</p>
-      </header>
-      <p>
-        We want every request to move quickly, for you and for our designers. Most delays come from three things: the brief is incomplete, the copy or assets arrive late, or the
-        content changes after work has started. These terms explain what we need from you, what you can expect from us, and what happens when something goes wrong.
-      </p>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {RULES.map(([h, t]) => (
-          <section key={h} className="rounded-xl border bg-secondary/50 p-4">
-            <h4 className="mb-1.5 font-normal">{h}</h4>
-            <p className="text-[13px] text-muted-foreground">{t}</p>
-          </section>
-        ))}
-      </div>
-      {SECTIONS.map(([h, clauses]) => (
-        <section key={h} className="space-y-2">
-          <h4 className="text-base font-normal">{h}</h4>
-          {clauses.map(([n, t]) => (
-            <p key={n} className="flex gap-3">
-              <span className="w-7 shrink-0 font-medium tabular-nums">{n}</span>
-              <span>{t}</span>
+
+const INTRO =
+  "We want every request to move quickly, for you and for our designers. Most delays come from three things: the brief is incomplete, the copy or assets arrive late, or the content changes after work has started. These terms explain what we need from you, what you can expect from us, and what happens when something goes wrong.";
+
+export const DEFAULT_TERMS = [
+  "**Please read before you submit.**",
+  "Provident Real Estate · Marketing & Design Team · For every design request made through the portal",
+  INTRO,
+  RULES.map(([h, t]) => `> **${h}** ${t}`).join("\n"),
+  ...SECTIONS.map(([h, clauses]) => [`## ${h}`, ...clauses.map(([n, t]) => `${n} ${t}`)].join("\n")),
+].join("\n\n");
+
+/** **bold** inside a line. */
+function inline(text: string): ReactNode {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={i} className="font-medium">
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <Fragment key={i}>{part}</Fragment>
+    ),
+  );
+}
+
+type Block = { kind: "h" | "p" | "card" | "clause" | "li"; text: string; n?: string };
+
+function parse(body: string): Block[] {
+  return body.split("\n").flatMap((raw): Block[] => {
+    const line = raw.trim();
+    if (!line) return [];
+    if (line.startsWith("## ")) return [{ kind: "h", text: line.slice(3) }];
+    if (line.startsWith("> ")) return [{ kind: "card", text: line.slice(2) }];
+    if (line.startsWith("- ")) return [{ kind: "li", text: line.slice(2) }];
+    const m = line.match(/^(\d+\.\d+)\s+(.*)$/);
+    if (m) return [{ kind: "clause", n: m[1], text: m[2] }];
+    return [{ kind: "p", text: line }];
+  });
+}
+
+export function Terms({ title, version, body }: { title: string; version: string; body: string }) {
+  const blocks = parse(body);
+  const out: ReactNode[] = [];
+  for (let i = 0; i < blocks.length; i++) {
+    const b = blocks[i];
+    if (b.kind === "card") {
+      // Consecutive rule cards sit side by side.
+      const cards: Block[] = [];
+      while (blocks[i]?.kind === "card") cards.push(blocks[i++]);
+      i--;
+      out.push(
+        <div key={i} className="grid gap-3 sm:grid-cols-3">
+          {cards.map((c, j) => (
+            <p key={j} className="rounded-xl border bg-secondary/50 p-4 text-[13px] text-muted-foreground [&_strong]:mb-1.5 [&_strong]:block [&_strong]:text-sm [&_strong]:font-normal [&_strong]:text-foreground">
+              {inline(c.text)}
             </p>
           ))}
-        </section>
-      ))}
+        </div>,
+      );
+    } else if (b.kind === "h") out.push(<h4 key={i} className="pt-1 text-base font-normal">{inline(b.text)}</h4>);
+    else if (b.kind === "clause")
+      out.push(
+        <p key={i} className="flex gap-3">
+          <span className="w-7 shrink-0 font-medium tabular-nums">{b.n}</span>
+          <span>{inline(b.text)}</span>
+        </p>,
+      );
+    else if (b.kind === "li")
+      out.push(
+        <p key={i} className="flex gap-2 pl-1">
+          <span>•</span>
+          <span>{inline(b.text)}</span>
+        </p>,
+      );
+    else out.push(<p key={i}>{inline(b.text)}</p>);
+  }
+  return (
+    <article className="space-y-3 text-sm leading-relaxed">
+      <header className="space-y-1">
+        <h3 className="text-h2">{title}</h3>
+        <p className="text-muted-foreground">Version {version}</p>
+      </header>
+      {out}
     </article>
   );
 }

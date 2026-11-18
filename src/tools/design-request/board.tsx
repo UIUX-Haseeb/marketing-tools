@@ -9,18 +9,20 @@
  */
 import { useEffect, useState, type CSSProperties } from "react";
 import {
-  Ban, CalendarDays, ChevronRight, Columns3, Eye, EyeOff, FileText, Flag, Layers, Palette, PauseCircle, Plus, RefreshCw, RotateCcw, Search, Settings, Zap,
+  Ban, CalendarDays, Columns3, Eye, EyeOff, FileText, Flag, Layers, Palette, PauseCircle, Plus, RefreshCw, RotateCcw, Search, Settings, Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { DesignCalendar } from "./calendar";
-import { colorOf, COLUMNS, columnOf, HOW_IT_WORKS, moveTo, type Column, type Move, type Role } from "./columns";
+import { colorOf, COLUMNS, columnOf, HOW_IT_WORKS, moveTo, ROLE_LABEL, type Column, type Move, type Role } from "./columns";
 import { ActionDialog, allFiles, Avatar, longDay, RequestSheet, type Intent } from "./detail";
 import { RequestForm } from "./request-form";
-import { FLAG_LIMIT, fmtDay, isoDay, REVISION_ROUNDS } from "./rules";
-import { DESIGNERS, DIRECTOR, flagsOf, isPaused, MARKETING, move, PEOPLE, reinstate, requesterFrom, resetDemo, runTimers, useDesignState } from "./store";
+import { fmtDay, isoDay } from "./rules";
+import { resetSettings, settings, useSettings } from "./settings";
+import { SettingsPanel } from "./settings-panel";
+import { DIRECTOR, flagsOf, isPaused, MARKETING, move, PEOPLE, reinstate, requesterFrom, resetDemo, runTimers, useDesignState } from "./store";
 import type { DesignRequest } from "./types";
 import { Modal } from "./ui";
 
@@ -46,7 +48,7 @@ function sortBy(order: Order) {
 function statusLine(r: DesignRequest, role: Role): { text: string; tone: string } | null {
   if (r.urgentApproval === "pending") return { text: "Urgent — waiting for the Marketing Director", tone: "text-warning" };
   if (r.status === "Returned") return { text: `Waiting for ${role === "requester" ? "your" : `${r.requester.name.split(" ")[0]}’s`} reply${r.replyDue ? ` · by ${fmtDay(r.replyDue)}` : ""}`, tone: "text-warning" };
-  if (r.status === "Revision requested") return { text: `Revision ${r.revisionRounds} of ${REVISION_ROUNDS} requested`, tone: "text-warning" };
+  if (r.status === "Revision requested") return { text: `Revision ${r.revisionRounds} of ${settings().revisionRounds} requested`, tone: "text-warning" };
   if (r.status === "Delivered") return { text: `Delivered · ${r.delivered?.length ?? 0} file${r.delivered?.length === 1 ? "" : "s"}`, tone: "text-success" };
   if (r.closeReason === "Completed") return { text: "Completed", tone: "text-success" };
   if (r.closeReason === "Auto-closed") return { text: "Auto-closed — no reply", tone: "text-destructive" };
@@ -147,7 +149,9 @@ function HowItWorks({ onHide }: { onHide: () => void }) {
 export function Board() {
   const state = useDesignState();
   const [viewerId, setViewerId] = useState(PEOPLE[0].id);
+  const cfg = useSettings();
   const [role, setRole] = useState<Role>("marketing");
+  const [designerName, setDesignerName] = useState(cfg.designers[0]?.name ?? "");
   const [q, setQ] = useState("");
   const [order, setOrder] = useState<Order>("default");
   const [howTo, setHowTo] = useState(true);
@@ -165,17 +169,18 @@ export function Board() {
   useEffect(() => runTimers(), []);
 
   const viewer = requesterFrom(PEOPLE.find((p) => p.id === viewerId) ?? PEOPLE[0]);
-  const viewerName = role === "marketing" ? MARKETING : viewer.name;
+  const viewerName = role === "marketing" ? MARKETING : role === "designer" ? designerName : viewer.name;
   const flags = flagsOf(state, viewer.id);
   const paused = isPaused(state, viewer.id);
   const pausedPeople = PEOPLE.filter((p) => isPaused(state, p.id));
 
   const needle = q.trim().toLowerCase();
-  const mine = state.requests.filter((r) => role === "marketing" || r.requester.id === viewer.id);
+  // Like the portal: managers see everything, a designer only what's assigned to them, a requester their own.
+  const mine = state.requests.filter((r) => (role === "marketing" ? true : role === "designer" ? r.designer === designerName : r.requester.id === viewer.id));
   const visible = mine
     .filter((r) => !needle || [r.ref, r.title, r.brief, r.requester.name, r.designer ?? ""].some((x) => x.toLowerCase().includes(needle)))
     .sort(sortBy(order));
-  const booked = (name: string) => mine.filter((r) => r.designer === name && ["Confirmed", "In progress", "Revision requested"].includes(r.status)).length;
+  const booked = (name: string) => state.requests.filter((r) => r.designer === name && ["Confirmed", "In progress", "Revision requested"].includes(r.status)).length;
 
   const current = state.requests.find((r) => r.id === openId);
   const editing = form?.editId ? state.requests.find((r) => r.id === form.editId) : undefined;
@@ -192,6 +197,45 @@ export function Board() {
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-dashed bg-card/60 px-3 py-2 text-sm">
+        <span className="kicker text-[10px] text-muted-foreground">Demo · Viewing as</span>
+        <div className="flex h-8 rounded-lg border bg-card p-0.5" role="group" aria-label="Viewing as">
+          {(["requester", "designer", "marketing"] as Role[]).map((x) => (
+            <button key={x} type="button" onClick={() => setRole(x)} className={cn("rounded-md px-3 text-sm", role === x ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+              {ROLE_LABEL[x]}
+            </button>
+          ))}
+        </div>
+        {role === "requester" && (
+          <Select value={viewerId} onChange={(e) => setViewerId(e.target.value)} className="h-8 w-60" aria-label="Signed in as">
+            {PEOPLE.map((p) => {
+              const n = flagsOf(state, p.id).length;
+              return (
+                <option key={p.id} value={p.id}>
+                  {p.fullName}
+                  {n ? ` · ${n} flag${n > 1 ? "s" : ""}` : ""}
+                </option>
+              );
+            })}
+          </Select>
+        )}
+        {role === "designer" && (
+          <Select value={designerName} onChange={(e) => setDesignerName(e.target.value)} className="h-8 w-52" aria-label="Designer">
+            {cfg.designers.map((d) => (
+              <option key={d.name} value={d.name}>
+                {d.name}
+              </option>
+            ))}
+          </Select>
+        )}
+        <span className="text-xs text-muted-foreground">
+          {role === "requester" ? "Your own requests · New request, edit a returned one, revisions, accept" : role === "designer" ? "Only the work assigned to you · start it and deliver it" : "Every request · assign, return, approve urgent, settings"}
+        </span>
+        <Button variant="ghost" size="sm" className="ml-auto" onClick={() => (resetDemo(), resetSettings())} title="Put the demo requests, flags and settings back">
+          <RotateCcw /> Reset demo
+        </Button>
+      </div>
+
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative w-full sm:w-72">
           <Search className="pointer-events-none absolute top-2.5 left-3 size-4 text-muted-foreground" />
@@ -213,21 +257,16 @@ export function Board() {
         <Button variant="outline" onClick={() => setDialog("columns")}>
           <Columns3 /> Columns
         </Button>
-        <Button variant="outline" onClick={() => setDialog("settings")}>
-          <Settings /> Settings
-        </Button>
-        <div className="ml-auto flex items-center gap-2">
-          <div className="flex h-9 rounded-lg border bg-card p-0.5 text-sm" role="group" aria-label="Viewing as">
-            {(["requester", "marketing"] as Role[]).map((x) => (
-              <button key={x} type="button" onClick={() => setRole(x)} className={cn("rounded-md px-3", role === x ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                {x === "requester" ? "Requester" : "Marketing"}
-              </button>
-            ))}
-          </div>
-          <Button onClick={() => setForm({})} disabled={paused} title={paused ? "Requests are paused at 3 flags" : undefined}>
+        {role === "marketing" && (
+          <Button variant="outline" onClick={() => setDialog("settings")}>
+            <Settings /> Settings
+          </Button>
+        )}
+        {role === "requester" && (
+          <Button className="ml-auto" onClick={() => setForm({})} disabled={paused} title={paused ? `Requests are paused at ${cfg.flagLimit} flags` : undefined}>
             <Plus /> New request
           </Button>
-        </div>
+        )}
       </div>
 
       {howTo ? (
@@ -251,7 +290,7 @@ export function Board() {
         <div className={cn("flex gap-3 rounded-xl border p-4 text-sm", paused ? "border-destructive/40 bg-destructive/10" : "border-warning/40 bg-warning/10")}>
           {paused ? <PauseCircle className="mt-0.5 size-4 shrink-0 text-destructive" /> : <Flag className="mt-0.5 size-4 shrink-0 text-warning" />}
           <div className="space-y-1">
-            <p className="font-normal">{paused ? `Your requests are paused — ${flags.length} flags.` : `${flags.length} of ${FLAG_LIMIT} flags on your profile.`}</p>
+            <p className="font-normal">{paused ? `Your requests are paused — ${flags.length} flags.` : `${flags.length} of ${cfg.flagLimit} flags on your profile.`}</p>
             {paused && <p className="text-muted-foreground">The {DIRECTOR} and your Head of Department need to review and reinstate your account.</p>}
             <ul className="list-disc pl-4 text-muted-foreground">
               {flags.map((f, i) => (
@@ -267,7 +306,7 @@ export function Board() {
       {role === "marketing" && pausedPeople.length > 0 && (
         <div className="space-y-2 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm">
           <p className="flex items-center gap-2 font-normal">
-            <Ban className="size-4 text-destructive" /> Paused at {FLAG_LIMIT} flags
+            <Ban className="size-4 text-destructive" /> Paused at {cfg.flagLimit} flags
           </p>
           {pausedPeople.map((p) => (
             <div key={p.id} className="flex items-center justify-between gap-3">
@@ -282,17 +321,18 @@ export function Board() {
 
       <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         Booked
-        {DESIGNERS.map((d) => (
+        {cfg.designers.map((d) => (
           <span key={d.name} className="inline-flex items-center gap-1.5 text-foreground">
             <span className="size-2.5 rounded-full" style={{ background: d.color }} /> {d.name} <span className="text-muted-foreground tabular-nums">{booked(d.name)}</span>
           </span>
         ))}
         {role === "requester" && <span>· Showing your requests, signed in as {viewer.name}</span>}
+        {role === "designer" && <span>· Showing the work assigned to {designerName}</span>}
       </p>
 
       <div className="-mx-1 overflow-x-auto pb-3">
         <div className="flex min-w-max items-start gap-3 px-1">
-          {COLUMNS.filter((c) => !hidden.includes(c.id)).map(({ id: c, color }) => {
+          {COLUMNS.filter((c) => !hidden.includes(c.id) && !(role === "designer" && (c.id === "Submitted" || c.id === "Returned"))).map(({ id: c, color }) => {
             const list = visible.filter((r) => columnOf(r) === c);
             const limit = shown[c] ?? PAGE;
             const target = dragged ? moveTo(dragged, c, role) : null;
@@ -407,50 +447,7 @@ export function Board() {
         </Modal>
       )}
 
-      {dialog === "settings" && (
-        <Modal label="Settings" onClose={() => setDialog(null)} className="mt-[8vh] max-w-[480px]">
-          <div className="space-y-5 p-6">
-            <div>
-              <p className="text-base font-normal">Settings</p>
-              <p className="text-sm text-muted-foreground">Demo only — in the CRM this comes from your login and role.</p>
-            </div>
-            <label className="block space-y-1.5">
-              <span className="text-xs text-muted-foreground">Signed in as</span>
-              <Select value={viewerId} onChange={(e) => setViewerId(e.target.value)}>
-                {PEOPLE.map((p) => {
-                  const n = flagsOf(state, p.id).length;
-                  return (
-                    <option key={p.id} value={p.id}>
-                      {p.fullName}
-                      {n ? ` · ${n} flag${n > 1 ? "s" : ""}` : ""}
-                    </option>
-                  );
-                })}
-              </Select>
-            </label>
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-3 text-sm">
-              <span>
-                Reset the demo
-                <span className="block text-xs text-muted-foreground">Puts the demo requests and flags back.</span>
-              </span>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  resetDemo();
-                  setDialog(null);
-                }}
-              >
-                <RotateCcw /> Reset
-              </Button>
-            </div>
-          </div>
-          <footer className="flex justify-end border-t px-6 py-3">
-            <Button variant="secondary" onClick={() => setDialog(null)}>
-              Done <ChevronRight />
-            </Button>
-          </footer>
-        </Modal>
-      )}
+      {dialog === "settings" && <SettingsPanel current={cfg} onClose={() => setDialog(null)} />}
 
       {form && (
         <RequestForm

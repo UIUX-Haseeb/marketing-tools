@@ -8,7 +8,8 @@
 import { useSyncExternalStore } from "react";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import type { Employee } from "@/lib/demo/types";
-import { addWorkingDays, FLAG_LIMIT, isoDay, REPLY_DAYS, REVISION_ROUNDS } from "./rules";
+import { addWorkingDays, isoDay } from "./rules";
+import { settings } from "./settings";
 import { SEED } from "./seed";
 import type { Attachment, DesignRequest, Flag, HistoryEntry, RequestDraft, Requester, Status } from "./types";
 
@@ -81,19 +82,11 @@ export function requesterFrom(e: Employee): Requester {
 
 export const PEOPLE = EMPLOYEES.filter((e) => e.active);
 
-/** The design team (demo names) and the colour each one has on the board and the calendar. */
-export const DESIGNERS = [
-  { name: "Joanna Cruz", color: "#3b82f6" },
-  { name: "Rami Aziz", color: "#db2777" },
-  { name: "Lina Farouk", color: "#16a34a" },
-  { name: "Noor Al Sayegh", color: "#ea580c" },
-] as const;
-export const designerColor = (name?: string) => DESIGNERS.find((d) => d.name === name)?.color ?? "#9ca3af";
 
 // ── Flags ──────────────────────────────────────────────────────────────
 
 export const flagsOf = (s: State, userId: string) => s.flags[userId] ?? [];
-export const isPaused = (s: State, userId: string) => flagsOf(s, userId).length >= FLAG_LIMIT;
+export const isPaused = (s: State, userId: string) => flagsOf(s, userId).length >= settings().flagLimit;
 
 function addFlag(s: State, userId: string, reason: string, requestRef?: string): State {
   return { ...s, flags: { ...s.flags, [userId]: [...flagsOf(s, userId), { at: new Date().toISOString(), reason, requestRef }] } };
@@ -129,7 +122,7 @@ export function submitRequest(draft: RequestDraft, requester: Requester, existin
   if (existingId) {
     let saved!: DesignRequest;
     update(existingId, (r) => {
-      saved = { ...r, ...draft, status: "Submitted", urgentApproval, replyDue: undefined, reminderSent: false, history: [...r.history, entry("Resubmitted", requester.name, to)] };
+      saved = { ...r, ...draft, termsVersion: settings().terms.version, status: "Submitted", urgentApproval, replyDue: undefined, reminderSent: false, history: [...r.history, entry("Resubmitted", requester.name, to)] };
       return { r: saved };
     });
     return saved;
@@ -137,6 +130,7 @@ export function submitRequest(draft: RequestDraft, requester: Requester, existin
   const seq = s.seq + 1;
   const r: DesignRequest = {
     ...draft,
+    termsVersion: settings().terms.version,
     id: crypto.randomUUID(),
     ref: `DR-${String(seq).padStart(4, "0")}`,
     requester,
@@ -159,7 +153,7 @@ export function returnRequest(id: string, note: string, flag: boolean) {
     r: {
       ...r,
       status: "Returned",
-      replyDue: addWorkingDays(new Date(), REPLY_DAYS).toISOString(),
+      replyDue: addWorkingDays(new Date(), settings().replyDays).toISOString(),
       reminderSent: false,
       history: [...r.history, entry(flag ? "Returned — flagged as placeholder or incomplete" : "Returned", MARKETING, requesterAnd(r), note)],
     },
@@ -215,15 +209,15 @@ export function requestRevision(id: string, notes: string) {
       ...r,
       status: "Revision requested",
       revisionRounds: r.revisionRounds + 1,
-      history: [...r.history, entry(`Revision ${r.revisionRounds + 1} of ${REVISION_ROUNDS} requested`, r.requester.name, [MARKETING_EMAIL, r.requester.email], notes)],
+      history: [...r.history, entry(`Revision ${r.revisionRounds + 1} of ${settings().revisionRounds} requested`, r.requester.name, [MARKETING_EMAIL, r.requester.email], notes)],
     },
   }));
 }
 
 export function revisionWindow(r: DesignRequest) {
   if (!r.deliveredAt) return null;
-  const until = addWorkingDays(new Date(r.deliveredAt), REPLY_DAYS);
-  return { until, open: new Date() <= until && r.revisionRounds < REVISION_ROUNDS };
+  const until = addWorkingDays(new Date(r.deliveredAt), settings().replyDays);
+  return { until, open: new Date() <= until && r.revisionRounds < settings().revisionRounds };
 }
 
 /** Cancelling before design work starts is free; after it starts it adds a flag. */
@@ -246,8 +240,8 @@ export function sendReminder(id: string) {
 /** Auto-close a returned request whose reply is overdue, and flag the requester. */
 function autoClose(r: DesignRequest, s: State): { r: DesignRequest; s: State } {
   return {
-    r: { ...r, status: "Closed", closeReason: "Auto-closed", history: [...r.history, entry(`Auto-closed — no reply within ${REPLY_DAYS} working days, flagged`, "Portal", requesterAnd(r, MARKETING_EMAIL))] },
-    s: addFlag(s, r.requester.id, `No reply within ${REPLY_DAYS} working days (${r.ref})`, r.ref),
+    r: { ...r, status: "Closed", closeReason: "Auto-closed", history: [...r.history, entry(`Auto-closed — no reply within ${settings().replyDays} working days, flagged`, "Portal", requesterAnd(r, MARKETING_EMAIL))] },
+    s: addFlag(s, r.requester.id, `No reply within ${settings().replyDays} working days (${r.ref})`, r.ref),
   };
 }
 

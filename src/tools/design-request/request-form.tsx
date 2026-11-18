@@ -13,9 +13,10 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, FORMATS, LANGUAGES, REQUEST_TYPES, typeById, USAGES } from "./catalog";
-import { BRIEF_MIN, earliestDeadline, fmtDay, isLowRes, needs, STEPS, stepErrors, validate, type StepId } from "./rules";
+import { earliestDeadline, fmtDay, isLowRes, latestDeadline, needs, STEPS, stepErrors, validate, type StepId } from "./rules";
 import { blankDraft, sampleDraft } from "./seed";
-import { submitRequest } from "./store";
+import { settings } from "./settings";
+import { submitRequest, useDesignState } from "./store";
 import { Terms } from "./terms";
 import type { Category, DesignRequest, Requester, RequestDraft } from "./types";
 import { Check, ChoiceCard, Chips, DropZone, Field, Modal } from "./ui";
@@ -69,8 +70,14 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
   const [tried, setTried] = useState<Set<StepId>>(new Set());
   const body = useRef<HTMLDivElement>(null);
 
+  const { requests } = useDesignState();
   const set = (p: Partial<RequestDraft>) => setD((x) => ({ ...x, ...p }));
-  const all = useMemo(() => validate(d), [d]);
+  const all = useMemo(
+    () => validate(d, new Date(), (iso) => requests.filter((r) => r.deadline === iso && r.id !== initial?.id && r.status !== "Closed").length),
+    [d, requests, initial?.id],
+  );
+  const docs = settings().documents.filter((x) => x.asked);
+  const terms = settings().terms;
   const shown = (k: string) => {
     const s = STEPS.find((x) => stepErrors(all, x.id).includes(k));
     return s && tried.has(s.id) ? all[k] : undefined;
@@ -190,7 +197,7 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
               htmlFor="brief"
               required
               error={shown("brief")}
-              help={`One request covers one design. For a set (three unit types, a post and a story) list each one clearly. ${d.brief.trim().length}/${BRIEF_MIN} characters minimum.`}
+              help={`One request covers one design. For a set (three unit types, a post and a story) list each one clearly. ${d.brief.trim().length}/${settings().files.briefMin} characters minimum.`}
             >
               <Textarea id="brief" rows={5} value={d.brief} onChange={(e) => set({ brief: e.target.value })} placeholder="What it's for, who it's for, what it must show…" className={cn(shown("brief") && "border-destructive")} />
             </Field>
@@ -311,7 +318,12 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
                 {shown("peopleAgreed") && <p className="text-xs text-destructive">{shown("peopleAgreed")}</p>}
               </div>
             )}
-            {!n.permit && !n.developer && !n.person && !n.people && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">Nothing else is needed for this request.</p>}
+            {docs.map((doc) => (
+              <Field key={doc.id} label={doc.name} required={doc.required} error={shown(`doc:${doc.id}`)} help={doc.help}>
+                <DropZone id={`doc-${doc.id}`} compact files={d.docs?.[doc.id] ?? []} onChange={(f) => set({ docs: { ...d.docs, [doc.id]: f } })} error={!!shown(`doc:${doc.id}`)} />
+              </Field>
+            ))}
+            {!n.permit && !n.developer && !n.person && !n.people && !docs.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">Nothing else is needed for this request.</p>}
           </>
         )}
 
@@ -322,9 +334,9 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
               htmlFor="deadline"
               required
               error={shown("deadline")}
-              help={min ? `A ${min.label} needs ${min.days} working days, so the earliest date is ${fmtDay(min.date)}. Weekends (Sat, Sun) don't count.` : "Pick a request type first to see its lead time."}
+              help={min ? `A ${min.label} needs ${min.days} working days, so the earliest date is ${fmtDay(min.date)}. Days Marketing & Design is off don't count; you can book up to ${fmtDay(latestDeadline())}.` : "Pick a request type first to see its lead time."}
             >
-              <Input id="deadline" type="date" min={min?.date} value={d.deadline} onChange={(e) => set({ deadline: e.target.value })} className={cn("w-48", shown("deadline") && "border-destructive")} />
+              <Input id="deadline" type="date" min={min?.date} max={latestDeadline()} value={d.deadline} onChange={(e) => set({ deadline: e.target.value })} className={cn("w-48", shown("deadline") && "border-destructive")} />
             </Field>
             <Field label="How urgent is it?">
               <div className="grid gap-2 sm:grid-cols-2">
@@ -343,11 +355,11 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
         {step === "terms" && (
           <>
             <div className="max-h-[42vh] overflow-y-auto rounded-xl border bg-background p-5">
-              <Terms />
+              <Terms title={terms.title} version={terms.version} body={terms.body} />
             </div>
             <div className="space-y-3">
               <Check id="readTerms" checked={d.readTerms} onChange={(readTerms) => set({ readTerms })}>
-                I’ve read the terms and conditions
+                {terms.ack}
               </Check>
               <Check id="proofread" checked={d.proofread} onChange={(proofread) => set({ proofread })}>
                 The copy is proofread and accurate — names, prices, figures, dates and spelling
@@ -356,6 +368,7 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
                 The required approvals are attached
               </Check>
               {shown("terms") && <p className="text-xs text-destructive">{shown("terms")}</p>}
+              {terms.note && <p className="text-xs text-muted-foreground">{terms.note} This is version {terms.version}.</p>}
             </div>
           </>
         )}

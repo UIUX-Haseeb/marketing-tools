@@ -47,6 +47,8 @@ export type RequestDraft = {
   personApproval: Attachment[];
   peopleShown: boolean;
   peopleAgreed: boolean;
+  /** Uploads for the extra documents in Settings › Documents, by document id. */
+  docs?: Record<string, Attachment[]>;
 
   deadline: string;
   urgent: boolean;
@@ -73,6 +75,8 @@ export type DesignRequest = RequestDraft & {
   ref: string;
   requester: Requester;
   status: Status;
+  /** The terms version the requester accepted. */
+  termsVersion?: string;
   /** The designer Marketing picked when confirming it. */
   designer?: string;
   created: string;

@@ -6,7 +6,9 @@ Route: `/tools/design-request`. Front-end only: requests, flags and the emails t
 
 ## What's here
 
-- **Board** (`board.tsx`, `columns.ts`) — columns Submitted, Returned, Confirmed, In progress, Delivered, Revision requested, Completed, Cancelled (Closed is split in two, like the portal). Toolbar: search, order (default = urgent first, then deadline), **Calendar**, **Refresh** (re-checks the reply timers), **Columns** (show / hide), **Settings** (*Signed in as* and Reset). *Viewing as* switches between **Requester** (own requests) and **Marketing** (every request + the admin moves). *Booked* shows each designer's open work.
+- **Three views** (the *Demo · Viewing as* bar): **Requester** (pick the person — own requests, New request, edit a returned one, revisions, accept), **Designer** (pick the designer — only the work assigned to them, from Confirmed on: start it, deliver it), **Manager** (every request, assign, return, approve urgent, Settings). Like the portal, once a designer is assigned only that designer sees the request.
+- **Settings** (`settings.ts`, `settings-panel.tsx`, managers only) — the portal's Photography settings, for design: **Availability** (lead time per type class, book up to N days ahead, most requests due per day, the working week with hours, days to reply, revision rounds, flags before pausing), **Designers** (colour, working days, days off; add / remove), **Files** (smallest picture, warn or refuse, shortest brief), **Documents** (extra upload boxes in the form's Approvals step — required / asked for, reorder), **Terms & Conditions** (version, title, the wording as light markdown with a preview, the tick-box text; each request records the version accepted). Each tab saves on its own; the form, the rules, the board and the calendar read the saved values straight away. **Reset demo** puts the settings back too.
+- **Board** (`board.tsx`, `columns.ts`) — columns Submitted, Returned, Confirmed, In progress, Delivered, Revision requested, Completed, Cancelled (Closed is split in two, like the portal). Toolbar: search, order (default = urgent first, then deadline), **Calendar**, **Refresh** (re-checks the reply timers), **Columns** (show / hide), **Settings**. *Booked* shows each designer's open work.
 - **Drag and drop** — dragging a card lights up the columns it can go to (`columns.ts › moveTo`); dropping runs the same step as the pop-out's button, opening its dialog when it needs something (designer, note, files).
 - **Request pop-out** (`detail.tsx`) — step bar, the request and its files on the left, the history with every email on the right; footer: *··· More* (Return with a note, Decline urgent, Change designer, Show on calendar, Cancel…), Close, and the next step (Assign designer, Start design work, Deliver, Mark as completed / Edit and resubmit, Accept and close).
 - **Calendar** (`calendar.tsx`) — the month with each request on its deadline in its designer's colour, and the deadlines per designer.
@@ -26,7 +28,7 @@ Route: `/tools/design-request`. Front-end only: requests, flags and the emails t
 
 Placeholders (`rules.ts › findPlaceholder`): TBC / TBA / TBD, N/A, "will send … later", "to follow", "coming soon", lorem ipsum, xxx, an answer of only dashes or dots.
 
-Lead times (`catalog.ts › LEAD_DAYS`, drafts): social post 2 working days, flyer 3, large-format or print 5, brochure or multi-page 10. Each request type is tagged with one.
+Lead times (Settings › Availability; defaults are the handover's drafts): social post 2 working days, flyer 3, large-format or print 5, brochure or multi-page 10. Each request type is tagged with one.
 
 ## Workflow (sections 3 and 4)
 
@@ -45,10 +47,12 @@ Lead times (`catalog.ts › LEAD_DAYS`, drafts): social post 2 working days, fly
 | `index.tsx` | Tool entry |
 | `types.ts` | `DesignRequest`, `RequestDraft`, statuses, attachments, flags — the data model |
 | `catalog.ts` | Categories and request types (Appendix B), lead times, formats, usages, languages |
-| `rules.ts` | Working days, lead-time check, placeholder check, which approvals are needed, validation per step |
+| `rules.ts` | Working days, lead-time check, placeholder check, which approvals are needed, validation per step (all from Settings) |
+| `settings.ts` | Design settings store and defaults (the handover's drafts) |
+| `settings-panel.tsx` | The Settings sheet and its five tabs |
 | `store.ts` | localStorage store, the workflow actions, flags, timers, the demo people |
 | `seed.ts` | Demo requests (every column, dates relative to today), blank and sample drafts |
-| `terms.tsx` | Terms & Conditions, verbatim |
+| `terms.tsx` | Terms & Conditions — Appendix A verbatim as the default wording, and the renderer |
 | `request-form.tsx` | New / resubmit dialog |
 | `columns.ts` | The columns, their colours, which drag moves are allowed, "How it works" |
 | `board.tsx` | Toolbar, How it works, Booked, columns, cards, drag and drop, Columns / Settings dialogs, flag banners |
@@ -62,4 +66,4 @@ Lead times (`catalog.ts › LEAD_DAYS`, drafts): social post 2 working days, fly
 - `store.ts` actions map one-to-one onto API calls; `runTimers` is the server's auto-close / reminder job; `history[].emailed` is the mailer.
 - The flag counter may be the Listing Photoshoot Request's — `flagsOf` / `isPaused` / `reinstate` are the only places that read or write it.
 - Roles: "Viewing as" stands in for the CRM's roles (Marketing Admin, designers, Marketing Director).
-- Designers (`store.ts › DESIGNERS`) are demo names — in the CRM, the Marketing & Design team.
+- Designers (Settings › Designers) are demo names — in the CRM, the Marketing & Design team. Settings are per browser here; in the CRM they're shared.

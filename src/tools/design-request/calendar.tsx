@@ -9,7 +9,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { isoDay } from "./rules";
-import { DESIGNERS, designerColor } from "./store";
+import { designerColor, settings } from "./settings";
 import type { DesignRequest } from "./types";
 import { Modal } from "./ui";
 
@@ -95,7 +95,7 @@ export function DesignCalendar({ requests, focus, onOpen, onClose }: { requests:
           </div>
           <div className="space-y-2 border-t pt-4 text-xs">
             <p className="text-muted-foreground">Deadlines this month</p>
-            {[{ name: "Unassigned", color: "" }, ...DESIGNERS].map((d) => {
+            {[{ name: "Unassigned", color: "" }, ...settings().designers].map((d) => {
               const n = inMonth.filter((r) => (d.name === "Unassigned" ? !r.designer : r.designer === d.name)).length;
               return (
                 <p key={d.name} className="flex items-center gap-2">

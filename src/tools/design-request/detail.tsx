@@ -17,9 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { categoryLabel, LEAD_LABEL, typeById } from "./catalog";
 import { colorOf, columnOf, type Move, type Role } from "./columns";
-import { fmtDay, fmtStamp, needs, REVISION_ROUNDS } from "./rules";
+import { fmtDay, fmtStamp, needs } from "./rules";
+import { designerAway, designerColor, settings } from "./settings";
 import {
-  assignDesigner, cancelRequest, decideUrgent, DESIGNERS, designerColor, expireReply, move, requestRevision, returnRequest, revisionWindow, sendReminder,
+  assignDesigner, cancelRequest, decideUrgent, expireReply, move, requestRevision, returnRequest, revisionWindow, sendReminder,
 } from "./store";
 import type { Attachment, DesignRequest, HistoryEntry } from "./types";
 import { Check, DropZone, FileRow, Menu, Modal, Sheet } from "./ui";
@@ -44,6 +45,7 @@ export function allFiles(r: DesignRequest): [string, Attachment[]][] {
       ["Permit QR", r.permitQr],
       ["Developer approval", r.developerApproval],
       ["HR / department head approval", r.personApproval],
+      ...settings().documents.map((doc) => [doc.name, r.docs?.[doc.id] ?? []]),
       ["Delivered", r.delivered ?? []],
     ] as [string, Attachment[]][]
   ).filter(([, f]) => f.length);
@@ -147,13 +149,16 @@ export function RequestSheet({ r, role, onClose, onEdit, onAct, onCalendar }: { 
     if (r.status === "Submitted" && pendingUrgent) more.push({ label: "Decline urgent", icon: <Clock />, onClick: () => decideUrgent(r.id, false) });
     if (["Confirmed", "In progress", "Revision requested"].includes(r.status)) more.push({ label: "Change designer", icon: <UserRound />, onClick: () => onAct("assign") });
     if (r.status === "Returned") more.push({ label: "Skip 2 working days (demo)", icon: <RotateCcw />, onClick: () => expireReply(r.id) });
+  } else if (role === "designer") {
+    if (r.status === "Confirmed") primary = <Button onClick={() => onAct("start")}><Play /> Start design work</Button>;
+    if (r.status === "In progress" || r.status === "Revision requested") primary = <Button onClick={() => onAct("deliver")}><Upload /> Deliver</Button>;
   } else {
     if (r.status === "Returned") primary = <Button onClick={onEdit}><Pencil /> Edit and resubmit</Button>;
     if (r.status === "Delivered") primary = <Button onClick={() => onAct("complete")}><CheckIcon /> Accept and close</Button>;
     if (r.status === "Delivered") more.push({ label: "Request a revision", icon: <Pencil />, disabled: !win?.open, onClick: () => onAct("revision") });
   }
   more.push({ label: "Show on calendar", icon: <CalendarDays />, onClick: onCalendar });
-  if (canCancel) more.push("divider", { label: "Cancel request", icon: <X />, danger: true, onClick: () => onAct("cancel") });
+  if (canCancel && role !== "designer") more.push("divider", { label: "Cancel request", icon: <X />, danger: true, onClick: () => onAct("cancel") });
 
   return (
     <Sheet label={`${r.ref} ${r.title}`} onClose={onClose}>
@@ -196,9 +201,9 @@ export function RequestSheet({ r, role, onClose, onEdit, onAct, onCalendar }: { 
           {r.status === "Delivered" && win && (
             <Alert tone="info" icon={<Pencil />}>
               {win.open
-                ? `Changes go in one list by ${fmtStamp(win.until.toISOString())} — revision ${r.revisionRounds + 1} of ${REVISION_ROUNDS}.`
-                : r.revisionRounds >= REVISION_ROUNDS
-                  ? `All ${REVISION_ROUNDS} revision rounds used — more changes need a new request.`
+                ? `Changes go in one list by ${fmtStamp(win.until.toISOString())} — revision ${r.revisionRounds + 1} of ${settings().revisionRounds}.`
+                : r.revisionRounds >= settings().revisionRounds
+                  ? `All ${settings().revisionRounds} revision rounds used — more changes need a new request.`
                   : "The 2-working-day revision window has closed."}
             </Alert>
           )}
@@ -242,6 +247,7 @@ export function RequestSheet({ r, role, onClose, onEdit, onAct, onCalendar }: { 
               {[n.developer && "Developer approval attached", n.person && "HR / department head approval attached", n.people && (r.peopleAgreed ? "People shown have agreed" : "People shown — consent not ticked")].filter(Boolean).join("\n")}
             </Field>
           )}
+          {r.termsVersion && <Field label="Terms accepted">Version {r.termsVersion}</Field>}
           <Field label="Designer">
             <span className="inline-flex items-center gap-2">
               <Avatar name={r.designer} /> {r.designer ?? "Unassigned"}
@@ -363,12 +369,21 @@ export function ActionDialog({ r, move: m, viewerName, onClose }: { r: DesignReq
           <div className="space-y-2">
             <Select value={designer} onChange={(e) => setDesigner(e.target.value)} aria-label="Designer">
               <option value="">Pick the designer…</option>
-              {DESIGNERS.map((d) => (
-                <option key={d.name} value={d.name}>
-                  {d.name}
-                </option>
-              ))}
+              {settings().designers.map((d) => {
+                const away = designerAway(d.name, r.deadline);
+                return (
+                  <option key={d.name} value={d.name}>
+                    {d.name}
+                    {away ? ` — ${away} on ${fmtDay(r.deadline)}` : ""}
+                  </option>
+                );
+              })}
             </Select>
+            {designer && designerAway(designer, r.deadline) && (
+              <p className="text-xs text-warning">
+                {designer} — {designerAway(designer, r.deadline)} on {longDay(r.deadline)}, the deadline. Pick someone else or agree a new date with {first}.
+              </p>
+            )}
             <p className="text-xs text-muted-foreground">
               {r.status === "Submitted" ? `That confirms it: the request is locked, and ${first} gets the confirmation with the deadline ${fmtDay(r.deadline)}.` : `${first} is told about the change.`}
             </p>
@@ -392,7 +407,7 @@ export function ActionDialog({ r, move: m, viewerName, onClose }: { r: DesignReq
           <>
             <Textarea rows={5} value={note} onChange={(e) => setNote(e.target.value)} placeholder={"All your changes, in one list:\n1. Move the logo to the top right\n2. The price should read AED 3,400,000"} autoFocus />
             <p className="text-xs text-muted-foreground">
-              Round {r.revisionRounds + 1} of {REVISION_ROUNDS}. Covered: layout, brand errors, crops, a missed format, our typos, colours. Not covered: new copy, a new concept, extra sizes.
+              Round {r.revisionRounds + 1} of {settings().revisionRounds}. Covered: layout, brand errors, crops, a missed format, our typos, colours. Not covered: new copy, a new concept, extra sizes.
             </p>
           </>
         )}

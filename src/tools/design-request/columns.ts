@@ -6,7 +6,10 @@
 import type { DesignRequest, Status } from "./types";
 
 export type Column = Exclude<Status, "Closed"> | "Completed" | "Cancelled";
-export type Role = "requester" | "marketing";
+/** Who is looking: the person who asked, the designer it's assigned to, or the Marketing manager. */
+export type Role = "requester" | "designer" | "marketing";
+
+export const ROLE_LABEL: Record<Role, string> = { requester: "Requester", designer: "Designer", marketing: "Manager" };
 
 export const COLUMNS: { id: Column; color: string }[] = [
   { id: "Submitted", color: "#22a6c0" },
@@ -29,6 +32,11 @@ export type Move = "assign" | "return" | "start" | "deliver" | "complete" | "rev
 export function moveTo(r: DesignRequest, to: Column, role: Role): Move | null {
   const from = columnOf(r);
   if (from === to || from === "Completed" || from === "Cancelled") return null;
+  if (role === "designer") {
+    if (from === "Confirmed" && to === "In progress") return "start";
+    if ((from === "In progress" || from === "Revision requested") && to === "Delivered") return "deliver";
+    return null;
+  }
   if (to === "Cancelled" && ["Submitted", "Returned", "Confirmed", "In progress"].includes(from)) return "cancel";
   if (role === "marketing") {
     if (from === "Submitted" && to === "Confirmed") return r.urgentApproval === "pending" ? null : "assign";
@@ -48,8 +56,8 @@ export function moveTo(r: DesignRequest, to: Column, role: Role): Move | null {
 export const HOW_IT_WORKS: [Column, string][] = [
   ["Submitted", "A new request waits here, seen by Marketing only. Check the brief, the copy and the approvals. If something is missing, open the card and choose “Return with a note”. An urgent request waits for the Marketing Director first."],
   ["Returned", "The requester fixes the request and sends it again, and it comes back to Submitted. With no reply in 2 working days it closes by itself and adds a flag."],
-  ["Confirmed", "Marketing drags the card here and picks the designer. That schedules the work: the request is locked from now on, and the requester gets the confirmation."],
-  ["In progress", "When the designer starts, drag the card here. Cancelling from now on adds a flag to the requester."],
-  ["Delivered", "When the design is ready, drag the card here and upload the files. The requester has 2 working days to send one list of changes (2 rounds included) — the card moves to Revision requested — or to accept it."],
-  ["Completed", "The requester accepts the design, or Marketing drags the card here. That is the end."],
+  ["Confirmed", "A manager drags the card here and picks the designer. That schedules the work: only that designer sees it from now on, the request is locked, and the requester gets the confirmation."],
+  ["In progress", "When the designer starts, they drag the card here. Cancelling from now on adds a flag to the requester."],
+  ["Delivered", "When the design is ready, the designer drags the card here and uploads the files. The requester has 2 working days to send one list of changes (2 rounds included) — the card moves to Revision requested — or to accept it."],
+  ["Completed", "The requester accepts the design, or a manager drags the card here. That is the end."],
 ];
