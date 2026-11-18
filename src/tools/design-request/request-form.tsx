@@ -190,7 +190,7 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
               <TypeSelect category={d.category} value={d.typeId} onChange={(typeId) => set({ typeId })} error={!!shown("typeId")} />
             </Field>
             <Field label="What should we call this?" htmlFor="title" required error={shown("title")}>
-              <Input id="title" value={d.title} onChange={(e) => set({ title: e.target.value })} placeholder="e.g. Just Listed — 2BR in Marina Gate 1" className={cn(shown("title") && "border-destructive")} />
+              <Input id="title" value={d.title} onChange={(e) => set({ title: e.target.value })} placeholder="e.g. Meta ad — 2BR in Marina Gate 1" className={cn(shown("title") && "border-destructive")} />
             </Field>
             <Field
               label="Brief"

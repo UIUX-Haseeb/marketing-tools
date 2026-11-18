@@ -12,14 +12,14 @@ Route: `/tools/design-request`. Front-end only: requests, flags and the emails t
 - **Drag and drop** — dragging a card lights up the columns it can go to (`columns.ts › moveTo`); dropping runs the same step as the pop-out's button, opening its dialog when it needs something (designer, note, files).
 - **Request pop-out** (`detail.tsx`) — step bar, the request and its files on the left, the history with every email on the right; footer: *··· More* (Return with a note, Decline urgent, Change designer, Show on calendar, Cancel…), Close, and the next step (Assign designer, Start design work, Deliver, Mark as completed / Edit and resubmit, Accept and close).
 - **Calendar** (`calendar.tsx`) — the month with each request on its deadline in its designer's colour, and the deadlines per designer.
-- **New request** (`request-form.tsx`) — six steps: Request, Format, Content, Approvals, Timing, Terms. Errors show once you try to leave a step; *Send it* checks every step and jumps to the first problem. *Fill with a sample* loads a Just Listed request for testing.
+- **New request** (`request-form.tsx`) — six steps: Request, Format, Content, Approvals, Timing, Terms. Errors show once you try to leave a step; *Send it* checks every step and jumps to the first problem. *Fill with a sample* loads a listing ad request for testing.
 - **Terms** (`terms.tsx`) — Appendix A verbatim, shown in the last step with the three confirmations. `[bracketed]` items are still placeholders.
 
 ## Form fields (handover section 2)
 
 | Step | Fields | Rules |
 | --- | --- | --- |
-| Request | Name + email (from the login), department (editable), category (cards), request type (Appendix B, `catalog.ts`), title, brief | Brief ≥ 60 characters, placeholders rejected |
+| Request | Name + email (from the login), department (editable), category (cards), request type (Appendix B, `catalog.ts`; Agents trimmed to six types in Nov 2026), title, brief | Brief ≥ 60 characters, placeholders rejected |
 | Format | Formats (Feed post, Story, A4, Poster, Roll-up, Screen, Custom), custom size, where it's used, print quantity + bleed, language, editable source files | Custom size when *Custom*; quantity when *Print* |
 | Content | Final copy (text or attachment), assets (upload or Drive link), reference (optional) | Placeholders rejected in the copy; pictures under 1500 px on the long side get a *Low resolution* warning |
 | Approvals | Permit number + QR, developer approval, HR / department head approval, "people shown have agreed" | Permit when Agents › Listings and deals; developer approval when the type needs it or co-brand material is ticked; HR approval for announcements about a person (HR people types tick it for you) |

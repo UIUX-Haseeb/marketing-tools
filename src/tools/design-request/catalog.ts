@@ -31,7 +31,7 @@ export type RequestType = {
 const LISTINGS = "Listings and deals (permit number and QR required)";
 
 export const CATEGORIES: { id: Category; label: string; help: string }[] = [
-  { id: "agents", label: "Agents", help: "Listings, personal branding, clients, events" },
+  { id: "agents", label: "Agents", help: "Listing ads and boards, client invitations and greetings, events" },
   { id: "hr", label: "HR", help: "People, occasions, recruitment, notices" },
   { id: "procurement", label: "Procurement", help: "Gifts, stationery, signage, print files" },
   { id: "it", label: "IT", help: "Notices, launches, guides, backgrounds" },
@@ -40,23 +40,9 @@ export const CATEGORIES: { id: Category; label: string; help: string }[] = [
 
 export const REQUEST_TYPES: Record<Category, RequestType[]> = {
   agents: [
-    { id: "ag-just-listed", group: LISTINGS, label: "Just Listed, Open House and Just Sold posts, stories and carousels", lead: "social", permit: true },
-    { id: "ag-one-pager", group: LISTINGS, label: "Property one-pager, brochure or fact sheet", lead: "multipage", permit: true },
-    { id: "ag-off-plan", group: LISTINGS, label: "Off-plan launch creatives built from developer material (needs developer approval)", lead: "flyer", permit: true, developer: true },
-    { id: "ag-pvh", group: LISTINGS, label: "PVH vacation home listing posts", lead: "social", permit: true },
     { id: "ag-paid-ads", group: LISTINGS, label: "Paid ad creatives (Meta ads, banners) for a specific listing or project", lead: "social", permit: true },
     { id: "ag-board", group: LISTINGS, label: "For Sale / To Let board artwork", lead: "print", permit: true },
-    { id: "ag-business-card", group: "Personal branding", label: "Business card", lead: "print" },
-    { id: "ag-signature", group: "Personal branding", label: "Email signature", lead: "flyer" },
-    { id: "ag-intro", group: "Personal branding", label: "Agent intro or “meet your agent” post", lead: "social" },
-    { id: "ag-milestone", group: "Personal branding", label: "Milestone, award or achievement post", lead: "social" },
-    { id: "ag-testimonial", group: "Personal branding", label: "Testimonial graphic", lead: "social" },
-    { id: "ag-reel-cover", group: "Personal branding", label: "Reel cover or video thumbnail", lead: "social" },
-    { id: "ag-market-update", group: "Client and market communication", label: "Market update infographic or report carousel", lead: "flyer" },
     { id: "ag-invitation", group: "Client and market communication", label: "Investor evening or launch preview invitation", lead: "flyer" },
-    { id: "ag-whatsapp", group: "Client and market communication", label: "WhatsApp broadcast creative", lead: "social" },
-    { id: "ag-deck-cover", group: "Client and market communication", label: "Client presentation or pitch deck cover", lead: "flyer" },
-    { id: "ag-floor-plan", group: "Client and market communication", label: "Floor plan layout", lead: "flyer" },
     { id: "ag-greetings", group: "Client and market communication", label: "Greeting cards for clients (Eid, Ramadan, National Day, New Year)", lead: "social" },
     { id: "ag-roadshow", group: "Events", label: "Roadshow or exhibition roll-ups, backdrops and booth graphics", lead: "print" },
     { id: "ag-open-house", group: "Events", label: "Open house flyers and signage", lead: "flyer" },

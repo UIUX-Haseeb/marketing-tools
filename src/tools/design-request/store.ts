@@ -18,7 +18,7 @@ export const MARKETING_EMAIL = "design-requests@provident.demo";
 export const DIRECTOR = "Marketing Director";
 export const DIRECTOR_EMAIL = "marketing.director@provident.demo";
 
-const KEY = "provtoys-design-requests:v2";
+const KEY = "provtoys-design-requests:v3";
 
 type State = { requests: DesignRequest[]; flags: Record<string, Flag[]>; seq: number };
 

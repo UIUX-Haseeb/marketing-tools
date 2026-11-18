@@ -15,14 +15,14 @@ export function blankDraft(): RequestDraft {
   };
 }
 
-/** A filled-in Just Listed request for testing without typing (terms left unticked). */
+/** A filled-in listing ad request for testing without typing (terms left unticked). */
 export function sampleDraft(): RequestDraft {
   return {
     ...blankDraft(),
     category: "agents",
-    typeId: "ag-just-listed",
-    title: "Just Listed — 2BR in Marina Gate 1",
-    brief: "Just Listed post and story for a 2-bedroom apartment in Marina Gate 1, high floor with full marina view. Use the living room photo as the hero.",
+    typeId: "ag-paid-ads",
+    title: "Meta ad — 2BR in Marina Gate 1",
+    brief: "Meta ad creatives, feed and story, for a 2-bedroom apartment in Marina Gate 1, high floor with full marina view. Use the living room photo as the hero.",
     formats: ["Feed post", "Story"],
     usages: ["Instagram", "WhatsApp"],
     language: "English",
@@ -95,21 +95,21 @@ export const SEED: DesignRequest[] = [
     ],
   }),
   req({
-    ref: "DR-0003", requester: omar, status: "Returned", category: "agents", typeId: "ag-one-pager", created: at(-2),
-    title: "Fact sheet — Creek Horizon 3BR", brief: "One-page fact sheet for a 3BR in Creek Horizon tower 2 for an investor meeting, with the payment plan and floor plan.",
-    formats: ["A4"], usages: ["Email", "Print"], printQuantity: "20", copy: "Price: TBC", assetsLink: "https://drive.google.com/drive/folders/creek-horizon",
-    permitNumber: "6633018211", permitQr: [{ name: "qr.png", size: 9_000, type: "image/png", width: 400, height: 400 }], deadline: day(8),
+    ref: "DR-0003", requester: omar, status: "Returned", category: "agents", typeId: "ag-invitation", created: at(-2),
+    title: "Investor evening — Creek Horizon", brief: "Invitation for an investor evening presenting Creek Horizon tower 2, with the date, venue, dress code and an RSVP link. Email and WhatsApp versions.",
+    formats: ["A4", "Story"], usages: ["Email", "WhatsApp"], copy: "Creek Horizon Investor Evening · Thursday 7 PM · Venue: TBC · RSVP to Omar Haddad", assetsLink: "https://drive.google.com/drive/folders/creek-horizon",
+    deadline: day(8),
     replyDue: addWorkingDays(new Date(), 1).toISOString(),
     history: [
       { at: at(-2), by: "Omar Haddad", action: "Submitted", emailed: ["omar.haddad@provident.demo", MKT] },
-      step(-1, "Returned — flagged as placeholder or incomplete", "omar.haddad@provident.demo", "The price says TBC and there's no floor plan in the Drive folder. Please send the final price and the floor plan."),
+      step(-1, "Returned — flagged as placeholder or incomplete", "omar.haddad@provident.demo", "The venue says TBC and there's no RSVP link. Please send the confirmed venue and the RSVP link."),
     ],
   }),
   req({
-    ref: "DR-0004", requester: fatima, status: "Submitted", category: "agents", typeId: "ag-milestone", created: at(-1),
-    title: "AED 50M milestone post", brief: "Post celebrating AED 50M in closed sales this year, in the Sales Achievement look, with my portrait and the two headline numbers.",
-    formats: ["Feed post", "Story"], usages: ["Instagram", "LinkedIn"], copy: "AED 50M closed in 2026 · 38 transactions", assets: [{ name: "portrait.jpg", size: 3_100_000, type: "image/jpeg", width: 3000, height: 4000 }],
-    deadline: day(2), urgent: true, urgentReason: "Award evening this week", urgentApproval: "pending",
+    ref: "DR-0004", requester: fatima, status: "Submitted", category: "agents", typeId: "ag-greetings", created: at(-1),
+    title: "National Day greeting for clients", brief: "UAE National Day greeting card for my clients, a feed post and a WhatsApp version, with my name and photo at the bottom in the brand style.",
+    formats: ["Feed post", "Story"], usages: ["Instagram", "WhatsApp"], language: "Both", copy: "Happy 55th UAE National Day · From Fatima Al Zahra and the Provident family", assets: [{ name: "portrait.jpg", size: 3_100_000, type: "image/jpeg", width: 3000, height: 4000 }],
+    deadline: day(2), urgent: true, urgentReason: "Has to go out before the National Day weekend", urgentApproval: "pending",
   }),
   req({
     ref: "DR-0005", requester: aisha, status: "Confirmed", category: "hr", typeId: "hr-invitations", created: at(-3), designer: "Lina Farouk",
@@ -128,11 +128,11 @@ export const SEED: DesignRequest[] = [
     deadline: day(-12), workStarted: true, deliveredAt: at(-13), delivered: [{ name: "permit-poster-a3.pdf", size: 2_200_000, type: "application/pdf" }],
   }),
   req({
-    ref: "DR-0007", requester: karim, status: "Revision requested", category: "agents", typeId: "ag-just-listed", created: at(-5), designer: "Noor Al Sayegh",
-    title: "Just Listed — Palm villa", brief: "Just Listed post and story for a 5-bedroom signature villa on the Palm, beach-facing. Use the pool photo as the hero image.",
-    formats: ["Feed post", "Story"], usages: ["Instagram", "WhatsApp"], copy: "JUST LISTED · Signature Villa, Palm Jumeirah · 5 Bedrooms · AED 48,000,000", permitNumber: "7019920114",
+    ref: "DR-0007", requester: karim, status: "Revision requested", category: "agents", typeId: "ag-paid-ads", created: at(-5), designer: "Noor Al Sayegh",
+    title: "Meta ads — Palm villa", brief: "Meta ad creatives, feed and story, for a 5-bedroom signature villa on the Palm, beach-facing. Use the pool photo as the hero image.",
+    formats: ["Feed post", "Story"], usages: ["Instagram"], copy: "Signature Villa, Palm Jumeirah · 5 Bedrooms · Private beach · AED 48,000,000", permitNumber: "7019920114",
     permitQr: [{ name: "permit-qr.png", size: 12_000, type: "image/png", width: 600, height: 600 }], assetsLink: "https://drive.google.com/drive/folders/palm-villa",
-    deadline: day(1), workStarted: true, revisionRounds: 1, deliveredAt: at(-1), delivered: [{ name: "just-listed-palm-v1.zip", size: 4_100_000, type: "application/zip" }],
+    deadline: day(1), workStarted: true, revisionRounds: 1, deliveredAt: at(-1), delivered: [{ name: "meta-ads-palm-v1.zip", size: 4_100_000, type: "application/zip" }],
     history: [
       { at: at(-5), by: "Karim Nasser", action: "Submitted", emailed: ["karim.nasser@provident.demo", MKT] },
       step(-4, "Confirmed — assigned to Noor Al Sayegh", "karim.nasser@provident.demo"),
@@ -149,9 +149,9 @@ export const SEED: DesignRequest[] = [
     deadline: day(4),
   }),
   req({
-    ref: "DR-0009", requester: omar, status: "Closed", closeReason: "Cancelled", category: "agents", typeId: "ag-just-listed", created: at(-9),
-    title: "Just Sold — JVC townhouse", brief: "Just Sold post for the 3BR townhouse in JVC district 12. The buyer asked us to hold off, so this is no longer needed.",
-    formats: ["Feed post"], usages: ["Instagram"], copy: "JUST SOLD · District 12, JVC", deadline: day(-4),
+    ref: "DR-0009", requester: omar, status: "Closed", closeReason: "Cancelled", category: "agents", typeId: "ag-board", created: at(-9),
+    title: "For Sale board — JVC townhouse", brief: "For Sale board for the 3BR townhouse in JVC district 12. The owner took it off the market, so this is no longer needed.",
+    formats: ["Custom"], customSize: "120 × 80 cm", usages: ["Print"], printQuantity: "1", bleed: true, copy: "FOR SALE · Provident Real Estate · Call Omar Haddad +971 50 000 0002", permitNumber: "7004417720", deadline: day(-4),
     history: [
       { at: at(-9), by: "Omar Haddad", action: "Submitted", emailed: ["omar.haddad@provident.demo", MKT] },
       step(-8, "Cancelled (no flag)", "omar.haddad@provident.demo", undefined, "Omar Haddad"),
