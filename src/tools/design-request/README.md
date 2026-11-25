@@ -2,7 +2,7 @@
 
 The portal's **Marketing Design Request** form, built from the handover (Nov 2026): agents and admin staff (HR, procurement, IT, finance, operations) ask Marketing & Design for a design. The board works like the portal's **Photoshoot Requests** page (Marketing › Photoshoot Requests): toolbar, "How it works", the team with what they're booked on, a coloured column per status, drag a card to the next column to take the next step, and a wide pop-out with the step bar, the request, the history and "··· More" / Close / the next step. The "New request" dialog is in the Support Tickets dialog's look (option cards, ⌘↵ to send, Esc to cancel, "Drag files here, or click to choose").
 
-Route: `/tools/design-request`. Front-end only: requests, flags and the emails that would be sent are kept in this browser's localStorage (`store.ts`, key `provtoys-design-requests:v1`); **Reset** restores the demo requests.
+Route: `/tools/design-request`. Front-end only: requests, flags and the emails that would be sent are kept in this browser's localStorage (`store.ts`, key `provtoys-design-requests:v4`); **Reset** restores the demo requests.
 
 ## What's here
 
@@ -55,7 +55,7 @@ Lead times (Settings › Availability; defaults are the handover's drafts): soci
 | `form-builder.tsx` | The manager's form builder |
 | `custom-fields.tsx` | A form's questions as the requester sees them, and the answers in the pop-out |
 | `store.ts` | localStorage store, the workflow actions, flags, timers, the demo people |
-| `seed.ts` | Demo requests (every column, dates relative to today), blank and sample drafts |
+| `seed.ts` | Demo requests (Agents only, DR-0001 to DR-0005, dates relative to today), blank and sample drafts |
 | `terms.tsx` | Terms & Conditions — Appendix A verbatim as the default wording, and the renderer |
 | `request-form.tsx` | New / resubmit dialog |
 | `columns.ts` | The columns, their colours, which drag moves are allowed, "How it works" |

@@ -19,11 +19,11 @@ export const MARKETING_EMAIL = "design-requests@provident.demo";
 export const DIRECTOR = "Marketing Director";
 export const DIRECTOR_EMAIL = "marketing.director@provident.demo";
 
-const KEY = "provtoys-design-requests:v3";
+const KEY = "provtoys-design-requests:v4";
 
 type State = { requests: DesignRequest[]; flags: Record<string, Flag[]>; seq: number };
 
-const seedState = (): State => ({ requests: SEED, flags: { "emp-2": [{ at: "2026-10-20T10:00", reason: "Placeholder copy (“TBC”) in DR-0003", requestRef: "DR-0003" }] }, seq: SEED.length });
+const seedState = (): State => ({ requests: SEED, flags: { "emp-2": [{ at: "2026-10-20T10:00", reason: "Placeholder copy (“TBC”) in DR-0001", requestRef: "DR-0001" }] }, seq: SEED.length });
 const SERVER = seedState();
 
 let cache: State | null = null;
