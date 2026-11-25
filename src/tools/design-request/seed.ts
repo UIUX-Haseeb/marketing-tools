@@ -32,8 +32,6 @@ export function sampleDraft(): RequestDraft {
     permitNumber: "7114992033",
     permitQr: [{ name: "permit-qr-7114992033.png", size: 18_400, type: "image/png", width: 600, height: 600 }],
     deadline: isoDay(addWorkingDays(new Date(), 3)),
-    // Answers to the "Paid ad brief" custom form (forms.ts).
-    answers: { objective: "Leads", sizes: ["1080 × 1080", "1080 × 1920"], headline: "2BR with full marina view", cta: "Book a viewing", landing: "https://provident.demo/listings/marina-gate-1" },
   };
 }
 

@@ -51,82 +51,10 @@ export type FormSnapshot = Pick<CustomForm, "id" | "name" | "fields">;
 
 export const hasOptions = (k: FieldKind) => k === "select" || k === "choice";
 
-const f = (id: string, kind: FieldKind, label: string, opts: Partial<FormField> = {}): FormField => ({ id, kind, label, help: "", required: false, options: [], ...opts });
+/** No forms to start with — managers build their own in the form builder. */
+const SEED: CustomForm[] = [];
 
-const SEED: CustomForm[] = [
-  {
-    id: "paid-ads",
-    name: "Paid ad brief",
-    description: "What the Meta or banner ad has to do, and where it sends people.",
-    typeIds: ["ag-paid-ads"],
-    updated: "2026-11-20",
-    fields: [
-      f("objective", "select", "Ad objective", { required: true, options: ["Leads", "Traffic to the listing", "Awareness"] }),
-      f("sizes", "choice", "Ad sizes", { required: true, options: ["1080 × 1080", "1080 × 1350", "1080 × 1920", "1200 × 628", "300 × 250"] }),
-      f("headline", "short", "Headline", { required: true, help: "Up to 40 characters reads best on Meta." }),
-      f("cta", "select", "Call to action", { options: ["Learn more", "Contact us", "Book a viewing", "Send WhatsApp message"] }),
-      f("landing", "link", "Landing page or listing link", { required: true }),
-      f("start", "date", "Campaign start date"),
-    ],
-  },
-  {
-    id: "sale-rent-signs",
-    name: "Sale / Rent signage",
-    description: "The sign, what goes on it, and where it’s put up.",
-    typeIds: ["ag-board"],
-    updated: "2026-11-25",
-    fields: [
-      f("sign", "heading", "The sign"),
-      f("purpose", "select", "For sale or for rent?", { required: true, options: ["For Sale", "For Rent", "For Sale or Rent"] }),
-      f("format", "select", "Sign type", { required: true, options: ["Pole or stake board", "Window poster", "Balcony banner", "Building hoarding"] }),
-      f("size", "select", "Size", { required: true, options: ["60 × 90 cm", "90 × 120 cm", "120 × 180 cm", "Other — I’ll give it in the brief"] }),
-      f("quantity", "number", "How many signs?", { required: true }),
-      f("content", "heading", "What goes on it"),
-      f("property", "short", "Building or community name", { required: true, help: "e.g. Marina Gate 1, Arabian Ranches 2" }),
-      f("unit", "short", "Property type and bedrooms", { help: "e.g. 3BR townhouse. Leave empty to keep the sign general." }),
-      f("contact", "short", "Agent name and mobile on the sign", { required: true }),
-      f("price", "checkbox", "Show the price on the sign"),
-      f("install", "heading", "Where it goes"),
-      f("address", "long", "Where the sign will be put up", { required: true, help: "Address, unit and the exact spot (gate, balcony, window)." }),
-      f("map", "link", "Google Maps link"),
-      f("installBy", "date", "Needed up by"),
-      f("spot", "file", "Photo of the spot", { help: "Helps us size the sign and check it can be read from the street." }),
-      f("consent", "checkbox", "The owner or building management has agreed to the sign going up", { required: true }),
-    ],
-  },
-  {
-    id: "open-house",
-    name: "Open house details",
-    description: "The when and where printed on the flyer and signs.",
-    typeIds: ["ag-open-house"],
-    updated: "2026-11-20",
-    fields: [
-      f("when", "heading", "When"),
-      f("date", "date", "Open house date", { required: true }),
-      f("hours", "short", "Hours", { required: true, help: "e.g. 11 AM – 3 PM" }),
-      f("where", "heading", "Where"),
-      f("address", "long", "Address and unit number", { required: true }),
-      f("map", "link", "Google Maps link"),
-      f("signs", "number", "How many direction signs?", { help: "Leave empty if you only need the flyer." }),
-      f("parking", "checkbox", "Visitor parking is available"),
-    ],
-  },
-  {
-    id: "new-joiner",
-    name: "New joiner",
-    description: "Who is joining, so the welcome post is right the first time.",
-    typeIds: ["hr-new-joiner"],
-    updated: "2026-11-20",
-    fields: [
-      f("names", "long", "Full names, as they should appear", { required: true, help: "One per line." }),
-      f("roles", "long", "Job titles, in the same order", { required: true }),
-      f("start", "date", "Start date", { required: true }),
-      f("photos", "file", "Headshots", { required: true, help: "Plain background, at least 1500 px." }),
-    ],
-  },
-];
-
-const KEY = "provtoys-design-forms:v2";
+const KEY = "provtoys-design-forms:v3";
 let cache: CustomForm[] | null = null;
 const listeners = new Set<() => void>();
 
