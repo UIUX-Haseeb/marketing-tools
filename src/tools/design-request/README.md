@@ -2,7 +2,7 @@
 
 The portal's **Marketing Design Request** form, built from the handover (Nov 2026): agents and admin staff (HR, procurement, IT, finance, operations) ask Marketing & Design for a design. The board works like the portal's **Photoshoot Requests** page (Marketing › Photoshoot Requests): toolbar, "How it works", the team with what they're booked on, a coloured column per status, drag a card to the next column to take the next step, and a wide pop-out with the step bar, the request, the history and "··· More" / Close / the next step. The "New request" dialog is in the Support Tickets dialog's look (option cards, ⌘↵ to send, Esc to cancel, "Drag files here, or click to choose").
 
-Route: `/tools/design-request`. Front-end only: requests, flags and the emails that would be sent are kept in this browser's localStorage (`store.ts`, key `provtoys-design-requests:v4`); **Reset** restores the demo requests.
+Route: `/tools/design-request`. Front-end only: requests, flags and the emails that would be sent are kept in this browser's localStorage (`store.ts`, key `provtoys-design-requests:v5`); **Reset** restores the demo requests.
 
 ## What's here
 
@@ -13,7 +13,7 @@ Route: `/tools/design-request`. Front-end only: requests, flags and the emails t
 - **Drag and drop** — dragging a card lights up the columns it can go to (`columns.ts › moveTo`); dropping runs the same step as the pop-out's button, opening its dialog when it needs something (designer, note, files).
 - **Request pop-out** (`detail.tsx`) — step bar, the request and its files on the left, the history with every email on the right; footer: *··· More* (Return with a note, Decline urgent, Change designer, Show on calendar, Cancel…), Close, and the next step (Assign designer, Start design work, Deliver, Mark as completed / Edit and resubmit, Accept and close).
 - **Calendar** (`calendar.tsx`) — the month with each request on its deadline in its designer's colour, and the deadlines per designer.
-- **New request** (`request-form.tsx`) — six steps: Request, Format, Content, Approvals, Timing, Terms. Errors show once you try to leave a step; *Send it* checks every step and jumps to the first problem. *Fill with a sample* loads a listing ad request for testing.
+- **New request** (`request-form.tsx`) — six steps: Request, Format, Content, Approvals, Timing, Terms. Errors show once you try to leave a step; *Send it* checks every step and jumps to the first problem.
 - **Terms** (`terms.tsx`) — Appendix A verbatim, shown in the last step with the three confirmations. `[bracketed]` items are still placeholders.
 
 ## Form fields (handover section 2)
@@ -55,7 +55,7 @@ Lead times (Settings › Availability; defaults are the handover's drafts): soci
 | `form-builder.tsx` | The manager's form builder |
 | `custom-fields.tsx` | A form's questions as the requester sees them, and the answers in the pop-out |
 | `store.ts` | localStorage store, the workflow actions, flags, timers, the demo people |
-| `seed.ts` | Demo requests (Agents only, DR-0001 to DR-0005, dates relative to today), blank and sample drafts |
+| `seed.ts` | The blank draft (the board starts with no requests) |
 | `terms.tsx` | Terms & Conditions — Appendix A verbatim as the default wording, and the renderer |
 | `request-form.tsx` | New / resubmit dialog |
 | `columns.ts` | The columns, their colours, which drag moves are allowed, "How it works" |

@@ -233,7 +233,7 @@ export function Board() {
         <span className="text-xs text-muted-foreground">
           {role === "requester" ? "Your own requests · New request, edit a returned one, revisions, accept" : role === "designer" ? "Only the work assigned to you · start it and deliver it" : "Every request · assign, return, approve urgent, form builder, settings"}
         </span>
-        <Button variant="ghost" size="sm" className="ml-auto" onClick={() => (resetDemo(), resetSettings(), resetForms())} title="Put the demo requests, flags, settings and forms back">
+        <Button variant="ghost" size="sm" className="ml-auto" onClick={() => (resetDemo(), resetSettings(), resetForms())} title="Clear every request and flag, and put the settings and forms back">
           <RotateCcw /> Reset demo
         </Button>
       </div>

@@ -11,7 +11,6 @@ import type { Employee } from "@/lib/demo/types";
 import { addWorkingDays, isoDay } from "./rules";
 import { formFor, type FormSnapshot } from "./forms";
 import { settings } from "./settings";
-import { SEED } from "./seed";
 import type { Attachment, DesignRequest, Flag, HistoryEntry, RequestDraft, Requester, Status } from "./types";
 
 export const MARKETING = "Marketing & Design";
@@ -19,11 +18,11 @@ export const MARKETING_EMAIL = "design-requests@provident.demo";
 export const DIRECTOR = "Marketing Director";
 export const DIRECTOR_EMAIL = "marketing.director@provident.demo";
 
-const KEY = "provtoys-design-requests:v4";
+const KEY = "provtoys-design-requests:v5";
 
 type State = { requests: DesignRequest[]; flags: Record<string, Flag[]>; seq: number };
 
-const seedState = (): State => ({ requests: SEED, flags: { "emp-2": [{ at: "2026-10-20T10:00", reason: "Placeholder copy (“TBC”) in DR-0001", requestRef: "DR-0001" }] }, seq: SEED.length });
+const seedState = (): State => ({ requests: [], flags: {}, seq: 0 });
 const SERVER = seedState();
 
 let cache: State | null = null;

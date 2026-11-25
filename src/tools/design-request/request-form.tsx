@@ -16,7 +16,7 @@ import { CATEGORIES, FORMATS, LANGUAGES, REQUEST_TYPES, typeById, USAGES } from 
 import { CustomFields } from "./custom-fields";
 import { formFor, useForms } from "./forms";
 import { earliestDeadline, fmtDay, isLowRes, latestDeadline, needs, stepErrors, stepsFor, validate, type StepId } from "./rules";
-import { blankDraft, sampleDraft } from "./seed";
+import { blankDraft } from "./seed";
 import { settings } from "./settings";
 import { submitRequest, useDesignState } from "./store";
 import { Terms } from "./terms";
@@ -126,11 +126,6 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
             <h2 className="text-h2">{initial ? `Edit and resubmit ${initial.ref}` : "Request a design"}</h2>
             <p className="mt-1 text-xs text-muted-foreground">⌘↵ to send · Esc to cancel</p>
           </div>
-          {!initial && (
-            <button type="button" onClick={() => setD({ ...sampleDraft() })} className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
-              Fill with a sample
-            </button>
-          )}
         </div>
         <nav aria-label="Steps" className="flex gap-1 overflow-x-auto overflow-y-hidden border-b [scrollbar-width:none]">
           {STEPS.map((s, i) => {
