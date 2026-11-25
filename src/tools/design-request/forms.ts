@@ -70,6 +70,31 @@ const SEED: CustomForm[] = [
     ],
   },
   {
+    id: "sale-rent-signs",
+    name: "Sale / Rent signage",
+    description: "The sign, what goes on it, and where it’s put up.",
+    typeIds: ["ag-board"],
+    updated: "2026-11-25",
+    fields: [
+      f("sign", "heading", "The sign"),
+      f("purpose", "select", "For sale or for rent?", { required: true, options: ["For Sale", "For Rent", "For Sale or Rent"] }),
+      f("format", "select", "Sign type", { required: true, options: ["Pole or stake board", "Window poster", "Balcony banner", "Building hoarding"] }),
+      f("size", "select", "Size", { required: true, options: ["60 × 90 cm", "90 × 120 cm", "120 × 180 cm", "Other — I’ll give it in the brief"] }),
+      f("quantity", "number", "How many signs?", { required: true }),
+      f("content", "heading", "What goes on it"),
+      f("property", "short", "Building or community name", { required: true, help: "e.g. Marina Gate 1, Arabian Ranches 2" }),
+      f("unit", "short", "Property type and bedrooms", { help: "e.g. 3BR townhouse. Leave empty to keep the sign general." }),
+      f("contact", "short", "Agent name and mobile on the sign", { required: true }),
+      f("price", "checkbox", "Show the price on the sign"),
+      f("install", "heading", "Where it goes"),
+      f("address", "long", "Where the sign will be put up", { required: true, help: "Address, unit and the exact spot (gate, balcony, window)." }),
+      f("map", "link", "Google Maps link"),
+      f("installBy", "date", "Needed up by"),
+      f("spot", "file", "Photo of the spot", { help: "Helps us size the sign and check it can be read from the street." }),
+      f("consent", "checkbox", "The owner or building management has agreed to the sign going up", { required: true }),
+    ],
+  },
+  {
     id: "open-house",
     name: "Open house details",
     description: "The when and where printed on the flyer and signs.",
@@ -101,7 +126,7 @@ const SEED: CustomForm[] = [
   },
 ];
 
-const KEY = "provtoys-design-forms:v1";
+const KEY = "provtoys-design-forms:v2";
 let cache: CustomForm[] | null = null;
 const listeners = new Set<() => void>();
 
