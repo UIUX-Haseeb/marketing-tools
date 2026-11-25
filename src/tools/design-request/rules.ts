@@ -3,6 +3,7 @@
  * rejection, lead times in working days, which approvals a request needs, step validation.
  */
 import { LEAD_LABEL, typeById } from "./catalog";
+import { answered, formFor } from "./forms";
 import { settings, weekdayIndex } from "./settings";
 import type { Attachment, RequestDraft } from "./types";
 
@@ -78,6 +79,7 @@ export function needs(d: RequestDraft) {
 
 export const STEPS = [
   { id: "request", label: "Request" },
+  { id: "details", label: "Details" },
   { id: "format", label: "Format" },
   { id: "content", label: "Content" },
   { id: "approvals", label: "Approvals" },
@@ -85,6 +87,9 @@ export const STEPS = [
   { id: "terms", label: "Terms" },
 ] as const;
 export type StepId = (typeof STEPS)[number]["id"];
+
+/** The steps for this draft: "Details" only when its request type has a custom form. */
+export const stepsFor = (d: RequestDraft) => STEPS.filter((s) => s.id !== "details" || !!formFor(d.typeId));
 
 export type Errors = Partial<Record<string, string>>;
 
@@ -141,6 +146,9 @@ export function validate(d: RequestDraft, today = new Date(), dueOn: (iso: strin
   if (n.developer && !d.developerApproval.length) e.developerApproval = "Attach the developer's written approval.";
   if (n.person && !d.personApproval.length) e.personApproval = "Attach the HR or department head approval.";
   if (n.people && !d.peopleAgreed) e.peopleAgreed = "Everyone shown needs to have agreed.";
+  const form = formFor(d.typeId);
+  for (const field of form?.fields ?? [])
+    if (field.kind !== "heading" && field.required && !answered(field, d.answers?.[field.id])) e[`cf:${field.id}`] = field.kind === "checkbox" ? "Tick this to continue." : "This one is required.";
   for (const doc of settings().documents) if (doc.asked && doc.required && !d.docs?.[doc.id]?.length) e[`doc:${doc.id}`] = `Attach the ${doc.name.toLowerCase()}.`;
 
   const min = earliestDeadline(d.typeId, today);
@@ -157,4 +165,4 @@ export function validate(d: RequestDraft, today = new Date(), dueOn: (iso: strin
   return e;
 }
 
-export const stepErrors = (errors: Errors, step: StepId) => Object.keys(errors).filter((k) => (k.startsWith("doc:") ? "approvals" : FIELD_STEP[k]) === step);
+export const stepErrors = (errors: Errors, step: StepId) => Object.keys(errors).filter((k) => (k.startsWith("doc:") ? "approvals" : k.startsWith("cf:") ? "details" : FIELD_STEP[k]) === step);

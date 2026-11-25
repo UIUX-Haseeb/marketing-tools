@@ -9,6 +9,7 @@ import { useSyncExternalStore } from "react";
 import { EMPLOYEES } from "@/lib/demo/employees";
 import type { Employee } from "@/lib/demo/types";
 import { addWorkingDays, isoDay } from "./rules";
+import { formFor, type FormSnapshot } from "./forms";
 import { settings } from "./settings";
 import { SEED } from "./seed";
 import type { Attachment, DesignRequest, Flag, HistoryEntry, RequestDraft, Requester, Status } from "./types";
@@ -115,7 +116,16 @@ function update(id: string, fn: (r: DesignRequest, s: State) => { r: DesignReque
 }
 
 /** New request, or a Returned one edited and sent again. */
-export function submitRequest(draft: RequestDraft, requester: Requester, existingId?: string): DesignRequest {
+/** The request type's form as it is now, and only the answers to its questions. */
+function withForm(draft: RequestDraft): RequestDraft & { form?: FormSnapshot } {
+  const f = formFor(draft.typeId);
+  if (!f) return { ...draft, answers: undefined, form: undefined };
+  const answers = Object.fromEntries(f.fields.filter((x) => draft.answers?.[x.id] !== undefined).map((x) => [x.id, draft.answers![x.id]]));
+  return { ...draft, answers, form: { id: f.id, name: f.name, fields: f.fields } };
+}
+
+export function submitRequest(raw: RequestDraft, requester: Requester, existingId?: string): DesignRequest {
+  const draft = withForm(raw);
   const s = read();
   const urgentApproval = draft.urgent ? ("pending" as const) : undefined;
   const to = [requester.email, MARKETING_EMAIL, ...(draft.urgent ? [DIRECTOR_EMAIL] : [])];

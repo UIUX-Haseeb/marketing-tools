@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { categoryLabel, LEAD_LABEL, typeById } from "./catalog";
 import { colorOf, columnOf, type Move, type Role } from "./columns";
+import { Answers } from "./custom-fields";
 import { fmtDay, fmtStamp, needs } from "./rules";
 import { designerAway, designerColor, settings } from "./settings";
 import {
@@ -227,6 +228,14 @@ export function RequestSheet({ r, role, onClose, onEdit, onAct, onCalendar }: { 
             <span className="block text-xs text-muted-foreground">{r.requester.email}</span>
           </Field>
           <Field label="Brief">{r.brief}</Field>
+          {r.form && (
+            <div className="space-y-2 rounded-xl border p-4">
+              <p className="text-sm">
+                {r.form.name} <span className="text-xs text-muted-foreground">· custom form</span>
+              </p>
+              <Answers fields={r.form.fields} answers={r.answers ?? {}} />
+            </div>
+          )}
           <Field label="Formats">{[...r.formats, r.customSize && `(${r.customSize})`].filter(Boolean).join(", ")}</Field>
           <Field label="Used on">{r.usages.join(", ")}</Field>
           {n.print && <Field label="Print">{`${r.printQuantity} copies${r.bleed ? " · with bleed" : ""}`}</Field>}

@@ -9,7 +9,7 @@
  */
 import { useEffect, useState, type CSSProperties } from "react";
 import {
-  Ban, CalendarDays, Columns3, Eye, EyeOff, FileText, Flag, Layers, Palette, PauseCircle, Plus, RefreshCw, RotateCcw, Search, Settings, Zap,
+  Ban, CalendarDays, ClipboardList, Columns3, Eye, EyeOff, FileText, Flag, Layers, Palette, PauseCircle, Plus, RefreshCw, RotateCcw, Search, Settings, Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,8 @@ import { RequestForm } from "./request-form";
 import { fmtDay, isoDay } from "./rules";
 import { resetSettings, settings, useSettings } from "./settings";
 import { SettingsPanel } from "./settings-panel";
+import { FormBuilder } from "./form-builder";
+import { resetForms } from "./forms";
 import { DIRECTOR, flagsOf, isPaused, MARKETING, move, PEOPLE, reinstate, requesterFrom, resetDemo, runTimers, useDesignState } from "./store";
 import type { DesignRequest } from "./types";
 import { Modal } from "./ui";
@@ -157,7 +159,7 @@ export function Board() {
   const [howTo, setHowTo] = useState(true);
   const [hidden, setHidden] = useState<Column[]>([]);
   const [shown, setShown] = useState<Partial<Record<Column, number>>>({});
-  const [dialog, setDialog] = useState<null | "calendar" | "columns" | "settings">(null);
+  const [dialog, setDialog] = useState<null | "calendar" | "columns" | "settings" | "forms">(null);
   const [calFocus, setCalFocus] = useState<string>();
   const [form, setForm] = useState<null | { editId?: string }>(null);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -229,9 +231,9 @@ export function Board() {
           </Select>
         )}
         <span className="text-xs text-muted-foreground">
-          {role === "requester" ? "Your own requests · New request, edit a returned one, revisions, accept" : role === "designer" ? "Only the work assigned to you · start it and deliver it" : "Every request · assign, return, approve urgent, settings"}
+          {role === "requester" ? "Your own requests · New request, edit a returned one, revisions, accept" : role === "designer" ? "Only the work assigned to you · start it and deliver it" : "Every request · assign, return, approve urgent, form builder, settings"}
         </span>
-        <Button variant="ghost" size="sm" className="ml-auto" onClick={() => (resetDemo(), resetSettings())} title="Put the demo requests, flags and settings back">
+        <Button variant="ghost" size="sm" className="ml-auto" onClick={() => (resetDemo(), resetSettings(), resetForms())} title="Put the demo requests, flags, settings and forms back">
           <RotateCcw /> Reset demo
         </Button>
       </div>
@@ -258,9 +260,14 @@ export function Board() {
           <Columns3 /> Columns
         </Button>
         {role === "marketing" && (
-          <Button variant="outline" onClick={() => setDialog("settings")}>
-            <Settings /> Settings
-          </Button>
+          <>
+            <Button variant="outline" onClick={() => setDialog("forms")}>
+              <ClipboardList /> Form builder
+            </Button>
+            <Button variant="outline" onClick={() => setDialog("settings")}>
+              <Settings /> Settings
+            </Button>
+          </>
         )}
         {role === "requester" && (
           <Button className="ml-auto" onClick={() => setForm({})} disabled={paused} title={paused ? `Requests are paused at ${cfg.flagLimit} flags` : undefined}>
@@ -448,6 +455,7 @@ export function Board() {
       )}
 
       {dialog === "settings" && <SettingsPanel current={cfg} onClose={() => setDialog(null)} />}
+      {dialog === "forms" && <FormBuilder onClose={() => setDialog(null)} />}
 
       {form && (
         <RequestForm

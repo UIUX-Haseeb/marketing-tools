@@ -2,6 +2,8 @@
  * Design request data model. In the CRM this is the design-requests API; here it's
  * localStorage (store.ts). Attachments keep their name, size and pixel size only.
  */
+import type { Answer, FormSnapshot } from "./forms";
+
 export type Category = "agents" | "hr" | "procurement" | "it" | "other";
 
 export const STATUSES = ["Submitted", "Returned", "Confirmed", "In progress", "Delivered", "Revision requested", "Closed"] as const;
@@ -49,6 +51,8 @@ export type RequestDraft = {
   peopleAgreed: boolean;
   /** Uploads for the extra documents in Settings › Documents, by document id. */
   docs?: Record<string, Attachment[]>;
+  /** Answers to the request type's custom form (Details step), by question id. */
+  answers?: Record<string, Answer>;
 
   deadline: string;
   urgent: boolean;
@@ -75,6 +79,8 @@ export type DesignRequest = RequestDraft & {
   ref: string;
   requester: Requester;
   status: Status;
+  /** The custom form as it was when the request was sent. */
+  form?: FormSnapshot;
   /** The terms version the requester accepted. */
   termsVersion?: string;
   /** The designer Marketing picked when confirming it. */

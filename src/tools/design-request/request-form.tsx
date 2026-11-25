@@ -13,7 +13,9 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, FORMATS, LANGUAGES, REQUEST_TYPES, typeById, USAGES } from "./catalog";
-import { earliestDeadline, fmtDay, isLowRes, latestDeadline, needs, STEPS, stepErrors, validate, type StepId } from "./rules";
+import { CustomFields } from "./custom-fields";
+import { formFor, useForms } from "./forms";
+import { earliestDeadline, fmtDay, isLowRes, latestDeadline, needs, stepErrors, stepsFor, validate, type StepId } from "./rules";
 import { blankDraft, sampleDraft } from "./seed";
 import { settings } from "./settings";
 import { submitRequest, useDesignState } from "./store";
@@ -71,12 +73,15 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
   const body = useRef<HTMLDivElement>(null);
 
   const { requests } = useDesignState();
+  useForms();
   const set = (p: Partial<RequestDraft>) => setD((x) => ({ ...x, ...p }));
   const all = useMemo(
     () => validate(d, new Date(), (iso) => requests.filter((r) => r.deadline === iso && r.id !== initial?.id && r.status !== "Closed").length),
     [d, requests, initial?.id],
   );
   const docs = settings().documents.filter((x) => x.asked);
+  const STEPS = stepsFor(d);
+  const form = formFor(d.typeId);
   const terms = settings().terms;
   const shown = (k: string) => {
     const s = STEPS.find((x) => stepErrors(all, x.id).includes(k));
@@ -97,8 +102,9 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
     goTo(STEPS[idx + 1].id);
   };
   const send = useCallback(() => {
-    setTried(new Set(STEPS.map((s) => s.id)));
-    const bad = STEPS.find((s) => stepErrors(all, s.id).length);
+    const steps = stepsFor(d);
+    setTried(new Set(steps.map((s) => s.id)));
+    const bad = steps.find((s) => stepErrors(all, s.id).length);
     if (bad) return goTo(bad.id);
     onSent(submitRequest(d, { ...requester, department }, initial?.id));
   }, [all, d, department, initial?.id, onSent, requester]);
@@ -201,6 +207,16 @@ export function RequestForm({ requester, initial, onClose, onSent }: { requester
             >
               <Textarea id="brief" rows={5} value={d.brief} onChange={(e) => set({ brief: e.target.value })} placeholder="What it's for, who it's for, what it must show…" className={cn(shown("brief") && "border-destructive")} />
             </Field>
+          </>
+        )}
+
+        {step === "details" && form && (
+          <>
+            <div className="rounded-xl bg-secondary/60 p-4 text-sm">
+              <p className="font-normal">{form.name}</p>
+              {form.description && <p className="mt-0.5 text-muted-foreground">{form.description}</p>}
+            </div>
+            <CustomFields fields={form.fields} answers={d.answers ?? {}} onChange={(id, a) => set({ answers: { ...d.answers, [id]: a } })} error={(id) => shown(`cf:${id}`)} />
           </>
         )}
 
