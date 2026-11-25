@@ -7,7 +7,7 @@
  */
 import { useState } from "react";
 import {
-  AlignLeft, ArrowDown, ArrowUp, Calendar, CheckSquare, ChevronDown, CircleDot, Copy, FileUp, Hash, Heading, Link2, ListChecks, Plus, Save, Trash2, Type, X,
+  AlignLeft, ArrowDown, ArrowUp, Calendar, CheckSquare, ChevronDown, CircleDot, Copy, Eye, FileUp, Hash, Heading, Link2, ListChecks, Plus, Save, Trash2, Type, X,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,64 @@ import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, REQUEST_TYPES, typeById } from "./catalog";
 import { CustomFields } from "./custom-fields";
-import { deleteForm, FIELD_KINDS, hasOptions, newId, saveForm, useForms, type Answer, type CustomForm, type FieldKind, type FormField } from "./forms";
+import { answered, deleteForm, FIELD_KINDS, hasOptions, newId, saveForm, useForms, type Answer, type CustomForm, type FieldKind, type FormField } from "./forms";
 import { fmtDay } from "./rules";
 import { Switch } from "./settings-panel";
+import { Modal } from "./ui";
+
+/** The form as the requester meets it: the request dialog on its Details step. Answers here aren't saved. */
+function PreviewDialog({ form, onClose }: { form: CustomForm; onClose: () => void }) {
+  const [answers, setAnswers] = useState<Record<string, Answer>>({});
+  const [tried, setTried] = useState(false);
+  const missing = form.fields.filter((f) => f.kind !== "heading" && f.required && !answered(f, answers[f.id]));
+  const steps = ["Request", "Details", "Format", "Content", "Approvals", "Timing", "Terms"];
+  return (
+    <Modal label={`Preview of ${form.name}`} onClose={onClose} className="h-[min(860px,calc(100vh-4rem))] max-w-[680px]">
+      <div className="flex items-center gap-2 rounded-t-2xl border-b border-info/30 bg-info/10 px-6 py-2 text-xs text-info">
+        <Eye className="size-3.5" /> Preview — what a requester sees. Nothing you type here is saved.
+      </div>
+      <header className="space-y-4 px-6 pt-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-h2">Request a design</h2>
+            <p className="mt-1 text-xs text-muted-foreground">⌘↵ to send · Esc to cancel</p>
+          </div>
+          <Button variant="ghost" size="icon" aria-label="Close preview" onClick={onClose}>
+            <X />
+          </Button>
+        </div>
+        <nav aria-label="Steps" className="flex gap-1 overflow-x-auto overflow-y-hidden border-b [scrollbar-width:none]">
+          {steps.map((s, i) => (
+            <span key={s} className={cn("-mb-px flex shrink-0 items-center gap-1.5 border-b-2 border-transparent px-2.5 pb-2.5 text-sm text-muted-foreground", s === "Details" && "border-foreground text-foreground")}>
+              <span className="flex size-5 items-center justify-center rounded-full border text-[11px] tabular-nums">{i + 1}</span>
+              {s}
+            </span>
+          ))}
+        </nav>
+      </header>
+      <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+        <div className="rounded-xl bg-secondary/60 p-4 text-sm">
+          <p className="font-normal">{form.name || "Untitled form"}</p>
+          {form.description && <p className="mt-0.5 text-muted-foreground">{form.description}</p>}
+        </div>
+        <CustomFields
+          fields={form.fields}
+          answers={answers}
+          onChange={(id, a) => setAnswers((x) => ({ ...x, [id]: a }))}
+          error={(id) => (tried && missing.some((f) => f.id === id) ? "This one is required." : undefined)}
+        />
+      </div>
+      <footer className="flex items-center gap-2 border-t px-6 py-4">
+        {tried && <span className={cn("text-sm", missing.length ? "text-destructive" : "text-success")}>{missing.length ? `${missing.length} required question${missing.length === 1 ? "" : "s"} still empty.` : "All required questions answered — the requester could carry on."}</span>}
+        <span className="ml-auto" />
+        <Button variant="outline" onClick={() => (setAnswers({}), setTried(false))}>
+          Clear
+        </Button>
+        <Button onClick={() => setTried(true)}>Try Next</Button>
+      </footer>
+    </Modal>
+  );
+}
 
 const KIND_ICON: Record<FieldKind, LucideIcon> = {
   short: Type,
@@ -133,6 +188,7 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
   const [flash, setFlash] = useState<string | null>(null);
   const [preview, setPreview] = useState<Record<string, Answer>>({});
   const [openCats, setOpenCats] = useState<string[]>(["agents"]);
+  const [previewing, setPreviewing] = useState(false);
 
   const isNew = !!draft && !saved.some((x) => x.id === draft.id);
   const set = (p: Partial<CustomForm>) => {
@@ -204,6 +260,7 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
 
   return (
     <div role="dialog" aria-label="Form builder" className="fixed inset-0 z-50 flex flex-col bg-background">
+      {previewing && draft && <PreviewDialog form={draft} onClose={() => setPreviewing(false)} />}
       <header className="flex items-center justify-between gap-4 border-b bg-card px-6 py-3.5">
         <div>
           <h2 className="text-lg font-normal">Form builder</h2>
@@ -402,6 +459,9 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
                     )}
                     {flash && <span className="text-sm text-success">{flash}</span>}
                     <span className="ml-auto" />
+                    <Button variant="outline" onClick={() => setPreviewing(true)}>
+                      <Eye /> Preview
+                    </Button>
                     {dirty && !isNew && (
                       <Button variant="secondary" onClick={() => open(saved.find((x) => x.id === draft.id)!)}>
                         Discard changes
