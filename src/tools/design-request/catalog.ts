@@ -38,6 +38,7 @@ export const CATEGORIES: { id: Category; label: string; help: string }[] = [
   { id: "other", label: "Other admin", help: "Finance, operations, compliance" },
 ];
 
+/** The built-in list. Managers change it in Settings › Request types (settings.ts `types`). */
 export const REQUEST_TYPES: Record<Category, RequestType[]> = {
   agents: [
     { id: "ag-paid-ads", group: LISTINGS, label: "Paid ad creatives (Meta ads, banners) for a specific listing or project", lead: "social", permit: true },
@@ -89,7 +90,6 @@ export const REQUEST_TYPES: Record<Category, RequestType[]> = {
 };
 
 export const ALL_TYPES = Object.values(REQUEST_TYPES).flat();
-export const typeById = (id: string) => ALL_TYPES.find((t) => t.id === id);
 export const categoryLabel = (c: Category) => CATEGORIES.find((x) => x.id === c)?.label ?? c;
 
 export const FORMATS = ["Feed post", "Story", "A4", "Poster", "Roll-up", "Screen", "Custom"] as const;

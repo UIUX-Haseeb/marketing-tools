@@ -2,7 +2,7 @@
 
 /**
  * "Design settings" — the portal's Photography settings sheet for design requests, open to the
- * Marketing manager: Availability, Designers, Files, Documents, Terms & Conditions. Each tab
+ * Marketing manager: Availability, Request types, Designers, Files, Documents, Terms & Conditions. Each tab
  * edits its own copy and saves with its own button; Cancel closes without saving.
  */
 import { useState, type ReactNode } from "react";
@@ -12,14 +12,16 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { LEAD_LABEL, type LeadClass } from "./catalog";
+import { CATEGORIES, LEAD_LABEL, REQUEST_TYPES, type LeadClass, type RequestType } from "./catalog";
 import { fmtDay, isoDay } from "./rules";
 import { DEFAULTS, saveSettings, WEEKDAY_NAMES, WEEKDAYS, type Designer, type DocumentRule, type Settings } from "./settings";
 import { Terms } from "./terms";
+import type { Category } from "./types";
 import { Modal, Sheet } from "./ui";
 
 const TABS = [
   { id: "availability", label: "Availability", help: "When requests can be due, and the rules for replies, revisions and flags." },
+  { id: "types", label: "Request types", help: "The request types requesters pick from, for each group." },
   { id: "designers", label: "Designers", help: "Each designer’s colour and the days they work." },
   { id: "files", label: "Files", help: "The pictures a request needs and how long a brief must be." },
   { id: "documents", label: "Documents", help: "The documents requesters attach to a design request." },
@@ -279,6 +281,101 @@ function Documents({ s, set }: { s: Settings; set: (p: Partial<Settings>) => voi
   );
 }
 
+const FLAGS: { key: "permit" | "developer" | "person"; label: string; help: string }[] = [
+  { key: "permit", label: "Permit number and QR", help: "The requester must give the DLD permit number and QR code." },
+  { key: "developer", label: "Developer approval", help: "Always needs the developer’s written approval." },
+  { key: "person", label: "About a person", help: "Needs HR or department head approval." },
+];
+
+function TypesTab({ s, set }: { s: Settings; set: (p: Partial<Settings>) => void }) {
+  const [cat, setCat] = useState<Category>("agents");
+  const list = s.types[cat];
+  const put = (next: RequestType[]) => set({ types: { ...s.types, [cat]: next } });
+  const edit = (i: number, p: Partial<RequestType>) => put(list.map((t, j) => (j === i ? { ...t, ...p } : t)));
+  const swap = (i: number, j: number) => {
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    put(next);
+  };
+  const groups = [...new Set(list.map((t) => t.group).filter(Boolean))] as string[];
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        What requesters see under “Request type” once they pick who it’s for. Each type sets the lead time and the approvals it needs. Removing a type doesn’t change requests already sent with it, and a
+        custom form stops showing for it.
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => setCat(c.id)}
+            className={cn("rounded-full border px-3 py-1 text-sm", cat === c.id ? "border-navy-2 bg-navy-2 text-paper dark:border-paper dark:bg-paper dark:text-navy" : "text-muted-foreground hover:text-foreground")}
+          >
+            {c.label} <span className="tabular-nums opacity-70">{s.types[c.id].length}</span>
+          </button>
+        ))}
+      </div>
+      <datalist id="type-groups">
+        {groups.map((g) => (
+          <option key={g} value={g} />
+        ))}
+      </datalist>
+      {list.map((t, i) => (
+        <div key={t.id} className="space-y-3 rounded-xl border p-4">
+          <div className="flex items-end gap-2">
+            <label className="block flex-1 space-y-1.5">
+              <span className="text-xs text-muted-foreground">Name</span>
+              <Input value={t.label} onChange={(e) => edit(i, { label: e.target.value })} className={cn(!t.label.trim() && "border-destructive")} />
+            </label>
+            <Button variant="ghost" size="icon" aria-label="Move up" disabled={i === 0} onClick={() => swap(i, i - 1)}>
+              <ArrowUp />
+            </Button>
+            <Button variant="ghost" size="icon" aria-label="Move down" disabled={i === list.length - 1} onClick={() => swap(i, i + 1)}>
+              <ArrowDown />
+            </Button>
+            <Button variant="ghost" size="icon" aria-label={`Remove ${t.label}`} onClick={() => put(list.filter((_, j) => j !== i))}>
+              <Trash2 />
+            </Button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="block space-y-1.5">
+              <span className="text-xs text-muted-foreground">Lead time</span>
+              <Select value={t.lead} onChange={(e) => edit(i, { lead: e.target.value as LeadClass })}>
+                {(Object.keys(LEAD_LABEL) as LeadClass[]).map((k) => (
+                  <option key={k} value={k}>
+                    {LEAD_LABEL[k]} · {s.lead[k]} working days
+                  </option>
+                ))}
+              </Select>
+            </label>
+            <label className="block space-y-1.5">
+              <span className="text-xs text-muted-foreground">Heading in the list (optional)</span>
+              <Input list="type-groups" value={t.group ?? ""} onChange={(e) => edit(i, { group: e.target.value || undefined })} placeholder="No heading" />
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {FLAGS.map((f) => (
+              <span key={f.key} className="flex items-center gap-2" title={f.help}>
+                <Switch on={!!t[f.key]} label={f.label} onChange={(v) => edit(i, { [f.key]: v || undefined })} /> {f.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+      {!list.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No request types in this group — requesters can’t pick it until you add one.</p>}
+      <div className="flex flex-wrap items-center gap-2">
+        <Button variant="secondary" onClick={() => put([...list, { id: `${cat}-${crypto.randomUUID().slice(0, 8)}`, label: "New request type", lead: "flyer", group: groups.at(-1) }])}>
+          <Plus /> Add a request type
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => put(REQUEST_TYPES[cat])}>
+          Put back the built-in list
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function TermsTab({ s, set }: { s: Settings; set: (p: Partial<Settings>) => void }) {
   const t = s.terms;
   const [preview, setPreview] = useState(false);
@@ -340,21 +437,24 @@ function TermsTab({ s, set }: { s: Settings; set: (p: Partial<Settings>) => void
   );
 }
 
-const SAVE: Record<Tab, string> = { availability: "Save availability", designers: "Save designers", files: "Save file rules", documents: "Save documents", terms: "Save Terms & Conditions" };
+const SAVE: Record<Tab, string> = { availability: "Save availability", types: "Save request types", designers: "Save designers", files: "Save file rules", documents: "Save documents", terms: "Save Terms & Conditions" };
 
-export function SettingsPanel({ current, onClose }: { current: Settings; onClose: () => void }) {
-  const [tab, setTab] = useState<Tab>("availability");
+export function SettingsPanel({ current, onClose, tab: first = "availability" }: { current: Settings; onClose: () => void; tab?: Tab }) {
+  const [tab, setTab] = useState<Tab>(first);
   const [draft, setDraft] = useState<Settings>(current);
   const [saved, setSaved] = useState<Tab | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const set = (p: Partial<Settings>) => {
     setDraft((d) => ({ ...d, ...p }));
     setSaved(null);
+    setError(null);
   };
   const info = TABS.find((t) => t.id === tab)!;
 
   const save = () => {
     const keys: Record<Tab, (keyof Settings)[]> = {
       availability: ["lead", "bookUpTo", "perDay", "week", "replyDays", "revisionRounds", "flagLimit"],
+      types: ["types"],
       designers: ["designers"],
       files: ["files"],
       documents: ["documents"],
@@ -362,6 +462,10 @@ export function SettingsPanel({ current, onClose }: { current: Settings; onClose
     };
     const patch = Object.fromEntries(keys[tab].map((k) => [k, draft[k]])) as Partial<Settings>;
     if (tab === "terms") patch.terms = { ...draft.terms, savedAt: isoDay(new Date()) };
+    if (tab === "types") {
+      const blank = Object.values(draft.types).flat().some((t) => !t.label.trim());
+      if (blank) return setError("Give every request type a name.");
+    }
     saveSettings(patch);
     if (patch.terms) setDraft((d) => ({ ...d, terms: patch.terms! }));
     setSaved(tab);
@@ -386,7 +490,7 @@ export function SettingsPanel({ current, onClose }: { current: Settings; onClose
           <button
             key={t.id}
             type="button"
-            onClick={() => setTab(t.id)}
+            onClick={() => (setTab(t.id), setError(null))}
             className={cn("shrink-0 border-b-2 px-4 py-3 text-sm whitespace-nowrap", tab === t.id ? "border-navy-2 text-foreground dark:border-paper" : "border-transparent text-muted-foreground hover:text-foreground")}
           >
             {t.label}
@@ -395,6 +499,7 @@ export function SettingsPanel({ current, onClose }: { current: Settings; onClose
       </nav>
       <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
         {tab === "availability" && <Availability s={draft} set={set} />}
+        {tab === "types" && <TypesTab s={draft} set={set} />}
         {tab === "designers" && <Designers s={draft} set={set} />}
         {tab === "files" && <Files s={draft} set={set} />}
         {tab === "documents" && <Documents s={draft} set={set} />}
@@ -402,6 +507,7 @@ export function SettingsPanel({ current, onClose }: { current: Settings; onClose
       </div>
       <footer className="flex items-center justify-end gap-2 border-t px-6 py-3">
         {saved === tab && <span className="mr-auto text-sm text-success">Saved.</span>}
+        {error && <span className="mr-auto text-sm text-destructive">{error}</span>}
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>

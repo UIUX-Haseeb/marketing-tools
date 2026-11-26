@@ -15,11 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { categoryLabel, LEAD_LABEL, typeById } from "./catalog";
+import { categoryLabel, LEAD_LABEL } from "./catalog";
 import { colorOf, columnOf, type Move, type Role } from "./columns";
 import { Answers } from "./custom-fields";
 import { fmtDay, fmtStamp, needs } from "./rules";
-import { designerAway, designerColor, settings } from "./settings";
+import { designerAway, designerColor, settings, typeById } from "./settings";
 import {
   assignDesigner, cancelRequest, decideUrgent, expireReply, move, requestRevision, returnRequest, revisionWindow, sendReminder,
 } from "./store";

@@ -2,9 +2,9 @@
  * The rules the form and the workflow enforce (handover sections 2 and 3): placeholder
  * rejection, lead times in working days, which approvals a request needs, step validation.
  */
-import { LEAD_LABEL, typeById } from "./catalog";
+import { LEAD_LABEL } from "./catalog";
 import { answered, formFor } from "./forms";
-import { settings, weekdayIndex } from "./settings";
+import { settings, typeById, weekdayIndex } from "./settings";
 import type { Attachment, RequestDraft } from "./types";
 
 // Revision rounds, the flag limit, reply days, the smallest picture and the shortest brief

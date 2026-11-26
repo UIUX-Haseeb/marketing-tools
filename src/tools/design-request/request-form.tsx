@@ -12,12 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, FORMATS, LANGUAGES, REQUEST_TYPES, typeById, USAGES } from "./catalog";
+import { CATEGORIES, FORMATS, LANGUAGES, USAGES } from "./catalog";
 import { CustomFields } from "./custom-fields";
 import { formFor, useForms } from "./forms";
 import { earliestDeadline, fmtDay, isLowRes, latestDeadline, needs, stepErrors, stepsFor, validate, type StepId } from "./rules";
 import { blankDraft } from "./seed";
-import { settings } from "./settings";
+import { settings, typeById, useSettings } from "./settings";
 import { submitRequest, useDesignState } from "./store";
 import { Terms } from "./terms";
 import type { Category, DesignRequest, Requester, RequestDraft } from "./types";
@@ -34,7 +34,8 @@ const CATEGORY_ICON: Record<Category, ReactNode> = {
 const defaultCategory = (dept: string): Category | "" => ({ Sales: "agents", HR: "hr", Operations: "other", Finance: "other" })[dept] as Category | "" ?? "";
 
 function TypeSelect({ category, value, onChange, error }: { category: Category | ""; value: string; onChange: (v: string) => void; error?: boolean }) {
-  const types = category ? REQUEST_TYPES[category] : [];
+  const all = useSettings().types;
+  const types = category ? all[category] : [];
   const groups = [...new Set(types.map((t) => t.group ?? ""))];
   return (
     <Select id="typeId" value={value} disabled={!category} onChange={(e) => onChange(e.target.value)} className={cn(!value && "text-muted-foreground", error && "border-destructive")}>

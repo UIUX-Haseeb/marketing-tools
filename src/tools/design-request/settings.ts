@@ -2,14 +2,16 @@
 
 /**
  * Design settings — the portal's "Photography settings" for design requests, kept in
- * localStorage (this browser only). Five tabs: Availability (lead times, booking window,
- * daily limit, the working week, reply / revision / flag rules), Designers (colour, working
+ * localStorage (this browser only). Six tabs: Availability (lead times, booking window,
+ * daily limit, the working week, reply / revision / flag rules), Request types (the list
+ * requesters pick from, per group), Designers (colour, working
  * days, days off), Files (smallest picture, warn or refuse), Documents (extra upload boxes on
  * the form) and Terms & Conditions (version, wording, the tick-box text). rules.ts, the form,
  * the board and the calendar all read from here, so a saved change shows straight away.
  */
 import { useSyncExternalStore } from "react";
-import { LEAD_DAYS, type LeadClass } from "./catalog";
+import { ALL_TYPES, LEAD_DAYS, REQUEST_TYPES, type LeadClass, type RequestType } from "./catalog";
+import type { Category } from "./types";
 import { DEFAULT_TERMS } from "./terms";
 
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
@@ -34,6 +36,8 @@ export type Settings = {
   files: { minPx: number; mode: "warn" | "refuse"; briefMin: number };
   documents: DocumentRule[];
   terms: { version: string; savedAt: string; title: string; body: string; ack: string; note: string };
+  /** The request types requesters pick from, per group (Agents, HR …). */
+  types: Record<Category, RequestType[]>;
 };
 
 const WEEKDAY: WorkDay = { on: true, from: "09:00", to: "18:00" };
@@ -64,6 +68,7 @@ export const DEFAULTS: Settings = {
     ack: "I’ve read the terms and conditions",
     note: "Each request records the version you accepted.",
   },
+  types: REQUEST_TYPES,
 };
 
 const KEY = "provtoys-design-settings:v1";
@@ -119,3 +124,9 @@ export function designerAway(name: string, iso: string): string | null {
   if (!d.days[weekdayIndex(new Date(`${iso}T12:00`))]) return "doesn’t work that day";
   return null;
 }
+
+/**
+ * A request type by id — the manager's current list first, then the built-in list, so a request
+ * sent with a type that was later removed still shows its name.
+ */
+export const typeById = (id: string): RequestType | undefined => Object.values(settings().types).flat().find((t) => t.id === id) ?? ALL_TYPES.find((t) => t.id === id);

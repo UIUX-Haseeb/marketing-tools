@@ -7,18 +7,19 @@
  */
 import { useState } from "react";
 import {
-  AlignLeft, ArrowDown, ArrowUp, Calendar, CheckSquare, ChevronDown, CircleDot, Copy, Eye, FileUp, Hash, Heading, Link2, ListChecks, Plus, Save, Trash2, Type, X,
+  AlignLeft, ArrowDown, ArrowUp, Calendar, CheckSquare, ChevronDown, CircleDot, Copy, Eye, FileUp, Hash, Heading, Link2, ListChecks, Pencil, Plus, Save, Trash2, Type, X,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, REQUEST_TYPES, typeById } from "./catalog";
+import { CATEGORIES } from "./catalog";
 import { CustomFields } from "./custom-fields";
 import { answered, deleteForm, FIELD_KINDS, hasOptions, newId, saveForm, useForms, type Answer, type CustomForm, type FieldKind, type FormField } from "./forms";
 import { fmtDay } from "./rules";
-import { Switch } from "./settings-panel";
+import { typeById, useSettings } from "./settings";
+import { SettingsPanel, Switch } from "./settings-panel";
 import { Modal } from "./ui";
 
 /** The form as the requester meets it: the request dialog on its Details step. Answers here aren't saved. */
@@ -179,6 +180,8 @@ function FieldCard({ field, index, count, onChange, onMove, onCopy, onDelete }: 
 
 export function FormBuilder({ onClose }: { onClose: () => void }) {
   const saved = useForms();
+  const cfg = useSettings();
+  const [editTypes, setEditTypes] = useState(false);
   const [selId, setSelId] = useState<string | null>(saved[0]?.id ?? null);
   const [draft, setDraft] = useState<CustomForm | null>(saved[0] ? structuredClone(saved[0]) : null);
   const [dirty, setDirty] = useState(false);
@@ -332,13 +335,18 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
                 </div>
 
                 <div className="space-y-2">
-                  <div>
-                    <h3 className="text-base font-normal">Used for</h3>
-                    <p className="text-sm text-muted-foreground">The request types that show this form. Each request type can use one form; picking a type that’s on another form moves it here when you save.</p>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-normal">Used for</h3>
+                      <p className="text-sm text-muted-foreground">The request types that show this form. Each request type can use one form; picking a type that’s on another form moves it here when you save.</p>
+                    </div>
+                    <Button variant="ghost" size="sm" className="shrink-0" onClick={() => setEditTypes(true)}>
+                      <Pencil /> Edit request types
+                    </Button>
                   </div>
                   <div className="divide-y rounded-xl border">
                     {CATEGORIES.map((c) => {
-                      const types = REQUEST_TYPES[c.id];
+                      const types = cfg.types[c.id];
                       const picked = types.filter((t) => draft.typeIds.includes(t.id)).length;
                       const isOpen = openCats.includes(c.id);
                       return (
@@ -502,6 +510,7 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
           </div>
         )}
       </div>
+      {editTypes && <SettingsPanel current={cfg} tab="types" onClose={() => setEditTypes(false)} />}
     </div>
   );
 }
