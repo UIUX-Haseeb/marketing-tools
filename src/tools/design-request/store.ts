@@ -10,7 +10,7 @@ import { EMPLOYEES } from "@/lib/demo/employees";
 import type { Employee } from "@/lib/demo/types";
 import { addWorkingDays, isoDay } from "./rules";
 import { formFor, type FormSnapshot } from "./forms";
-import { settings } from "./settings";
+import { settings, typeById } from "./settings";
 import type { Attachment, DesignRequest, Flag, HistoryEntry, RequestDraft, Requester, Status } from "./types";
 
 export const MARKETING = "Marketing & Design";
@@ -131,7 +131,7 @@ export function submitRequest(raw: RequestDraft, requester: Requester, existingI
   if (existingId) {
     let saved!: DesignRequest;
     update(existingId, (r) => {
-      saved = { ...r, ...draft, termsVersion: settings().terms.version, status: "Submitted", urgentApproval, replyDue: undefined, reminderSent: false, history: [...r.history, entry("Resubmitted", requester.name, to)] };
+      saved = { ...r, ...draft, termsVersion: settings().terms.version, typeLabel: typeById(draft.typeId)?.label, status: "Submitted", urgentApproval, replyDue: undefined, reminderSent: false, history: [...r.history, entry("Resubmitted", requester.name, to)] };
       return { r: saved };
     });
     return saved;
@@ -139,7 +139,7 @@ export function submitRequest(raw: RequestDraft, requester: Requester, existingI
   const seq = s.seq + 1;
   const r: DesignRequest = {
     ...draft,
-    termsVersion: settings().terms.version,
+    termsVersion: settings().terms.version, typeLabel: typeById(draft.typeId)?.label,
     id: crypto.randomUUID(),
     ref: `DR-${String(seq).padStart(4, "0")}`,
     requester,

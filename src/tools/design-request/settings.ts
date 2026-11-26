@@ -10,7 +10,7 @@
  * the board and the calendar all read from here, so a saved change shows straight away.
  */
 import { useSyncExternalStore } from "react";
-import { ALL_TYPES, LEAD_DAYS, REQUEST_TYPES, type LeadClass, type RequestType } from "./catalog";
+import { LEAD_DAYS, REQUEST_TYPES, type LeadClass, type RequestType } from "./catalog";
 import type { Category } from "./types";
 import { DEFAULT_TERMS } from "./terms";
 
@@ -125,8 +125,5 @@ export function designerAway(name: string, iso: string): string | null {
   return null;
 }
 
-/**
- * A request type by id — the manager's current list first, then the built-in list, so a request
- * sent with a type that was later removed still shows its name.
- */
-export const typeById = (id: string): RequestType | undefined => Object.values(settings().types).flat().find((t) => t.id === id) ?? ALL_TYPES.find((t) => t.id === id);
+/** A request type by id, from the manager's list. Sent requests also keep the name (`typeLabel`). */
+export const typeById = (id: string): RequestType | undefined => Object.values(settings().types).flat().find((t) => t.id === id);

@@ -18,7 +18,8 @@ import { CATEGORIES } from "./catalog";
 import { CustomFields } from "./custom-fields";
 import { answered, deleteForm, FIELD_KINDS, hasOptions, newId, saveForm, useForms, type Answer, type CustomForm, type FieldKind, type FormField } from "./forms";
 import { fmtDay } from "./rules";
-import { typeById, useSettings } from "./settings";
+import { saveSettings, typeById, useSettings } from "./settings";
+import type { Category } from "./types";
 import { SettingsPanel, Switch } from "./settings-panel";
 import { Modal } from "./ui";
 
@@ -191,6 +192,21 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
   const [flash, setFlash] = useState<string | null>(null);
   const [preview, setPreview] = useState<Record<string, Answer>>({});
   const [openCats, setOpenCats] = useState<string[]>(["agents"]);
+  const [newType, setNewType] = useState<Partial<Record<Category, string>>>({});
+
+  /** Add a request type to a group straight from "Used for", and tick it for this form. */
+  const addType = (c: Category) => {
+    const label = newType[c]?.trim();
+    if (!label || !draft) return;
+    const t = { id: `${c}-${newId()}`, label, lead: "flyer" as const };
+    saveSettings({ types: { ...cfg.types, [c]: [...cfg.types[c], t] } });
+    set({ typeIds: [...draft.typeIds, t.id] });
+    setNewType((n) => ({ ...n, [c]: "" }));
+  };
+  const removeType = (c: Category, id: string) => {
+    saveSettings({ types: { ...cfg.types, [c]: cfg.types[c].filter((t) => t.id !== id) } });
+    if (draft?.typeIds.includes(id)) set({ typeIds: draft.typeIds.filter((x) => x !== id) });
+  };
   const [previewing, setPreviewing] = useState(false);
 
   const isNew = !!draft && !saved.some((x) => x.id === draft.id);
@@ -338,7 +354,7 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h3 className="text-base font-normal">Used for</h3>
-                      <p className="text-sm text-muted-foreground">The request types that show this form. Each request type can use one form; picking a type that’s on another form moves it here when you save.</p>
+                      <p className="text-sm text-muted-foreground">The request types that show this form. Add your own under each group — a new type is ticked for this form and shows in the request form straight away. Each request type can use one form; picking a type that’s on another form moves it here when you save.</p>
                     </div>
                     <Button variant="ghost" size="sm" className="shrink-0" onClick={() => setEditTypes(true)}>
                       <Pencil /> Edit request types
@@ -367,8 +383,8 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
                                 const on = draft.typeIds.includes(t.id);
                                 const other = owner(t.id);
                                 return (
-                                  <li key={t.id}>
-                                    <label className="flex cursor-pointer items-start gap-2.5 text-sm">
+                                  <li key={t.id} className="group flex items-start gap-2">
+                                    <label className="flex flex-1 cursor-pointer items-start gap-2.5 text-sm">
                                       <input
                                         type="checkbox"
                                         checked={on}
@@ -380,9 +396,39 @@ export function FormBuilder({ onClose }: { onClose: () => void }) {
                                         {other && <span className="block text-xs text-muted-foreground">{on ? `Moves here from “${other.name}” when you save` : `Uses “${other.name}”`}</span>}
                                       </span>
                                     </label>
+                                    <button
+                                      type="button"
+                                      onClick={() => removeType(c.id, t.id)}
+                                      aria-label={`Remove request type ${t.label}`}
+                                      title="Remove this request type for everyone"
+                                      className="rounded p-0.5 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive focus-visible:opacity-100"
+                                    >
+                                      <X className="size-4" />
+                                    </button>
                                   </li>
                                 );
                               })}
+                              {!types.length && <li className="text-sm text-muted-foreground">No request types yet.</li>}
+                              <li>
+                                <form
+                                  className="flex gap-2 pt-1"
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    addType(c.id);
+                                  }}
+                                >
+                                  <Input
+                                    value={newType[c.id] ?? ""}
+                                    onChange={(e) => setNewType((n) => ({ ...n, [c.id]: e.target.value }))}
+                                    placeholder={`Add a request type for ${c.label}…`}
+                                    aria-label={`New request type for ${c.label}`}
+                                    className="h-9"
+                                  />
+                                  <Button type="submit" variant="secondary" size="sm" disabled={!newType[c.id]?.trim()}>
+                                    <Plus /> Add
+                                  </Button>
+                                </form>
+                              </li>
                             </ul>
                           )}
                         </div>

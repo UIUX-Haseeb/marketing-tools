@@ -220,7 +220,7 @@ export function RequestSheet({ r, role, onClose, onEdit, onAct, onCalendar }: { 
             {r.urgent && <span className="ml-2 text-xs text-destructive">Urgent{r.urgentApproval === "approved" ? " · approved" : ""}</span>}
           </Field>
           <Field label="Request">
-            {categoryLabel(r.category as never)} › {t?.label ?? "—"}
+            {categoryLabel(r.category as never)} › {t?.label ?? r.typeLabel ?? "—"}
             {t && <span className="block text-xs text-muted-foreground">Lead time: {LEAD_LABEL[t.lead]}</span>}
           </Field>
           <Field label="Requested by">

@@ -68,7 +68,7 @@ export const isLowRes = (a: Attachment) => !!a.width && !!a.height && Math.max(a
 export function needs(d: RequestDraft) {
   const t = typeById(d.typeId);
   return {
-    permit: d.category === "agents" && !!t?.permit,
+    permit: !!t?.permit,
     developer: !!t?.developer || d.developerMaterial,
     person: !!t?.person || d.aboutPerson,
     people: d.peopleShown,

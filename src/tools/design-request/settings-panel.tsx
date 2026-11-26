@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, LEAD_LABEL, REQUEST_TYPES, type LeadClass, type RequestType } from "./catalog";
+import { CATEGORIES, LEAD_LABEL, type LeadClass, type RequestType } from "./catalog";
 import { fmtDay, isoDay } from "./rules";
 import { DEFAULTS, saveSettings, WEEKDAY_NAMES, WEEKDAYS, type Designer, type DocumentRule, type Settings } from "./settings";
 import { Terms } from "./terms";
@@ -363,13 +363,10 @@ function TypesTab({ s, set }: { s: Settings; set: (p: Partial<Settings>) => void
           </div>
         </div>
       ))}
-      {!list.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No request types in this group — requesters can’t pick it until you add one.</p>}
+      {!list.length && <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">No request types in this group yet — requesters can’t send one for it until you add one.</p>}
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="secondary" onClick={() => put([...list, { id: `${cat}-${crypto.randomUUID().slice(0, 8)}`, label: "New request type", lead: "flyer", group: groups.at(-1) }])}>
           <Plus /> Add a request type
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => put(REQUEST_TYPES[cat])}>
-          Put back the built-in list
         </Button>
       </div>
     </div>

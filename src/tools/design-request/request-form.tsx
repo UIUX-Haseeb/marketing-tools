@@ -39,7 +39,7 @@ function TypeSelect({ category, value, onChange, error }: { category: Category |
   const groups = [...new Set(types.map((t) => t.group ?? ""))];
   return (
     <Select id="typeId" value={value} disabled={!category} onChange={(e) => onChange(e.target.value)} className={cn(!value && "text-muted-foreground", error && "border-destructive")}>
-      <option value="">{category ? "Pick a request type" : "Pick who it's for first"}</option>
+      <option value="">{!category ? "Pick who it's for first" : types.length ? "Pick a request type" : "No request types yet — Marketing adds them"}</option>
       {groups.map((g) =>
         g ? (
           <optgroup key={g} label={g}>
@@ -48,7 +48,7 @@ function TypeSelect({ category, value, onChange, error }: { category: Category |
             ))}
           </optgroup>
         ) : (
-          types.map((t) => (
+          types.filter((t) => !t.group).map((t) => (
             <option key={t.id} value={t.id}>{t.label}</option>
           ))
         ),

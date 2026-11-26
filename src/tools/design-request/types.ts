@@ -83,6 +83,8 @@ export type DesignRequest = RequestDraft & {
   form?: FormSnapshot;
   /** The terms version the requester accepted. */
   termsVersion?: string;
+  /** The request type's name when it was sent, so removing the type later keeps it readable. */
+  typeLabel?: string;
   /** The designer Marketing picked when confirming it. */
   designer?: string;
   created: string;
